@@ -1,0 +1,11 @@
+---
+import DashboardLayout from '@layouts/DashboardLayout.astro';
+
+// locals.user is set by middleware (already authenticated)
+const user = Astro.locals.user!;
+---
+
+<DashboardLayout title="Dashboard" user={user}>
+  <h1>Dashboard</h1>
+  <p>Welcome back, {user.email}.</p>
+</DashboardLayout>

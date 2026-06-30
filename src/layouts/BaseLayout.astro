@@ -1,0 +1,53 @@
+---
+import SEO from '@components/SEO.astro';
+import CookieConsent from '@components/CookieConsent.astro';
+import '@styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+  canonical?: string;
+  ogImage?: string;
+}
+
+const { title, description, noindex = false, canonical, ogImage } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <SEO
+      title={title}
+      description={description}
+      noindex={noindex}
+      canonical={canonical}
+      ogImage={ogImage}
+    />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">wisdo</a>
+        <ul>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/dashboard/">Dashboard</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <p>&copy; {new Date().getFullYear()} wisdo</p>
+    </footer>
+
+    <CookieConsent />
+  </body>
+</html>

@@ -1,0 +1,90 @@
+---
+import SEO from '@components/SEO.astro';
+import '@styles/global.css';
+import type { User } from '@supabase/supabase-js';
+
+interface Props {
+  title: string;
+  user: User;
+}
+
+const { title, user } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- Private layout: always noindex -->
+    <SEO
+      title={`${title} — wisdo`}
+      description="Private dashboard"
+      noindex={true}
+    />
+  </head>
+  <body class="dashboard-body">
+    <aside class="sidebar">
+      <a href="/" class="sidebar-logo">wisdo</a>
+      <nav>
+        <ul>
+          <li><a href="/dashboard/">Home</a></li>
+          <li><a href="/tools/">Tools</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <p class="user-email">{user.email}</p>
+        <form action="/api/auth/logout/" method="POST">
+          <button type="submit">Sign out</button>
+        </form>
+      </div>
+    </aside>
+
+    <main class="dashboard-main">
+      <slot />
+    </main>
+  </body>
+</html>
+
+<style>
+  .dashboard-body {
+    display: grid;
+    grid-template-columns: 16rem 1fr;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    background: var(--color-surface);
+    border-right: var(--border-width) solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+    gap: var(--space-6);
+  }
+
+  .sidebar-logo {
+    font-weight: var(--font-bold);
+    font-size: var(--text-xl);
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+  }
+
+  .user-email {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-main {
+    padding: var(--space-8);
+    overflow-y: auto;
+  }
+</style>

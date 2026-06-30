@@ -1,0 +1,117 @@
+---
+// vanilla-cookieconsent v3 + Google Consent Mode v2
+// Geo detection via CF-IPCountry header (Cloudflare DNS-only → Vercel)
+const cfCountry = Astro.request.headers.get('CF-IPCountry') ?? '';
+const EU_COUNTRIES = new Set([
+  'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU',
+  'IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE',
+  'GB', // UK — PECR / UK GDPR
+  'IS','LI','NO', // EEA
+]);
+const requiresOptIn = EU_COUNTRIES.has(cfCountry);
+---
+
+<!-- Google Consent Mode v2 — default DENIED before consent -->
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500,
+  });
+</script>
+
+<!-- Pass server-side geo flag to client via data attribute -->
+<div id="cc-config" data-opt-in={String(requiresOptIn)} hidden></div>
+
+<link rel="stylesheet" href="/node_modules/vanilla-cookieconsent/dist/cookieconsent.css" />
+
+<script>
+  import CookieConsent from 'vanilla-cookieconsent';
+
+  const requiresOptIn =
+    document.getElementById('cc-config')?.dataset.optIn === 'true';
+
+  CookieConsent.run({
+    guiOptions: {
+      consentModal: { layout: 'box', position: 'bottom right', equalWeightButtons: false },
+      preferencesModal: { layout: 'box' },
+    },
+    autoClearCookies: true,
+    revision: 1,
+
+    onFirstConsent({ cookie }: { cookie: { categories: string[] } }) {
+      updateConsentMode(cookie.categories);
+    },
+    onConsent({ cookie }: { cookie: { categories: string[] } }) {
+      updateConsentMode(cookie.categories);
+    },
+    onChange({ cookie }: { cookie: { categories: string[] } }) {
+      updateConsentMode(cookie.categories);
+    },
+
+    categories: {
+      necessary: { enabled: true, readOnly: true },
+      analytics: {
+        enabled: !requiresOptIn,
+        autoClear: { cookies: [{ name: /^(_ga|_gid|_gat)/ }] },
+      },
+      marketing: {
+        enabled: false,
+        autoClear: { cookies: [{ name: /^(_fbp|_fbc)/ }] },
+      },
+    },
+
+    language: {
+      default: 'en',
+      translations: {
+        en: {
+          consentModal: {
+            title: 'We use cookies',
+            description:
+              'We use cookies to improve your experience and analyse site usage.',
+            acceptAllBtn: 'Accept all',
+            acceptNecessaryBtn: 'Reject all',
+            showPreferencesBtn: 'Manage preferences',
+          },
+          preferencesModal: {
+            title: 'Cookie preferences',
+            acceptAllBtn: 'Accept all',
+            acceptNecessaryBtn: 'Reject all',
+            savePreferencesBtn: 'Save preferences',
+            sections: [
+              {
+                title: 'Strictly necessary',
+                description: 'Essential for the site to function.',
+                linkedCategory: 'necessary',
+              },
+              {
+                title: 'Analytics',
+                description: 'Help us understand how visitors use the site.',
+                linkedCategory: 'analytics',
+              },
+              {
+                title: 'Marketing',
+                description: 'Used to deliver personalised ads.',
+                linkedCategory: 'marketing',
+              },
+            ],
+          },
+        },
+      },
+    },
+  });
+
+  function updateConsentMode(categories: string[]) {
+    if (typeof window.gtag !== 'function') return;
+    window.gtag('consent', 'update', {
+      analytics_storage: categories.includes('analytics') ? 'granted' : 'denied',
+      ad_storage: categories.includes('marketing') ? 'granted' : 'denied',
+      ad_user_data: categories.includes('marketing') ? 'granted' : 'denied',
+      ad_personalization: categories.includes('marketing') ? 'granted' : 'denied',
+    });
+  }
+</script>

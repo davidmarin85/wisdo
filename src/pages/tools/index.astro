@@ -1,0 +1,10 @@
+---
+import DashboardLayout from '@layouts/DashboardLayout.astro';
+
+const user = Astro.locals.user!;
+---
+
+<DashboardLayout title="Tools" user={user}>
+  <h1>Tools</h1>
+  <p>Your tools will appear here.</p>
+</DashboardLayout>

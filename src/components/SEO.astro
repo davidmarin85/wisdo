@@ -1,0 +1,40 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean | undefined;
+  canonical?: string | undefined;
+  ogImage?: string | undefined;
+}
+
+const {
+  title,
+  description,
+  noindex = false,
+  canonical,
+  ogImage,
+} = Astro.props;
+
+const SITE = 'https://wisdo.com';
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, SITE).href;
+const ogImageUrl = ogImage ?? `${SITE}/og-default.png`;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImageUrl} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImageUrl} />
