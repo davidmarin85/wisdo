@@ -1,10 +1,433 @@
 ---
-import DashboardLayout from '@layouts/DashboardLayout.astro';
-
-const user = Astro.locals.user!;
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ToolCard from '@components/ToolCard.astro';
+import { tools, categories } from '@data/tools';
 ---
 
-<DashboardLayout title="Tools" user={user}>
-  <h1>Tools</h1>
-  <p>Your tools will appear here.</p>
-</DashboardLayout>
+<BaseLayout
+  title="wisdo Market — Directorio de herramientas de ventas"
+  description="Explora y compara las mejores herramientas de prospecting, outreach, calling y automatización para equipos comerciales."
+  navVariant="light"
+>
+  <div class="page-tools">
+    <!-- Page header -->
+    <div class="tools-header">
+      <div class="container">
+        <div class="tools-header__content">
+          <div>
+            <span class="tag tag--purple">wisdo Market</span>
+            <h1 class="tools-header__title">Directorio de herramientas</h1>
+            <p class="tools-header__subtitle">
+              {tools.length} herramientas evaluadas para equipos de ventas B2B
+            </p>
+          </div>
+          <div class="tools-header__search">
+            <input
+              type="search"
+              id="tool-search"
+              placeholder="Buscar herramienta…"
+              class="search-input"
+              aria-label="Buscar herramientas"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="container tools-layout">
+      <!-- Sidebar with categories -->
+      <aside class="tools-sidebar" aria-label="Categorías">
+        <h2 class="tools-sidebar__heading">Categorías</h2>
+        <ul role="list" class="tools-sidebar__list">
+          {categories.map(cat => (
+            <li>
+              <button
+                class:list={['sidebar-pill', { 'sidebar-pill--active': cat.slug === 'all' }]}
+                data-filter={cat.slug}
+                type="button"
+              >
+                {cat.label}
+                {cat.slug !== 'all' && (
+                  <span class="sidebar-pill__count">
+                    {tools.filter(t => t.categorySlug === cat.slug).length}
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div class="tools-sidebar__divider"></div>
+
+        <h2 class="tools-sidebar__heading">Precio</h2>
+        <ul role="list" class="tools-sidebar__list">
+          <li>
+            <button class="sidebar-pill sidebar-pill--active" data-price-filter="all" type="button">
+              Todos los precios
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-pill" data-price-filter="free" type="button">
+              Gratis
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-pill" data-price-filter="freemium" type="button">
+              Freemium
+            </button>
+          </li>
+          <li>
+            <button class="sidebar-pill" data-price-filter="paid" type="button">
+              Solo de pago
+            </button>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Tool grid -->
+      <main>
+        <div class="tools-grid-header">
+          <p class="tools-count">
+            <span id="visible-count">{tools.length}</span> herramientas
+          </p>
+          <div class="tools-sort">
+            <label for="sort-select" class="sr-only">Ordenar por</label>
+            <select id="sort-select" class="sort-select">
+              <option value="rating">Mejor valoradas</option>
+              <option value="name">Nombre A-Z</option>
+              <option value="reviews">Más reseñas</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="tool-grid" id="tool-grid">
+          {tools.map(tool => (
+            <ToolCard tool={tool} />
+          ))}
+        </div>
+
+        <p class="no-results" id="no-results" hidden>
+          No hay herramientas con esos filtros. <button type="button" id="reset-filters">Limpiar filtros</button>
+        </p>
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-tools {
+    background-color: var(--color-cream);
+    min-height: 100vh;
+  }
+
+  /* ---- HEADER ---- */
+  .tools-header {
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-12) 0 var(--space-8);
+  }
+
+  .tools-header__content {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .tools-header__title {
+    font-size: var(--text-4xl);
+    color: var(--color-dark);
+    margin: var(--space-3) 0 var(--space-2);
+    letter-spacing: -0.02em;
+  }
+
+  .tools-header__subtitle {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+  }
+
+  .tools-header__search {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    background-color: var(--color-cream);
+    color: var(--color-text);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    outline: none;
+  }
+
+  .search-input:focus {
+    border-color: var(--color-purple);
+    box-shadow: 0 0 0 3px var(--color-purple-glow);
+  }
+
+  /* ---- LAYOUT ---- */
+  .tools-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: var(--space-10);
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-16);
+    align-items: start;
+  }
+
+  /* ---- SIDEBAR ---- */
+  .tools-sidebar {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-6));
+  }
+
+  .tools-sidebar__heading {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-3);
+  }
+
+  .tools-sidebar__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .tools-sidebar__divider {
+    height: 1px;
+    background-color: var(--color-border);
+    margin: var(--space-6) 0;
+  }
+
+  .sidebar-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    border: none;
+    background: none;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .sidebar-pill:hover {
+    background-color: var(--color-gray-100);
+    color: var(--color-dark);
+  }
+
+  .sidebar-pill--active {
+    background-color: rgb(108 92 231 / 0.1);
+    color: var(--color-purple-dark);
+    font-weight: var(--font-semibold);
+  }
+
+  .sidebar-pill__count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  /* ---- GRID HEADER ---- */
+  .tools-grid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+  }
+
+  .tools-count {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .sort-select {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    background-color: var(--color-white);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .sort-select:focus {
+    border-color: var(--color-purple);
+  }
+
+  /* ---- TOOL GRID ---- */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-5);
+  }
+
+  /* ---- NO RESULTS ---- */
+  .no-results {
+    text-align: center;
+    padding: var(--space-16);
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    grid-column: 1 / -1;
+  }
+
+  .no-results button {
+    background: none;
+    border: none;
+    color: var(--color-purple);
+    cursor: pointer;
+    font-size: inherit;
+    text-decoration: underline;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 900px) {
+    .tools-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .tools-sidebar {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-6);
+    }
+
+    .tools-sidebar__list {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .tools-sidebar__divider {
+      display: none;
+    }
+
+    .sidebar-pill {
+      width: auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .tools-header__content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .tools-header__search {
+      max-width: 100%;
+    }
+
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // --- Category filter ---
+  const categoryPills = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const pricePills = document.querySelectorAll<HTMLButtonElement>('[data-price-filter]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.tool-card'));
+  const searchInput = document.getElementById('tool-search') as HTMLInputElement | null;
+  const visibleCount = document.getElementById('visible-count');
+  const noResults = document.getElementById('no-results') as HTMLElement | null;
+  const resetBtn = document.getElementById('reset-filters');
+  const sortSelect = document.getElementById('sort-select') as HTMLSelectElement | null;
+  const grid = document.getElementById('tool-grid');
+
+  let activeCategory = 'all';
+  let activePrice = 'all';
+  let searchQuery = '';
+
+  function applyFilters() {
+    let visible = 0;
+
+    cards.forEach(card => {
+      const catMatch = activeCategory === 'all' || card.dataset.category === activeCategory;
+      const priceMatch = activePrice === 'all' || card.dataset.pricing === activePrice;
+      const searchMatch =
+        searchQuery === '' ||
+        (card.querySelector('.tool-card__name')?.textContent ?? '')
+          .toLowerCase()
+          .includes(searchQuery);
+
+      const show = catMatch && priceMatch && searchMatch;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    if (visibleCount) visibleCount.textContent = String(visible);
+    if (noResults) noResults.hidden = visible > 0;
+  }
+
+  categoryPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      activeCategory = pill.dataset.filter ?? 'all';
+      categoryPills.forEach(p => p.classList.remove('sidebar-pill--active', 'filter-pill--active'));
+      pill.classList.add('sidebar-pill--active', 'filter-pill--active');
+      applyFilters();
+    });
+  });
+
+  pricePills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      activePrice = pill.dataset.priceFilter ?? 'all';
+      pricePills.forEach(p => p.classList.remove('sidebar-pill--active'));
+      pill.classList.add('sidebar-pill--active');
+      applyFilters();
+    });
+  });
+
+  searchInput?.addEventListener('input', () => {
+    searchQuery = searchInput.value.toLowerCase().trim();
+    applyFilters();
+  });
+
+  resetBtn?.addEventListener('click', () => {
+    activeCategory = 'all';
+    activePrice = 'all';
+    searchQuery = '';
+    if (searchInput) searchInput.value = '';
+    categoryPills.forEach(p => p.classList.remove('sidebar-pill--active', 'filter-pill--active'));
+    pricePills.forEach(p => p.classList.remove('sidebar-pill--active'));
+    document.querySelector<HTMLButtonElement>('[data-filter="all"]')?.classList.add('sidebar-pill--active');
+    document.querySelector<HTMLButtonElement>('[data-price-filter="all"]')?.classList.add('sidebar-pill--active');
+    applyFilters();
+  });
+
+  // --- Sort ---
+  sortSelect?.addEventListener('change', () => {
+    const val = sortSelect.value;
+    const sorted = [...cards].sort((a, b) => {
+      if (val === 'name') {
+        const nameA = a.querySelector('.tool-card__name')?.textContent ?? '';
+        const nameB = b.querySelector('.tool-card__name')?.textContent ?? '';
+        return nameA.localeCompare(nameB, 'es');
+      }
+      const numA = parseFloat(a.dataset[val === 'rating' ? 'rating' : 'reviewCount'] ?? '0');
+      const numB = parseFloat(b.dataset[val === 'rating' ? 'rating' : 'reviewCount'] ?? '0');
+      return numB - numA;
+    });
+    sorted.forEach(card => grid?.appendChild(card));
+  });
+</script>

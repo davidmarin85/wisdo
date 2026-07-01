@@ -1,14 +1,357 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import ToolCard from '@components/ToolCard.astro';
+import { tools, categories } from '@data/tools';
+
+const featuredTools = tools.filter(t => t.featured);
 ---
 
 <BaseLayout
-  title="wisdo"
-  description="Welcome to wisdo."
+  title="wisdo — El marketplace de herramientas para ventas"
+  description="Encuentra, compara y elige las mejores herramientas de prospecting, outreach y automatización para tu equipo comercial."
+  navVariant="dark"
 >
-  <section>
-    <h1>Welcome to wisdo</h1>
-    <p>Get started by editing <code>src/pages/index.astro</code></p>
-    <a href="/dashboard/">Go to dashboard &rarr;</a>
+  <!-- HERO — dark section -->
+  <section class="hero">
+    <div class="hero__glow hero__glow--purple" aria-hidden="true"></div>
+    <div class="hero__glow hero__glow--green" aria-hidden="true"></div>
+
+    <div class="container hero__content">
+      <div class="hero__eyebrow">
+        <span class="tag tag--dark">wisdo Market · Beta</span>
+      </div>
+
+      <h1 class="hero__title">
+        El marketplace de<br />
+        <span class="hero__title-accent">herramientas de ventas</span>
+      </h1>
+
+      <p class="hero__subtitle">
+        Encuentra, compara y elige las mejores herramientas de prospecting,<br class="hide-mobile" />
+        outreach y automatización para tu equipo comercial.
+      </p>
+
+      <div class="hero__actions">
+        <a href="/tools/" class="btn btn--primary btn--lg">
+          Explorar herramientas
+        </a>
+        <a href="#marketplace" class="btn btn--outline btn--lg">
+          Ver comparador
+        </a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <span class="hero__stat-value">6+</span>
+          <span class="hero__stat-label">Herramientas</span>
+        </div>
+        <div class="hero__stat-divider" aria-hidden="true"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-value">4</span>
+          <span class="hero__stat-label">Categorías</span>
+        </div>
+        <div class="hero__stat-divider" aria-hidden="true"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-value">100%</span>
+          <span class="hero__stat-label">Independiente</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARKETPLACE — light section -->
+  <section class="marketplace" id="marketplace">
+    <div class="container">
+      <div class="marketplace__header">
+        <div>
+          <h2 class="marketplace__title">Herramientas destacadas</h2>
+          <p class="marketplace__subtitle">Las favoritas de los equipos de ventas en Latinoamérica</p>
+        </div>
+        <a href="/tools/" class="btn btn--outline-dark">
+          Ver todas →
+        </a>
+      </div>
+
+      <!-- Category filter pills -->
+      <div class="filter-pills" role="group" aria-label="Filtrar por categoría">
+        {categories.map(cat => (
+          <button
+            class:list={['filter-pill', { 'filter-pill--active': cat.slug === 'all' }]}
+            data-filter={cat.slug}
+            type="button"
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <!-- Tool grid -->
+      <div class="tool-grid" id="tool-grid">
+        {featuredTools.map(tool => (
+          <ToolCard tool={tool} />
+        ))}
+      </div>
+
+      <div class="marketplace__cta">
+        <p>¿No encuentras lo que buscas?</p>
+        <a href="/tools/" class="btn btn--purple">
+          Ver el directorio completo
+        </a>
+      </div>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    background-color: var(--color-dark);
+    color: white;
+    padding: var(--space-32) 0 var(--space-24);
+    overflow: hidden;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero__glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+  }
+
+  .hero__glow--purple {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgb(108 92 231 / 0.3) 0%, transparent 70%);
+    top: -100px;
+    left: -100px;
+  }
+
+  .hero__glow--green {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgb(19 194 138 / 0.2) 0%, transparent 70%);
+    bottom: 0;
+    right: 10%;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-8);
+  }
+
+  .hero__eyebrow {
+    display: flex;
+    justify-content: center;
+  }
+
+  .hero__title {
+    font-size: clamp(var(--text-4xl), 6vw, var(--text-6xl));
+    font-weight: var(--font-bold);
+    letter-spacing: -0.03em;
+    line-height: var(--leading-tight);
+    color: white;
+  }
+
+  .hero__title-accent {
+    background: linear-gradient(135deg, var(--color-purple-light) 0%, var(--color-green) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero__subtitle {
+    font-size: var(--text-lg);
+    color: rgb(255 255 255 / 0.65);
+    line-height: var(--leading-relaxed);
+    max-width: 52ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero__stats {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    margin-top: var(--space-4);
+    padding-top: var(--space-8);
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero__stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  .hero__stat-value {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-bold);
+    color: white;
+    letter-spacing: -0.02em;
+  }
+
+  .hero__stat-label {
+    font-size: var(--text-sm);
+    color: rgb(255 255 255 / 0.5);
+    font-family: var(--font-mono);
+  }
+
+  .hero__stat-divider {
+    width: 1px;
+    height: 40px;
+    background-color: rgb(255 255 255 / 0.1);
+  }
+
+  /* ---- MARKETPLACE ---- */
+  .marketplace {
+    background-color: var(--color-cream);
+    padding: var(--space-20) 0 var(--space-24);
+  }
+
+  .marketplace__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .marketplace__title {
+    font-size: var(--text-3xl);
+    color: var(--color-dark);
+    margin-bottom: var(--space-2);
+  }
+
+  .marketplace__subtitle {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+  }
+
+  /* ---- FILTER PILLS ---- */
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-8);
+  }
+
+  .filter-pill {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-gray-200);
+    background-color: var(--color-white);
+    color: var(--color-gray-600);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .filter-pill:hover {
+    border-color: var(--color-purple);
+    color: var(--color-purple);
+  }
+
+  .filter-pill--active {
+    background-color: var(--color-purple);
+    border-color: var(--color-purple);
+    color: white;
+  }
+
+  /* ---- TOOL GRID ---- */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-5);
+    margin-bottom: var(--space-12);
+  }
+
+  /* ---- MARKETPLACE CTA ---- */
+  .marketplace__cta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    justify-content: center;
+    padding-top: var(--space-12);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .marketplace__cta p {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 640px) {
+    .hero {
+      min-height: auto;
+      padding: var(--space-20) 0 var(--space-16);
+    }
+
+    .hero__stats {
+      gap: var(--space-5);
+    }
+
+    .hero__stat-value {
+      font-size: var(--text-2xl);
+    }
+
+    .hide-mobile {
+      display: none;
+    }
+
+    .marketplace__header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .marketplace__cta {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .tool-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
+  const cards = document.querySelectorAll<HTMLElement>('.tool-card');
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const filter = pill.dataset.filter ?? 'all';
+
+      pills.forEach(p => p.classList.remove('filter-pill--active'));
+      pill.classList.add('filter-pill--active');
+
+      cards.forEach(card => {
+        const match = filter === 'all' || card.dataset.category === filter;
+        card.style.display = match ? '' : 'none';
+      });
+    });
+  });
+</script>

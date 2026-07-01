@@ -1,0 +1,242 @@
+---
+interface Props {
+  user?: { email: string } | null;
+  variant?: 'dark' | 'light';
+}
+
+const { user = null, variant = 'dark' } = Astro.props;
+const currentPath = new URL(Astro.request.url).pathname;
+---
+
+<header class:list={['nav-header', `nav-header--${variant}`]}>
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav__logo" aria-label="wisdo inicio">
+        wisdo
+        <span class="nav__logo-dot">.</span>
+      </a>
+
+      <ul class="nav__links" role="list">
+        <li>
+          <a
+            href="/tools/"
+            class:list={['nav__link', { 'nav__link--active': currentPath.startsWith('/tools') }]}
+          >
+            Market
+          </a>
+        </li>
+        <li>
+          <a
+            href="/blog/"
+            class:list={['nav__link', { 'nav__link--active': currentPath.startsWith('/blog') }]}
+          >
+            Blog
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav__actions">
+        {user ? (
+          <>
+            <a
+              href="/dashboard/"
+              class:list={['nav__link', { 'nav__link--active': currentPath.startsWith('/dashboard') }]}
+            >
+              Dashboard
+            </a>
+            <a href="/api/auth/logout/" class:list={['btn', variant === 'dark' ? 'btn--outline' : 'btn--outline-dark']}>
+              Salir
+            </a>
+          </>
+        ) : (
+          <a href="/login/" class="btn btn--primary">
+            Iniciar sesión
+          </a>
+        )}
+      </div>
+
+      <button class="nav__burger" aria-label="Menú" aria-expanded="false" aria-controls="nav-mobile">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </div>
+
+  <div class="nav-mobile" id="nav-mobile" hidden>
+    <ul role="list">
+      <li><a href="/tools/">Market</a></li>
+      <li><a href="/blog/">Blog</a></li>
+      {user ? (
+        <>
+          <li><a href="/dashboard/">Dashboard</a></li>
+          <li><a href="/api/auth/logout/">Salir</a></li>
+        </>
+      ) : (
+        <li><a href="/login/" class="btn btn--primary">Iniciar sesión</a></li>
+      )}
+    </ul>
+  </div>
+</header>
+
+<style>
+  .nav-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .nav-header--dark {
+    background-color: rgb(11 10 20 / 0.85);
+    border-bottom: 1px solid rgb(255 255 255 / 0.06);
+    color: white;
+  }
+
+  .nav-header--light {
+    background-color: rgb(251 249 245 / 0.92);
+    border-bottom: 1px solid var(--color-gray-200);
+    color: var(--color-dark);
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .nav__logo {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: inherit;
+    flex-shrink: 0;
+  }
+
+  .nav__logo-dot {
+    color: var(--color-green);
+  }
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-right: auto;
+  }
+
+  .nav__link {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .nav-header--dark .nav__link:hover,
+  .nav-header--dark .nav__link--active {
+    opacity: 1;
+    background-color: rgb(255 255 255 / 0.08);
+  }
+
+  .nav-header--light .nav__link:hover,
+  .nav-header--light .nav__link--active {
+    opacity: 1;
+    background-color: var(--color-gray-100);
+  }
+
+  .nav__link--active {
+    opacity: 1;
+  }
+
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-left: auto;
+  }
+
+  .nav__burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--space-2);
+    margin-left: auto;
+  }
+
+  .nav__burger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: currentColor;
+    border-radius: 2px;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+  }
+
+  .nav-mobile {
+    background-color: var(--color-dark-2);
+    padding: var(--space-4) var(--space-6);
+    border-top: 1px solid rgb(255 255 255 / 0.06);
+  }
+
+  .nav-mobile ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .nav-mobile a {
+    display: block;
+    padding: var(--space-3) var(--space-4);
+    color: white;
+    opacity: 0.8;
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+  }
+
+  .nav-mobile a:hover {
+    opacity: 1;
+    background-color: rgb(255 255 255 / 0.06);
+  }
+
+  @media (max-width: 768px) {
+    .nav__links,
+    .nav__actions {
+      display: none;
+    }
+
+    .nav__burger {
+      display: flex;
+    }
+
+    .nav-mobile:not([hidden]) {
+      display: block;
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      right: 0;
+      z-index: 99;
+    }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector('.nav__burger') as HTMLButtonElement | null;
+  const mobile = document.querySelector('.nav-mobile') as HTMLElement | null;
+
+  burger?.addEventListener('click', () => {
+    const isOpen = !mobile?.hidden;
+    if (mobile) mobile.hidden = isOpen;
+    burger.setAttribute('aria-expanded', String(!isOpen));
+  });
+</script>

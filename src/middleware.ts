@@ -2,7 +2,7 @@ import { defineMiddleware } from 'astro:middleware';
 import { createSupabaseServerClient } from '@lib/supabase';
 import { buildLoginUrl } from '@lib/auth';
 
-const PRIVATE_PREFIXES = ['/dashboard/', '/tools/'];
+const PRIVATE_PREFIXES = ['/dashboard/'];
 
 function isPrivateRoute(pathname: string): boolean {
   return PRIVATE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
@@ -11,6 +11,9 @@ function isPrivateRoute(pathname: string): boolean {
 export const onRequest = defineMiddleware(async (context, next) => {
   const { request, cookies, redirect } = context;
   const url = new URL(request.url);
+
+  // Default to unauthenticated — public pages skip Supabase call
+  context.locals.user = null;
 
   if (!isPrivateRoute(url.pathname)) {
     return next();
