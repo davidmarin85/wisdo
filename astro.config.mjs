@@ -9,7 +9,7 @@ export default defineConfig({
     webAnalytics: { enabled: false },
     imageService: true,
   }),
-  site: 'https://wisdo.io',
+  site: 'https://www.wisdo.io',
   vite: {
     resolve: {
       alias: {

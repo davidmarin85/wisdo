@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-const SITE = 'https://wisdo.io';
+const SITE = 'https://www.wisdo.io';
 
 interface PostEntry {
   slug: string;

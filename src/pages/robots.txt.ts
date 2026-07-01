@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-const CANONICAL_HOST = import.meta.env.CANONICAL_HOST ?? 'wisdo.io';
+const CANONICAL_HOST = import.meta.env.CANONICAL_HOST ?? 'www.wisdo.io';
 
 const PRIVATE_PATHS = [
   '/dashboard/',
