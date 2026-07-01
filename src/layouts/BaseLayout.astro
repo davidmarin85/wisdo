@@ -54,14 +54,17 @@ const user = Astro.locals.user
     <footer class="site-footer">
       <div class="container">
         <div class="site-footer__inner">
-          <span class="site-footer__logo">wisdo<span class="dot">.</span></span>
+          <a href="/" class="site-footer__logo" aria-label="wisdo inicio">
+            <span class="site-footer__logo-dot" aria-hidden="true"></span>
+            wisdo
+            <span class="site-footer__logo-badge">MARKET</span>
+          </a>
           <p class="site-footer__copy">
-            &copy; {new Date().getFullYear()} wisdo. El marketplace de herramientas para equipos de ventas.
+            &copy; 2026 wisdo Market &middot; Curated marketing &amp; sales tools
           </p>
           <nav class="site-footer__links" aria-label="Footer">
             <a href="/tools/">Market</a>
             <a href="/blog/">Blog</a>
-            <a href="/about/">Sobre wisdo</a>
           </nav>
         </div>
       </div>
@@ -90,10 +93,31 @@ const user = Astro.locals.user
     font-weight: var(--font-bold);
     color: white;
     letter-spacing: -0.02em;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
   }
 
-  .site-footer__logo .dot {
-    color: var(--color-green);
+  .site-footer__logo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-green);
+    box-shadow: 0 0 10px var(--color-green);
+    flex-shrink: 0;
+  }
+
+  .site-footer__logo-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #9D8CFF;
+    border: 1px solid #3A3660;
+    border-radius: 4px;
+    padding: 2px 5px;
   }
 
   .site-footer__copy {

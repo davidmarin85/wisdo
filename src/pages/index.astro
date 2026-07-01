@@ -4,43 +4,42 @@ import ToolCard from '@components/ToolCard.astro';
 import { tools, categories } from '@data/tools';
 
 const featuredTools = tools.filter(t => t.featured);
+
+const bestForMap: Record<string, string> = {
+  apollo:    'Outreach a escala',
+  kaspr:     'LinkedIn lead gen',
+  krispcall: 'Ventas telefónicas',
+  lemlist:   'Cold email multichannel',
+  lusha:     'Enriquecimiento B2B',
+  manychat:  'Chatbots & DMs',
+};
 ---
 
 <BaseLayout
-  title="wisdo — El marketplace de herramientas para ventas"
+  title="wisdo Market — El marketplace de herramientas para ventas"
   description="Encuentra, compara y elige las mejores herramientas de prospecting, outreach y automatización para tu equipo comercial."
   navVariant="dark"
 >
-  <!-- HERO — dark section -->
+
+  <!-- ===== HERO ===== -->
   <section class="hero">
     <div class="container hero__content">
       <p class="hero__eyebrow">The marketing &amp; sales tool marketplace</p>
-
       <h1 class="hero__title">
         Every tool to find,<br />
         <span class="hero__title-accent">reach &amp; close</span> more customers.
       </h1>
-
       <p class="hero__subtitle">
         Herramientas evaluadas y comparadas para equipos comerciales<br class="hide-mobile" />
         en Latinoamérica. Sin afiliados, sin sesgos.
       </p>
-
       <form class="hero__search" action="/tools/" method="get" role="search">
         <svg class="hero__search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
         </svg>
-        <input
-          type="search"
-          name="q"
-          placeholder="Busca herramientas, casos de uso…"
-          class="hero__search-input"
-          aria-label="Buscar herramientas"
-          autocomplete="off"
-        />
+        <input type="search" name="q" placeholder="Busca herramientas, casos de uso…" class="hero__search-input" aria-label="Buscar herramientas" autocomplete="off" />
         <button type="submit" class="hero__search-btn">Buscar</button>
       </form>
-
       <div class="hero__popular">
         <span class="hero__popular-label">Popular:</span>
         <a href="/tools/?q=cold+email" class="hero__popular-tag">Cold email</a>
@@ -48,7 +47,6 @@ const featuredTools = tools.filter(t => t.featured);
         <a href="/tools/?q=chatbot" class="hero__popular-tag">Chatbots</a>
         <a href="/tools/?q=lead+gen" class="hero__popular-tag">Lead gen</a>
       </div>
-
       <div class="hero__stats">
         <div class="hero__stat">
           <span class="hero__stat-value">25+</span>
@@ -68,7 +66,7 @@ const featuredTools = tools.filter(t => t.featured);
     </div>
   </section>
 
-  <!-- MARKETPLACE — light section -->
+  <!-- ===== FEATURED TOOLS ===== -->
   <section class="marketplace" id="marketplace">
     <div class="container">
       <div class="marketplace__header">
@@ -76,12 +74,8 @@ const featuredTools = tools.filter(t => t.featured);
           <h2 class="marketplace__title">Herramientas destacadas</h2>
           <p class="marketplace__subtitle">Las favoritas de los equipos de ventas en Latinoamérica</p>
         </div>
-        <a href="/tools/" class="btn btn--outline-dark">
-          Ver todas →
-        </a>
+        <a href="/tools/" class="btn btn--outline-dark">Ver todas →</a>
       </div>
-
-      <!-- Category filter pills -->
       <div class="filter-pills" role="group" aria-label="Filtrar por categoría">
         {categories.map(cat => (
           <button
@@ -93,26 +87,223 @@ const featuredTools = tools.filter(t => t.featured);
           </button>
         ))}
       </div>
-
-      <!-- Tool grid -->
       <div class="tool-grid" id="tool-grid">
         {featuredTools.map(tool => (
           <ToolCard tool={tool} />
         ))}
       </div>
-
       <div class="marketplace__cta">
         <p>¿No encuentras lo que buscas?</p>
-        <a href="/tools/" class="btn btn--purple">
-          Ver el directorio completo
-        </a>
+        <a href="/tools/" class="btn btn--purple">Ver el directorio completo</a>
       </div>
     </div>
   </section>
+
+  <!-- ===== QUIZ / STACK DIAGNOSTIC ===== -->
+  <section class="quiz" id="quiz">
+    <div class="container">
+      <p class="quiz__eyebrow">Stack Diagnostic</p>
+      <h2 class="quiz__title">Find your perfect sales stack</h2>
+      <p class="quiz__subtitle">4 preguntas para recomendarte las herramientas que se adaptan a tu situación.</p>
+
+      <div class="quiz__frame">
+        <div class="quiz__stepbar" id="quiz-stepbar" aria-label="Progreso del quiz">
+          <div class="quiz__pill quiz__pill--active" data-s="1"></div>
+          <div class="quiz__pill" data-s="2"></div>
+          <div class="quiz__pill" data-s="3"></div>
+          <div class="quiz__pill" data-s="4"></div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="quiz__q" id="quiz-q1">
+          <p class="quiz__qlabel">Pregunta 1 de 4</p>
+          <h3 class="quiz__qtitle">¿Qué tipo de negocio tienes?</h3>
+          <div class="quiz__opts">
+            <button class="quiz__opt" data-key="biz" data-val="agency" type="button">
+              <span class="quiz__opt-name">Agencia</span>
+              <span class="quiz__opt-desc">Gestionas clientes y campañas</span>
+            </button>
+            <button class="quiz__opt" data-key="biz" data-val="saas" type="button">
+              <span class="quiz__opt-name">SaaS</span>
+              <span class="quiz__opt-desc">Vendes software por suscripción</span>
+            </button>
+            <button class="quiz__opt" data-key="biz" data-val="consultant" type="button">
+              <span class="quiz__opt-name">Consultor</span>
+              <span class="quiz__opt-desc">Vendes tu expertise directamente</span>
+            </button>
+            <button class="quiz__opt" data-key="biz" data-val="ecommerce" type="button">
+              <span class="quiz__opt-name">Ecommerce</span>
+              <span class="quiz__opt-desc">Vendes productos online</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz__q" id="quiz-q2" hidden>
+          <p class="quiz__qlabel">Pregunta 2 de 4</p>
+          <h3 class="quiz__qtitle">¿En qué etapa está tu negocio?</h3>
+          <div class="quiz__opts quiz__opts--3">
+            <button class="quiz__opt" data-key="stage" data-val="validating" type="button">
+              <span class="quiz__opt-name">Validando</span>
+              <span class="quiz__opt-desc">Buscando product-market fit</span>
+            </button>
+            <button class="quiz__opt" data-key="stage" data-val="growing" type="button">
+              <span class="quiz__opt-name">Creciendo</span>
+              <span class="quiz__opt-desc">Tienes clientes, quieres más</span>
+            </button>
+            <button class="quiz__opt" data-key="stage" data-val="scaling" type="button">
+              <span class="quiz__opt-name">Escalando</span>
+              <span class="quiz__opt-desc">Operando y optimizando a escala</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz__q" id="quiz-q3" hidden>
+          <p class="quiz__qlabel">Pregunta 3 de 4</p>
+          <h3 class="quiz__qtitle">¿Cuál es tu mayor problema ahora mismo?</h3>
+          <div class="quiz__opts">
+            <button class="quiz__opt" data-key="problem" data-val="generate-leads" type="button">
+              <span class="quiz__opt-name">Generar leads</span>
+              <span class="quiz__opt-desc">No llegan suficientes prospectos</span>
+            </button>
+            <button class="quiz__opt" data-key="problem" data-val="close-sales" type="button">
+              <span class="quiz__opt-name">Cerrar ventas</span>
+              <span class="quiz__opt-desc">Los leads no están convirtiendo</span>
+            </button>
+            <button class="quiz__opt" data-key="problem" data-val="retain-customers" type="button">
+              <span class="quiz__opt-name">Retener clientes</span>
+              <span class="quiz__opt-desc">Se van antes de lo esperado</span>
+            </button>
+            <button class="quiz__opt" data-key="problem" data-val="automate-ops" type="button">
+              <span class="quiz__opt-name">Automatizar ops</span>
+              <span class="quiz__opt-desc">Los procesos manuales te frenan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz__q" id="quiz-q4" hidden>
+          <p class="quiz__qlabel">Pregunta 4 de 4</p>
+          <h3 class="quiz__qtitle">¿Cuánto puedes invertir en herramientas al mes?</h3>
+          <div class="quiz__opts quiz__opts--3">
+            <button class="quiz__opt" data-key="budget" data-val="low" type="button">
+              <span class="quiz__opt-name">Hasta €100</span>
+              <span class="quiz__opt-desc">Bootstrapped, máximo impacto</span>
+            </button>
+            <button class="quiz__opt" data-key="budget" data-val="medium" type="button">
+              <span class="quiz__opt-name">€100 – 500</span>
+              <span class="quiz__opt-desc">Stack sólido y completo</span>
+            </button>
+            <button class="quiz__opt" data-key="budget" data-val="high" type="button">
+              <span class="quiz__opt-name">€500 o más</span>
+              <span class="quiz__opt-desc">Sin límites, solo lo mejor</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Result (injected by JS) -->
+        <div class="quiz__result" id="quiz-result" hidden></div>
+
+        <!-- Navigation -->
+        <div class="quiz__nav" id="quiz-nav">
+          <button class="quiz__back-btn" id="quiz-back" type="button" hidden>← Atrás</button>
+          <button class="quiz__restart-btn" id="quiz-restart" type="button" hidden>Empezar de nuevo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== COMPARATOR ===== -->
+  <section class="comparator" id="comparator">
+    <div class="container">
+      <p class="comparator__eyebrow">Comparador interactivo</p>
+      <h2 class="comparator__title">Compara herramientas</h2>
+      <p class="comparator__subtitle">Selecciona hasta 3 herramientas y compáralas lado a lado.</p>
+
+      <div class="comp-chips" id="comp-chips" role="group" aria-label="Seleccionar herramientas">
+        {tools.map(tool => (
+          <button class="comp-chip" data-slug={tool.slug} data-color={tool.color} data-mono={tool.mono} type="button" aria-pressed="false">
+            <span class="comp-chip__mono" style={`background:${tool.color}`}>{tool.mono}</span>
+            {tool.name}
+          </button>
+        ))}
+      </div>
+
+      <div id="comp-output">
+        <p class="comp-empty">Selecciona al menos una herramienta para comparar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FULL COMPARISON TABLE ===== -->
+  <section class="compare-all" id="compare-all">
+    <div class="container">
+      <p class="compare-all__eyebrow">Tabla completa</p>
+      <h2 class="compare-all__title">Todas las herramientas, de un vistazo</h2>
+      <p class="compare-all__subtitle">Una comparativa honesta sin afiliados ni rankings pagados.</p>
+
+      <div class="compare-all__scroll">
+        <table class="all-table">
+          <thead>
+            <tr>
+              <th class="all-table__th all-table__th--label">Herramienta</th>
+              <th class="all-table__th">Categoría</th>
+              <th class="all-table__th">Ideal para</th>
+              <th class="all-table__th">Precio</th>
+              <th class="all-table__th">Rating</th>
+              <th class="all-table__th"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {tools.map(tool => (
+              <tr class="all-table__row">
+                <td class="all-table__td all-table__tool-cell">
+                  <span class="all-table__mono" style={`background:${tool.color}`}>{tool.mono}</span>
+                  <span class="all-table__name">{tool.name}</span>
+                </td>
+                <td class="all-table__td">
+                  <span class="all-table__cat">{tool.category}</span>
+                </td>
+                <td class="all-table__td all-table__bestfor">{bestForMap[tool.slug]}</td>
+                <td class="all-table__td all-table__price">{tool.priceLabel}</td>
+                <td class="all-table__td">
+                  <span class="all-table__rating">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#F5B33B" aria-hidden="true">
+                      <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/>
+                    </svg>
+                    {tool.rating}
+                  </span>
+                </td>
+                <td class="all-table__td">
+                  <a href={tool.externalUrl} target="_blank" rel="noopener noreferrer" class="all-table__cta">
+                    {tool.cta} →
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-section">
+    <div class="container cta-section__inner">
+      <h2 class="cta-section__title">Build your sales stack<br />in one place</h2>
+      <p class="cta-section__body">Browse vetted tools, compare them honestly, and start with the ones that fit your goals.</p>
+      <div class="cta-section__btns">
+        <a href="/tools/" class="cta-section__btn cta-section__btn--white">Explorar el marketplace</a>
+        <a href="mailto:hola@wisdo.io" class="cta-section__btn cta-section__btn--outline">Sugerir una herramienta</a>
+      </div>
+    </div>
+  </section>
+
 </BaseLayout>
 
 <style>
-  /* ---- HERO ---- */
+  /* ===== HERO ===== */
   .hero {
     background:
       radial-gradient(900px 460px at 72% -8%, rgba(108, 92, 231, 0.42), transparent 58%),
@@ -167,7 +358,6 @@ const featuredTools = tools.filter(t => t.featured);
     max-width: 50ch;
   }
 
-  /* Search bar */
   .hero__search {
     display: flex;
     align-items: center;
@@ -181,10 +371,7 @@ const featuredTools = tools.filter(t => t.featured);
     margin-top: var(--space-2);
   }
 
-  .hero__search-icon {
-    color: rgb(255 255 255 / 0.4);
-    flex-shrink: 0;
-  }
+  .hero__search-icon { color: rgb(255 255 255 / 0.4); flex-shrink: 0; }
 
   .hero__search-input {
     flex: 1;
@@ -198,9 +385,7 @@ const featuredTools = tools.filter(t => t.featured);
     min-width: 0;
   }
 
-  .hero__search-input::placeholder {
-    color: rgb(255 255 255 / 0.35);
-  }
+  .hero__search-input::placeholder { color: rgb(255 255 255 / 0.35); }
 
   .hero__search-btn {
     padding: 10px 20px;
@@ -216,11 +401,8 @@ const featuredTools = tools.filter(t => t.featured);
     transition: opacity 0.15s;
   }
 
-  .hero__search-btn:hover {
-    opacity: 0.88;
-  }
+  .hero__search-btn:hover { opacity: 0.88; }
 
-  /* Popular tags */
   .hero__popular {
     display: flex;
     align-items: center;
@@ -247,12 +429,8 @@ const featuredTools = tools.filter(t => t.featured);
     transition: background 0.15s, color 0.15s;
   }
 
-  .hero__popular-tag:hover {
-    background: rgba(255, 255, 255, 0.12);
-    color: white;
-  }
+  .hero__popular-tag:hover { background: rgba(255, 255, 255, 0.12); color: white; }
 
-  /* Stats */
   .hero__stats {
     display: flex;
     align-items: center;
@@ -264,12 +442,7 @@ const featuredTools = tools.filter(t => t.featured);
     justify-content: center;
   }
 
-  .hero__stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-1);
-  }
+  .hero__stat { display: flex; flex-direction: column; align-items: center; gap: var(--space-1); }
 
   .hero__stat-value {
     font-family: var(--font-display);
@@ -286,13 +459,9 @@ const featuredTools = tools.filter(t => t.featured);
     letter-spacing: 0.3px;
   }
 
-  .hero__stat-divider {
-    width: 1px;
-    height: 40px;
-    background-color: rgb(255 255 255 / 0.1);
-  }
+  .hero__stat-divider { width: 1px; height: 40px; background-color: rgb(255 255 255 / 0.1); }
 
-  /* ---- MARKETPLACE ---- */
+  /* ===== MARKETPLACE ===== */
   .marketplace {
     background-color: var(--color-white);
     padding: var(--space-20) 0 var(--space-24);
@@ -307,24 +476,10 @@ const featuredTools = tools.filter(t => t.featured);
     flex-wrap: wrap;
   }
 
-  .marketplace__title {
-    font-size: var(--text-3xl);
-    color: var(--color-dark);
-    margin-bottom: var(--space-2);
-  }
+  .marketplace__title { font-size: var(--text-3xl); color: var(--color-dark); margin-bottom: var(--space-2); }
+  .marketplace__subtitle { color: var(--color-text-muted); font-size: var(--text-base); }
 
-  .marketplace__subtitle {
-    color: var(--color-text-muted);
-    font-size: var(--text-base);
-  }
-
-  /* ---- FILTER PILLS ---- */
-  .filter-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-bottom: var(--space-8);
-  }
+  .filter-pills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-8); }
 
   .filter-pill {
     font-family: var(--font-mono);
@@ -339,18 +494,9 @@ const featuredTools = tools.filter(t => t.featured);
     transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   }
 
-  .filter-pill:hover {
-    border-color: var(--color-purple);
-    color: var(--color-purple);
-  }
+  .filter-pill:hover { border-color: var(--color-purple); color: var(--color-purple); }
+  .filter-pill--active { background-color: var(--color-purple); border-color: var(--color-purple); color: white; }
 
-  .filter-pill--active {
-    background-color: var(--color-purple);
-    border-color: var(--color-purple);
-    color: white;
-  }
-
-  /* ---- TOOL GRID ---- */
   .tool-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -358,7 +504,6 @@ const featuredTools = tools.filter(t => t.featured);
     margin-bottom: var(--space-12);
   }
 
-  /* ---- MARKETPLACE CTA ---- */
   .marketplace__cta {
     display: flex;
     align-items: center;
@@ -368,61 +513,988 @@ const featuredTools = tools.filter(t => t.featured);
     border-top: 1px solid var(--color-border);
   }
 
-  .marketplace__cta p {
-    color: var(--color-text-muted);
-    font-size: var(--text-base);
+  .marketplace__cta p { color: var(--color-text-muted); font-size: var(--text-base); }
+
+  /* ===== QUIZ ===== */
+  .quiz {
+    background-color: #0B0A14;
+    padding: var(--space-24) 0;
+    color: white;
   }
 
-  /* ---- RESPONSIVE ---- */
+  .quiz__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #13C28A;
+    margin-bottom: var(--space-4);
+    text-align: center;
+  }
+
+  .quiz__title {
+    font-size: clamp(var(--text-3xl), 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin-bottom: var(--space-3);
+  }
+
+  .quiz__subtitle {
+    font-size: var(--text-base);
+    color: rgb(255 255 255 / 0.55);
+    text-align: center;
+    margin-bottom: var(--space-12);
+    max-width: 48ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .quiz__frame {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .quiz__stepbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: var(--space-10);
+    justify-content: center;
+  }
+
+  .quiz__pill {
+    height: 4px;
+    flex: 1;
+    max-width: 80px;
+    border-radius: 99px;
+    background: rgb(255 255 255 / 0.12);
+    transition: background 0.25s;
+  }
+
+  .quiz__pill--active { background: #6C5CE7; }
+  .quiz__pill--done   { background: #13C28A; }
+
+  .quiz__q {}
+
+  .quiz__qlabel {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.4);
+    margin-bottom: var(--space-3);
+  }
+
+  .quiz__qtitle {
+    font-size: clamp(var(--text-xl), 3vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-8);
+    line-height: 1.2;
+  }
+
+  .quiz__opts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .quiz__opts--3 { grid-template-columns: repeat(3, 1fr); }
+
+  .quiz__opt {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 20px 22px;
+    border-radius: 14px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.04);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    color: white;
+  }
+
+  .quiz__opt:hover {
+    border-color: #6C5CE7;
+    background: rgb(108 92 231 / 0.12);
+    transform: translateY(-1px);
+  }
+
+  .quiz__opt--selected {
+    border-color: #6C5CE7;
+    background: rgb(108 92 231 / 0.18);
+  }
+
+  .quiz__opt-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .quiz__opt-desc {
+    font-size: 13px;
+    color: rgb(255 255 255 / 0.5);
+    line-height: 1.4;
+  }
+
+  /* Result */
+  .quiz__result-inner {
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid rgb(255 255 255 / 0.1);
+    border-radius: 20px;
+    padding: 32px;
+  }
+
+  .quiz__archetype-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #13C28A;
+    margin-bottom: 6px;
+  }
+
+  .quiz__archetype {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .quiz__stack-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: #9D8CFF;
+    margin-bottom: 28px;
+  }
+
+  .quiz__tools-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .quiz__tool-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: rgb(255 255 255 / 0.05);
+    border: 1px solid rgb(255 255 255 / 0.07);
+  }
+
+  .quiz__tool-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: rgb(255 255 255 / 0.3);
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  .quiz__tool-mono {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .quiz__tool-info { flex: 1; }
+  .quiz__tool-name { font-size: 15px; font-weight: 600; }
+  .quiz__tool-role { font-size: 12px; color: rgb(255 255 255 / 0.45); margin-top: 2px; }
+
+  .quiz__tool-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #13C28A;
+    border: 1px solid rgb(19 194 138 / 0.3);
+    border-radius: 5px;
+    padding: 2px 7px;
+  }
+
+  .quiz__result-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .quiz__cost-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgb(255 255 255 / 0.4);
+  }
+
+  .quiz__cost {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .quiz__explore-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: #6C5CE7;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .quiz__explore-btn:hover { opacity: 0.88; }
+
+  /* Nav */
+  .quiz__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+    min-height: 40px;
+  }
+
+  .quiz__back-btn {
+    background: none;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    color: rgb(255 255 255 / 0.55);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .quiz__back-btn:hover { color: white; border-color: rgb(255 255 255 / 0.35); }
+
+  .quiz__restart-btn {
+    background: none;
+    border: none;
+    color: rgb(255 255 255 / 0.4);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.15s;
+  }
+
+  .quiz__restart-btn:hover { color: white; }
+
+  /* ===== COMPARATOR ===== */
+  .comparator {
+    background-color: #14121F;
+    padding: var(--space-24) 0;
+    color: white;
+  }
+
+  .comparator__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #9D8CFF;
+    margin-bottom: var(--space-4);
+    text-align: center;
+  }
+
+  .comparator__title {
+    font-size: clamp(var(--text-3xl), 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-align: center;
+    margin-bottom: var(--space-3);
+  }
+
+  .comparator__subtitle {
+    font-size: var(--text-base);
+    color: rgb(255 255 255 / 0.55);
+    text-align: center;
+    margin-bottom: var(--space-10);
+    max-width: 48ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .comp-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: var(--space-10);
+  }
+
+  .comp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 8px 8px;
+    border-radius: 99px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: rgb(255 255 255 / 0.04);
+    color: rgb(255 255 255 / 0.7);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+
+  .comp-chip:hover {
+    border-color: rgb(255 255 255 / 0.3);
+    color: white;
+  }
+
+  .comp-chip[aria-pressed="true"] {
+    border-color: #6C5CE7;
+    background: rgb(108 92 231 / 0.15);
+    color: white;
+  }
+
+  .comp-chip__mono {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .comp-empty {
+    text-align: center;
+    color: rgb(255 255 255 / 0.35);
+    font-size: var(--text-sm);
+    padding: var(--space-12) 0;
+  }
+
+  /* Comparator table (injected by JS) */
+  :global(.comp-table-scroll) {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  :global(.comp-table) {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+  }
+
+  :global(.comp-table thead tr) {
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  :global(.comp-table th) {
+    padding: 20px 18px;
+    text-align: left;
+    background: rgb(255 255 255 / 0.03);
+  }
+
+  :global(.comp-table th:first-child) {
+    width: 130px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.3);
+  }
+
+  :global(.comp-th-tool) {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  :global(.comp-th-mono) {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+  }
+
+  :global(.comp-th-name) {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+  }
+
+  :global(.comp-table tbody tr) {
+    border-bottom: 1px solid rgb(255 255 255 / 0.05);
+  }
+
+  :global(.comp-table tbody tr:last-child) {
+    border-bottom: none;
+  }
+
+  :global(.comp-table td) {
+    padding: 16px 18px;
+    font-size: 14px;
+    color: rgb(255 255 255 / 0.7);
+    vertical-align: middle;
+  }
+
+  :global(.comp-table td:first-child) {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: rgb(255 255 255 / 0.35);
+    text-transform: uppercase;
+  }
+
+  :global(.comp-table tfoot tr) {
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  :global(.comp-table tfoot td) {
+    padding: 20px 18px;
+  }
+
+  :global(.comp-cta) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    background: rgb(255 255 255 / 0.08);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    color: white;
+    border-radius: 9px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  :global(.comp-cta:hover) { background: rgb(255 255 255 / 0.14); }
+
+  :global(.comp-rating) {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #F5B33B;
+    font-weight: 600;
+  }
+
+  /* ===== FULL COMPARISON TABLE ===== */
+  .compare-all {
+    background-color: var(--color-cream);
+    padding: var(--space-24) 0;
+  }
+
+  .compare-all__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-purple);
+    margin-bottom: var(--space-4);
+    text-align: center;
+  }
+
+  .compare-all__title {
+    font-size: clamp(var(--text-3xl), 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: var(--color-dark);
+    margin-bottom: var(--space-3);
+  }
+
+  .compare-all__subtitle {
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    text-align: center;
+    margin-bottom: var(--space-10);
+    max-width: 48ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .compare-all__scroll {
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid var(--color-border);
+    background: var(--color-white);
+  }
+
+  .all-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+  }
+
+  .all-table__th {
+    padding: 14px 20px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-cream);
+    white-space: nowrap;
+  }
+
+  .all-table__th--label { width: 200px; }
+
+  .all-table__row {
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.12s;
+  }
+
+  .all-table__row:last-child { border-bottom: none; }
+  .all-table__row:hover { background: rgb(108 92 231 / 0.03); }
+
+  .all-table__td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--color-text);
+    vertical-align: middle;
+  }
+
+  .all-table__tool-cell { display: flex; align-items: center; gap: 12px; }
+
+  .all-table__mono {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .all-table__name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-dark);
+  }
+
+  .all-table__cat {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    background: rgb(108 92 231 / 0.07);
+    border-radius: 5px;
+    padding: 3px 8px;
+  }
+
+  .all-table__bestfor { color: var(--color-text-muted); }
+
+  .all-table__price {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #0E9E70;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .all-table__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-dark);
+  }
+
+  .all-table__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 14px;
+    background: #171528;
+    color: white;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  .all-table__cta:hover { background: #2D2B4A; }
+
+  /* ===== CTA ===== */
+  .cta-section {
+    background: linear-gradient(135deg, #3B2DAF 0%, #6C5CE7 45%, #0E9D6E 100%);
+    padding: var(--space-24) 0;
+    text-align: center;
+    color: white;
+  }
+
+  .cta-section__inner { max-width: 600px; margin: 0 auto; }
+
+  .cta-section__title {
+    font-size: clamp(var(--text-3xl), 4vw, 46px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    margin-bottom: var(--space-5);
+  }
+
+  .cta-section__body {
+    font-size: var(--text-base);
+    color: rgb(255 255 255 / 0.75);
+    line-height: var(--leading-relaxed);
+    max-width: 46ch;
+    margin: 0 auto var(--space-10);
+  }
+
+  .cta-section__btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .cta-section__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .cta-section__btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  .cta-section__btn--white { background: white; color: #171528; }
+  .cta-section__btn--outline { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.45); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .quiz__opts { grid-template-columns: 1fr; }
+    .quiz__opts--3 { grid-template-columns: 1fr; }
+    .quiz__result-footer { flex-direction: column; align-items: flex-start; }
+  }
+
   @media (max-width: 640px) {
-    .hero {
-      min-height: auto;
-      padding: var(--space-20) 0 var(--space-16);
-    }
-
-    .hero__stats {
-      gap: var(--space-5);
-    }
-
-    .hero__stat-value {
-      font-size: var(--text-2xl);
-    }
-
-    .hide-mobile {
-      display: none;
-    }
-
-    .marketplace__header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .marketplace__cta {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .tool-grid {
-      grid-template-columns: 1fr;
-    }
+    .hero { min-height: auto; padding: var(--space-20) 0 var(--space-16); }
+    .hero__stats { gap: var(--space-5); }
+    .hero__stat-value { font-size: var(--text-2xl); }
+    .hide-mobile { display: none; }
+    .marketplace__header { flex-direction: column; align-items: flex-start; }
+    .marketplace__cta { flex-direction: column; text-align: center; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .comp-chips { justify-content: flex-start; }
+    .cta-section__btns { flex-direction: column; }
   }
 </style>
 
 <script>
+  // ===== FILTER PILLS (marketplace) =====
   const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
   const cards = document.querySelectorAll<HTMLElement>('.tool-card');
 
   pills.forEach(pill => {
     pill.addEventListener('click', () => {
       const filter = pill.dataset.filter ?? 'all';
-
       pills.forEach(p => p.classList.remove('filter-pill--active'));
       pill.classList.add('filter-pill--active');
-
       cards.forEach(card => {
         const match = filter === 'all' || card.dataset.category === filter;
         card.style.display = match ? '' : 'none';
       });
+    });
+  });
+
+  // ===== QUIZ =====
+  const ARCHETYPES: Record<string, string> = {
+    agency:     'The Operator',
+    saas:       'The Builder',
+    consultant: 'The Specialist',
+    ecommerce:  'The Seller',
+  };
+
+  type StackDef = { name: string; tools: Record<string, string[]> };
+  const STACKS: Record<string, StackDef> = {
+    'generate-leads':    { name: 'Lead Generation Engine', tools: { low: ['apollo', 'kaspr'], medium: ['apollo', 'kaspr', 'lusha'], high: ['apollo', 'kaspr', 'lusha', 'lemlist'] } },
+    'close-sales':       { name: 'Closing Machine',        tools: { low: ['lemlist', 'manychat'], medium: ['lemlist', 'apollo', 'manychat'], high: ['lemlist', 'apollo', 'manychat', 'krispcall'] } },
+    'retain-customers':  { name: 'Retention Loop',         tools: { low: ['manychat'], medium: ['manychat', 'apollo'], high: ['manychat', 'apollo', 'lemlist'] } },
+    'automate-ops':      { name: 'Automation Stack',       tools: { low: ['manychat', 'krispcall'], medium: ['manychat', 'krispcall', 'apollo'], high: ['manychat', 'krispcall', 'apollo', 'lemlist'] } },
+  };
+
+  const COST: Record<string, string> = { low: '~€90/mes', medium: '~€320/mes', high: '€500+/mes' };
+
+  type ToolInfo = { name: string; mono: string; color: string; role: string; pricing: string; isFree: boolean };
+  const QUIZ_TOOLS: Record<string, ToolInfo> = {
+    apollo:    { name: 'Apollo.io',  mono: 'A',  color: '#3B4BF0', role: 'Base de datos & secuencias', pricing: 'Freemium', isFree: true },
+    kaspr:     { name: 'Kaspr',      mono: 'K',  color: '#6C5CE7', role: 'LinkedIn enrichment',        pricing: 'Freemium', isFree: true },
+    krispcall: { name: 'KrispCall',  mono: 'KC', color: '#13C28A', role: 'Llamadas cloud + IA',        pricing: 'Desde $15/mo', isFree: false },
+    lemlist:   { name: 'Lemlist',    mono: 'L',  color: '#1E73FF', role: 'Cold outreach multichannel', pricing: 'Desde $39/mo', isFree: false },
+    lusha:     { name: 'Lusha',      mono: 'Lu', color: '#FF6B2C', role: 'Enriquecimiento B2B',        pricing: 'Freemium', isFree: true },
+    manychat:  { name: 'ManyChat',   mono: 'M',  color: '#00B36B', role: 'Chatbots & automatización',  pricing: 'Freemium', isFree: true },
+  };
+
+  const STEP_KEYS = ['biz', 'stage', 'problem', 'budget'] as const;
+  type StepKey = typeof STEP_KEYS[number];
+  const answers: Record<StepKey, string | null> = { biz: null, stage: null, problem: null, budget: null };
+  let step = 1;
+
+  const quizStepbar = document.getElementById('quiz-stepbar');
+  const quizBack    = document.getElementById('quiz-back') as HTMLButtonElement | null;
+  const quizRestart = document.getElementById('quiz-restart') as HTMLButtonElement | null;
+  const quizNav     = document.getElementById('quiz-nav');
+  const quizResult  = document.getElementById('quiz-result');
+
+  function getQuizQ(n: number): HTMLElement | null {
+    return document.getElementById(`quiz-q${n}`);
+  }
+
+  function updateStepbar() {
+    quizStepbar?.querySelectorAll<HTMLElement>('[data-s]').forEach(el => {
+      const s = parseInt(el.dataset.s ?? '0');
+      el.classList.remove('quiz__pill--active', 'quiz__pill--done');
+      if (s < step) el.classList.add('quiz__pill--done');
+      else if (s === step) el.classList.add('quiz__pill--active');
+    });
+  }
+
+  function showStep(n: number) {
+    [1, 2, 3, 4].forEach(i => {
+      const el = getQuizQ(i);
+      if (el) el.hidden = (i !== n);
+    });
+    if (quizResult) quizResult.hidden = true;
+
+    if (quizBack)    quizBack.hidden    = (n <= 1);
+    if (quizRestart) quizRestart.hidden = true;
+    if (quizNav)     quizNav.style.display = '';
+    updateStepbar();
+  }
+
+  function showResult() {
+    [1, 2, 3, 4].forEach(i => {
+      const el = getQuizQ(i);
+      if (el) el.hidden = true;
+    });
+
+    const archetype  = ARCHETYPES[answers.biz ?? 'saas'] ?? 'The Builder';
+    const stackDef   = STACKS[answers.problem ?? 'generate-leads']!;
+    const toolSlugs  = stackDef.tools[answers.budget ?? 'medium'] ?? [];
+    const costLabel  = COST[answers.budget ?? 'medium'] ?? '';
+
+    let toolsHtml = '';
+    toolSlugs.forEach((slug, i) => {
+      const t = QUIZ_TOOLS[slug];
+      if (!t) return;
+      toolsHtml += `
+        <div class="quiz__tool-item">
+          <span class="quiz__tool-num">${String(i + 1).padStart(2, '0')}</span>
+          <span class="quiz__tool-mono" style="background:${t.color}">${t.mono}</span>
+          <div class="quiz__tool-info">
+            <div class="quiz__tool-name">${t.name}</div>
+            <div class="quiz__tool-role">${t.role}</div>
+          </div>
+          ${t.isFree ? '<span class="quiz__tool-badge">FREE</span>' : ''}
+        </div>
+      `;
+    });
+
+    if (quizResult) {
+      quizResult.innerHTML = `
+        <div class="quiz__result-inner">
+          <p class="quiz__archetype-label">Tu arquetipo</p>
+          <h3 class="quiz__archetype">${archetype}</h3>
+          <p class="quiz__stack-name">${stackDef.name}</p>
+          <div class="quiz__tools-list">${toolsHtml}</div>
+          <div class="quiz__result-footer">
+            <div>
+              <div class="quiz__cost-label">Inversión estimada</div>
+              <div class="quiz__cost">${costLabel}</div>
+            </div>
+            <a href="/tools/" class="quiz__explore-btn">Explorar herramientas →</a>
+          </div>
+        </div>
+      `;
+      quizResult.hidden = false;
+    }
+
+    quizStepbar?.querySelectorAll<HTMLElement>('[data-s]').forEach(el => el.classList.add('quiz__pill--done'));
+    if (quizBack)    quizBack.hidden    = true;
+    if (quizRestart) quizRestart.hidden = false;
+    if (quizNav)     quizNav.style.display = '';
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.quiz__opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.key as StepKey;
+      const val = btn.dataset.val ?? '';
+      answers[key] = val;
+
+      btn.parentElement?.querySelectorAll('.quiz__opt').forEach(b => b.classList.remove('quiz__opt--selected'));
+      btn.classList.add('quiz__opt--selected');
+
+      setTimeout(() => {
+        if (step < 4) {
+          step++;
+          showStep(step);
+        } else {
+          showResult();
+        }
+      }, 200);
+    });
+  });
+
+  quizBack?.addEventListener('click', () => {
+    if (step > 1) {
+      const prevKey = STEP_KEYS[step - 2] as StepKey;
+      answers[STEP_KEYS[step - 1] as StepKey] = null;
+      step--;
+      showStep(step);
+      const prevQ = getQuizQ(step);
+      prevQ?.querySelectorAll('.quiz__opt').forEach(b => {
+        if ((b as HTMLElement).dataset.val === answers[prevKey]) {
+          b.classList.add('quiz__opt--selected');
+        } else {
+          b.classList.remove('quiz__opt--selected');
+        }
+      });
+    }
+  });
+
+  quizRestart?.addEventListener('click', () => {
+    (Object.keys(answers) as StepKey[]).forEach(k => { answers[k] = null; });
+    step = 1;
+    document.querySelectorAll('.quiz__opt').forEach(b => b.classList.remove('quiz__opt--selected'));
+    showStep(1);
+  });
+
+  updateStepbar();
+
+  // ===== COMPARATOR =====
+  type CompToolInfo = { name: string; mono: string; color: string; category: string; bestFor: string; pricing: string; rating: string; link: string; cta: string };
+  const COMP_TOOLS: Record<string, CompToolInfo> = {
+    apollo:    { name: 'Apollo.io',  mono: 'A',  color: '#3B4BF0', category: 'Prospecting', bestFor: 'Outreach a escala',     pricing: 'Freemium · desde $49/mo',  rating: '4.7', link: 'https://www.apollo.io',      cta: 'Get Apollo' },
+    kaspr:     { name: 'Kaspr',      mono: 'K',  color: '#6C5CE7', category: 'Prospecting', bestFor: 'LinkedIn lead gen',     pricing: 'Freemium · desde €30/mo',  rating: '4.4', link: 'https://www.kaspr.io',       cta: 'Get Kaspr' },
+    krispcall: { name: 'KrispCall',  mono: 'KC', color: '#13C28A', category: 'Calling',     bestFor: 'Ventas telefónicas',    pricing: 'Desde $15/usuario/mo',     rating: '4.3', link: 'https://www.krispcall.com',  cta: 'Get KrispCall' },
+    lemlist:   { name: 'Lemlist',    mono: 'L',  color: '#1E73FF', category: 'Outreach',    bestFor: 'Cold email multichannel', pricing: 'Desde $39/mo',           rating: '4.6', link: 'https://www.lemlist.com',    cta: 'Get Lemlist' },
+    lusha:     { name: 'Lusha',      mono: 'Lu', color: '#FF6B2C', category: 'Prospecting', bestFor: 'Enriquecimiento B2B',   pricing: 'Freemium · desde $36/mo',  rating: '4.2', link: 'https://www.lusha.com',      cta: 'Get Lusha' },
+    manychat:  { name: 'ManyChat',   mono: 'M',  color: '#00B36B', category: 'Automation',  bestFor: 'Chatbots & DMs',       pricing: 'Freemium · desde $15/mo',  rating: '4.5', link: 'https://manychat.com',       cta: 'Get ManyChat' },
+  };
+
+  const compChips   = document.querySelectorAll<HTMLButtonElement>('.comp-chip');
+  const compOutput  = document.getElementById('comp-output');
+  let selectedSlugs: string[] = [];
+
+  function renderComparator() {
+    if (!compOutput) return;
+    if (selectedSlugs.length === 0) {
+      compOutput.innerHTML = '<p class="comp-empty">Selecciona al menos una herramienta para comparar.</p>';
+      return;
+    }
+
+    const cols = selectedSlugs.map(s => COMP_TOOLS[s]).filter((t): t is CompToolInfo => t !== undefined);
+    const ROWS: { label: string; key: keyof CompToolInfo }[] = [
+      { label: 'Categoría',  key: 'category' },
+      { label: 'Ideal para', key: 'bestFor' },
+      { label: 'Precio',     key: 'pricing' },
+      { label: 'Valoración', key: 'rating' },
+    ];
+
+    let html = '<div class="comp-table-scroll"><table class="comp-table"><thead><tr>';
+    html += '<th></th>';
+    cols.forEach(t => {
+      html += `<th><div class="comp-th-tool"><span class="comp-th-mono" style="background:${t.color}">${t.mono}</span><span class="comp-th-name">${t.name}</span></div></th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    ROWS.forEach(row => {
+      html += `<tr><td>${row.label}</td>`;
+      cols.forEach(t => {
+        const val = String(t[row.key]);
+        if (row.key === 'rating') {
+          html += `<td><span class="comp-rating"><svg width="13" height="13" viewBox="0 0 24 24" fill="#F5B33B" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>${val}</span></td>`;
+        } else {
+          html += `<td>${val}</td>`;
+        }
+      });
+      html += '</tr>';
+    });
+
+    html += '</tbody><tfoot><tr><td></td>';
+    cols.forEach(t => {
+      html += `<td><a href="${t.link}" target="_blank" rel="noopener noreferrer" class="comp-cta">${t.cta} →</a></td>`;
+    });
+    html += '</tr></tfoot></table></div>';
+
+    compOutput.innerHTML = html;
+  }
+
+  compChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const slug = chip.dataset.slug ?? '';
+      const isSelected = chip.getAttribute('aria-pressed') === 'true';
+
+      if (isSelected) {
+        chip.setAttribute('aria-pressed', 'false');
+        selectedSlugs = selectedSlugs.filter(s => s !== slug);
+      } else {
+        if (selectedSlugs.length >= 3) return;
+        chip.setAttribute('aria-pressed', 'true');
+        selectedSlugs.push(slug);
+      }
+      renderComparator();
     });
   });
 </script>
