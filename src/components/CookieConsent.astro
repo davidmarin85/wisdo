@@ -30,7 +30,7 @@ const requiresOptIn = EU_COUNTRIES.has(cfCountry);
 <link rel="stylesheet" href="/node_modules/vanilla-cookieconsent/dist/cookieconsent.css" />
 
 <script>
-  import CookieConsent from 'vanilla-cookieconsent';
+  import * as CookieConsent from 'vanilla-cookieconsent';
 
   const requiresOptIn =
     document.getElementById('cc-config')?.dataset.optIn === 'true';
