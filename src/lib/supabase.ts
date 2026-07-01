@@ -2,22 +2,21 @@ import { createServerClient, parseCookieHeader } from '@supabase/ssr';
 import type { CookieMethodsServer } from '@supabase/ssr';
 import type { AstroCookies } from 'astro';
 
-const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string;
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  throw new Error(
-    'Missing Supabase env vars: PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are required.'
-  );
-}
-
 interface ServerClientOptions {
   request: Request;
   cookies: AstroCookies;
 }
 
 export function createSupabaseServerClient({ request, cookies }: ServerClientOptions) {
-  // Explicitly typed as CookieMethodsServer so TypeScript resolves the non-deprecated overload.
+  const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL as string;
+  const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string;
+
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error(
+      'Missing Supabase env vars: PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY are required.'
+    );
+  }
+
   const cookieMethods: CookieMethodsServer = {
     getAll() {
       return parseCookieHeader(request.headers.get('Cookie') ?? '')

@@ -1,6 +1,5 @@
 ---
 import SEO from '@components/SEO.astro';
-import CookieConsent from '@components/CookieConsent.astro';
 import '@styles/global.css';
 
 interface Props {
@@ -48,6 +47,5 @@ const { title, description, noindex = false, canonical, ogImage } = Astro.props;
       <p>&copy; {new Date().getFullYear()} wisdo</p>
     </footer>
 
-    <CookieConsent />
   </body>
 </html>
