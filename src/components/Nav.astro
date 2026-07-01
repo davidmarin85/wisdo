@@ -12,8 +12,9 @@ const currentPath = new URL(Astro.request.url).pathname;
   <div class="container">
     <nav class="nav">
       <a href="/" class="nav__logo" aria-label="wisdo inicio">
+        <span class="nav__logo-dot" aria-hidden="true"></span>
         wisdo
-        <span class="nav__logo-dot">.</span>
+        <span class="nav__logo-badge">MARKET</span>
       </a>
 
       <ul class="nav__links" role="list">
@@ -115,10 +116,35 @@ const currentPath = new URL(Astro.request.url).pathname;
     text-decoration: none;
     color: inherit;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .nav__logo-dot {
-    color: var(--color-green);
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-green);
+    box-shadow: 0 0 12px var(--color-green);
+    flex-shrink: 0;
+  }
+
+  .nav__logo-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #9D8CFF;
+    border: 1px solid #3A3660;
+    border-radius: 5px;
+    padding: 2px 6px;
+    margin-left: 2px;
+  }
+
+  .nav-header--light .nav__logo-badge {
+    color: var(--color-purple);
+    border-color: rgb(108 92 231 / 0.3);
   }
 
   .nav__links {

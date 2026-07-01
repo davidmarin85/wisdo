@@ -9,7 +9,9 @@ export interface Tool {
   rating: number;
   reviewCount: number;
   tags: string[];
-  logo: string;
+  mono: string;
+  color: string;
+  cta: string;
   externalUrl: string;
   featured?: boolean;
 }
@@ -41,7 +43,9 @@ export const tools: Tool[] = [
     rating: 4.7,
     reviewCount: 8400,
     tags: ['Email', 'Lead gen', 'Enrichment', 'Sequences'],
-    logo: '🎯',
+    mono: 'A',
+    color: '#3B4BF0',
+    cta: 'Get Apollo',
     externalUrl: 'https://www.apollo.io',
     featured: true,
   },
@@ -57,7 +61,9 @@ export const tools: Tool[] = [
     rating: 4.4,
     reviewCount: 1200,
     tags: ['LinkedIn', 'Teléfonos', 'Email'],
-    logo: '📋',
+    mono: 'K',
+    color: '#6C5CE7',
+    cta: 'Get Kaspr',
     externalUrl: 'https://www.kaspr.io',
     featured: true,
   },
@@ -73,7 +79,9 @@ export const tools: Tool[] = [
     rating: 4.3,
     reviewCount: 560,
     tags: ['VoIP', 'Cloud PBX', 'IA', 'Grabación'],
-    logo: '📞',
+    mono: 'KC',
+    color: '#13C28A',
+    cta: 'Get KrispCall',
     externalUrl: 'https://www.krispcall.com',
     featured: false,
   },
@@ -89,7 +97,9 @@ export const tools: Tool[] = [
     rating: 4.6,
     reviewCount: 3100,
     tags: ['Cold email', 'Personalización', 'Multichannel'],
-    logo: '✉️',
+    mono: 'L',
+    color: '#1E73FF',
+    cta: 'Get Lemlist',
     externalUrl: 'https://www.lemlist.com',
     featured: true,
   },
@@ -105,7 +115,9 @@ export const tools: Tool[] = [
     rating: 4.2,
     reviewCount: 2800,
     tags: ['Enrichment', 'Teléfonos', 'CRM sync'],
-    logo: '🔍',
+    mono: 'Lu',
+    color: '#FF6B2C',
+    cta: 'Get Lusha',
     externalUrl: 'https://www.lusha.com',
     featured: false,
   },
@@ -121,7 +133,9 @@ export const tools: Tool[] = [
     rating: 4.5,
     reviewCount: 6700,
     tags: ['WhatsApp', 'Instagram', 'Chatbot', 'DMs'],
-    logo: '💬',
+    mono: 'M',
+    color: '#00B36B',
+    cta: 'Get ManyChat',
     externalUrl: 'https://manychat.com',
     featured: true,
   },

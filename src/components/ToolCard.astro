@@ -1,93 +1,102 @@
 ---
 import type { Tool } from '@data/tools';
-import { pricingConfig } from '@data/tools';
 
 interface Props {
   tool: Tool;
+  variant?: 'cream' | 'white';
 }
 
-const { tool } = Astro.props;
-const pricing = pricingConfig[tool.pricing];
-const stars = Math.round(tool.rating);
+const { tool, variant = 'cream' } = Astro.props;
 ---
 
 <article
-  class="tool-card"
+  class:list={['tool-card', `tool-card--${variant}`]}
   data-category={tool.categorySlug}
   data-pricing={tool.pricing}
   data-rating={tool.rating}
   data-review-count={tool.reviewCount}
 >
-  <a href={`/tools/${tool.slug}/`} class="tool-card__link" aria-label={`Ver ${tool.name}`}>
-    <div class="tool-card__header">
-      <span class="tool-card__logo" role="img" aria-label={tool.name}>{tool.logo}</span>
-      <div class="tool-card__title-group">
-        <h3 class="tool-card__name">{tool.name}</h3>
-        <span class="tool-card__category">{tool.category}</span>
-      </div>
-      <span class:list={['tag', pricing.colorClass]}>{pricing.label}</span>
+  <div class="tool-card__header">
+    <div class="tool-card__mono" style={`background:${tool.color}`}>
+      {tool.mono}
     </div>
-
-    <p class="tool-card__desc">{tool.description}</p>
-
-    <div class="tool-card__tags">
-      {tool.tags.slice(0, 3).map(tag => (
-        <span class="tag">{tag}</span>
-      ))}
+    <div class="tool-card__title-group">
+      <h3 class="tool-card__name">{tool.name}</h3>
+      <span class="tool-card__category">{tool.category}</span>
     </div>
-
-    <div class="tool-card__footer">
-      <div class="tool-card__rating" aria-label={`${tool.rating} de 5 estrellas`}>
-        <span class="tool-card__stars">
-          {Array.from({ length: 5 }, (_, i) => (
-            <span class:list={['star', { 'star--filled': i < stars }]}>★</span>
-          ))}
-        </span>
-        <span class="tool-card__rating-num">{tool.rating}</span>
-        <span class="tool-card__review-count">({tool.reviewCount.toLocaleString('es')})</span>
-      </div>
-      <span class="tool-card__price">{tool.priceLabel}</span>
+    <div class="tool-card__rating-badge" aria-label={`${tool.rating} de 5`}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#F5B33B" aria-hidden="true">
+        <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/>
+      </svg>
+      <span class="tool-card__rating-num">{tool.rating}</span>
     </div>
-  </a>
+  </div>
+
+  <p class="tool-card__desc">{tool.description}</p>
+
+  <div class="tool-card__tags">
+    {tool.tags.slice(0, 3).map((tag: string) => (
+      <span class="tool-card__tag">{tag}</span>
+    ))}
+  </div>
+
+  <div class="tool-card__footer">
+    <span class="tool-card__price">{tool.priceLabel}</span>
+    <a
+      href={tool.externalUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="tool-card__cta"
+      aria-label={`${tool.cta} (abre en nueva pestaña)`}
+    >
+      {tool.cta} →
+    </a>
+  </div>
 </article>
 
 <style>
   .tool-card {
-    background-color: var(--color-white);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    transition: box-shadow var(--transition-normal), transform var(--transition-normal), border-color var(--transition-normal);
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid #EDE7DC;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .tool-card--cream {
+    background: #FBF9F5;
+  }
+
+  .tool-card--white {
+    background: #fff;
   }
 
   .tool-card:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
-    border-color: var(--color-gray-200);
+    border-color: #C9BEF5;
+    box-shadow: 0 4px 24px rgb(108 92 231 / 0.10);
   }
 
-  .tool-card__link {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    padding: var(--space-6);
-    height: 100%;
-    text-decoration: none;
-    color: inherit;
-  }
-
+  /* Header */
   .tool-card__header {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: 14px;
   }
 
-  .tool-card__logo {
-    font-size: 2rem;
-    line-height: 1;
+  .tool-card__mono {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
     flex-shrink: 0;
-    width: 2.5rem;
-    text-align: center;
   }
 
   .tool-card__title-group {
@@ -97,9 +106,10 @@ const stars = Math.round(tool.rating);
 
   .tool-card__name {
     font-family: var(--font-display);
-    font-size: var(--text-base);
-    font-weight: var(--font-semibold);
-    color: var(--color-dark);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #171528;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -107,72 +117,98 @@ const stars = Math.round(tool.rating);
 
   .tool-card__category {
     font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #9A92A8;
+    margin-top: 3px;
+    display: block;
   }
 
+  .tool-card__rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .tool-card__rating-num {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: #2A2740;
+  }
+
+  /* Description */
   .tool-card__desc {
-    font-size: var(--text-sm);
-    color: var(--color-gray-600);
-    line-height: var(--leading-relaxed);
+    margin: 16px 0 0;
     flex: 1;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #5A5568;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
 
+  /* Tags */
   .tool-card__tags {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    gap: 6px;
+    margin-top: 16px;
   }
 
+  .tool-card__tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: #7E7995;
+    background: rgb(126 121 149 / 0.1);
+    border-radius: 6px;
+    padding: 4px 8px;
+  }
+
+  /* Footer */
   .tool-card__footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3);
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--color-border);
-  }
-
-  .tool-card__rating {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    font-size: var(--text-sm);
-  }
-
-  .tool-card__stars {
-    display: flex;
-  }
-
-  .star {
-    color: var(--color-gray-200);
-    font-size: 0.85em;
-    line-height: 1;
-  }
-
-  .star--filled {
-    color: #F4A840;
-  }
-
-  .tool-card__rating-num {
-    font-weight: var(--font-semibold);
-    color: var(--color-dark);
-  }
-
-  .tool-card__review-count {
-    color: var(--color-text-muted);
-    font-size: var(--text-xs);
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px solid #EDE7DC;
   }
 
   .tool-card__price {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    text-align: right;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: #0E9E70;
+  }
+
+  .tool-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    background: #171528;
+    color: #fff;
+    border-radius: 10px;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
     flex-shrink: 0;
+  }
+
+  .tool-card__cta:hover {
+    background: #2D2B4A;
+    transform: translateY(-1px);
   }
 </style>
