@@ -46,17 +46,17 @@ const currentPath = new URL(Astro.request.url).pathname;
               Dashboard
             </a>
             <a href="/api/auth/logout/" class:list={['btn', variant === 'dark' ? 'btn--outline' : 'btn--outline-dark']}>
-              Salir
+              Sign out
             </a>
           </>
         ) : (
           <a href="/login/" class="btn btn--primary">
-            Iniciar sesión
+            Sign in
           </a>
         )}
       </div>
 
-      <button class="nav__burger" aria-label="Menú" aria-expanded="false" aria-controls="nav-mobile">
+      <button class="nav__burger" aria-label="Menu" aria-expanded="false" aria-controls="nav-mobile">
         <span></span><span></span><span></span>
       </button>
     </nav>
@@ -69,10 +69,10 @@ const currentPath = new URL(Astro.request.url).pathname;
       {user ? (
         <>
           <li><a href="/dashboard/">Dashboard</a></li>
-          <li><a href="/api/auth/logout/">Salir</a></li>
+          <li><a href="/api/auth/logout/">Sign out</a></li>
         </>
       ) : (
-        <li><a href="/login/" class="btn btn--primary">Iniciar sesión</a></li>
+        <li><a href="/login/" class="btn btn--primary">Sign in</a></li>
       )}
     </ul>
   </div>

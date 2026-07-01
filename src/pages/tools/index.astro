@@ -5,8 +5,8 @@ import { tools, categories } from '@data/tools';
 ---
 
 <BaseLayout
-  title="wisdo Market — Directorio de herramientas de ventas"
-  description="Explora y compara las mejores herramientas de prospecting, outreach, calling y automatización para equipos comerciales."
+  title="wisdo Market — Sales tools directory"
+  description="Explore and compare the best prospecting, outreach, calling and automation tools for B2B sales teams."
   navVariant="light"
 >
   <div class="page-tools">
@@ -16,18 +16,18 @@ import { tools, categories } from '@data/tools';
         <div class="tools-header__content">
           <div>
             <span class="tag tag--purple">wisdo Market</span>
-            <h1 class="tools-header__title">Directorio de herramientas</h1>
+            <h1 class="tools-header__title">Tools directory</h1>
             <p class="tools-header__subtitle">
-              {tools.length} herramientas evaluadas para equipos de ventas B2B
+              {tools.length} vetted tools for B2B sales teams
             </p>
           </div>
           <div class="tools-header__search">
             <input
               type="search"
               id="tool-search"
-              placeholder="Buscar herramienta…"
+              placeholder="Search tools…"
               class="search-input"
-              aria-label="Buscar herramientas"
+              aria-label="Search tools"
             />
           </div>
         </div>
@@ -37,8 +37,8 @@ import { tools, categories } from '@data/tools';
     <!-- Main content -->
     <div class="container tools-layout">
       <!-- Sidebar with categories -->
-      <aside class="tools-sidebar" aria-label="Categorías">
-        <h2 class="tools-sidebar__heading">Categorías</h2>
+      <aside class="tools-sidebar" aria-label="Categories">
+        <h2 class="tools-sidebar__heading">Categories</h2>
         <ul role="list" class="tools-sidebar__list">
           {categories.map(cat => (
             <li>
@@ -60,16 +60,16 @@ import { tools, categories } from '@data/tools';
 
         <div class="tools-sidebar__divider"></div>
 
-        <h2 class="tools-sidebar__heading">Precio</h2>
+        <h2 class="tools-sidebar__heading">Pricing</h2>
         <ul role="list" class="tools-sidebar__list">
           <li>
             <button class="sidebar-pill sidebar-pill--active" data-price-filter="all" type="button">
-              Todos los precios
+              All pricing
             </button>
           </li>
           <li>
             <button class="sidebar-pill" data-price-filter="free" type="button">
-              Gratis
+              Free
             </button>
           </li>
           <li>
@@ -79,7 +79,7 @@ import { tools, categories } from '@data/tools';
           </li>
           <li>
             <button class="sidebar-pill" data-price-filter="paid" type="button">
-              Solo de pago
+              Paid only
             </button>
           </li>
         </ul>
@@ -89,14 +89,14 @@ import { tools, categories } from '@data/tools';
       <main>
         <div class="tools-grid-header">
           <p class="tools-count">
-            <span id="visible-count">{tools.length}</span> herramientas
+            <span id="visible-count">{tools.length}</span> tools
           </p>
           <div class="tools-sort">
-            <label for="sort-select" class="sr-only">Ordenar por</label>
+            <label for="sort-select" class="sr-only">Sort by</label>
             <select id="sort-select" class="sort-select">
-              <option value="rating">Mejor valoradas</option>
-              <option value="name">Nombre A-Z</option>
-              <option value="reviews">Más reseñas</option>
+              <option value="rating">Top rated</option>
+              <option value="name">Name A-Z</option>
+              <option value="reviews">Most reviews</option>
             </select>
           </div>
         </div>
@@ -108,7 +108,7 @@ import { tools, categories } from '@data/tools';
         </div>
 
         <p class="no-results" id="no-results" hidden>
-          No hay herramientas con esos filtros. <button type="button" id="reset-filters">Limpiar filtros</button>
+          No tools match those filters. <button type="button" id="reset-filters">Clear filters</button>
         </p>
       </main>
     </div>
@@ -344,7 +344,6 @@ import { tools, categories } from '@data/tools';
 </style>
 
 <script>
-  // --- Category filter ---
   const categoryPills = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
   const pricePills = document.querySelectorAll<HTMLButtonElement>('[data-price-filter]');
   const cards = Array.from(document.querySelectorAll<HTMLElement>('.tool-card'));
@@ -415,14 +414,13 @@ import { tools, categories } from '@data/tools';
     applyFilters();
   });
 
-  // --- Sort ---
   sortSelect?.addEventListener('change', () => {
     const val = sortSelect.value;
     const sorted = [...cards].sort((a, b) => {
       if (val === 'name') {
         const nameA = a.querySelector('.tool-card__name')?.textContent ?? '';
         const nameB = b.querySelector('.tool-card__name')?.textContent ?? '';
-        return nameA.localeCompare(nameB, 'es');
+        return nameA.localeCompare(nameB, 'en');
       }
       const numA = parseFloat(a.dataset[val === 'rating' ? 'rating' : 'reviewCount'] ?? '0');
       const numB = parseFloat(b.dataset[val === 'rating' ? 'rating' : 'reviewCount'] ?? '0');
