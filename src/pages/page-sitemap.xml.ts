@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-const SITE = 'https://wisdo.com';
+const SITE = 'https://wisdo.io';
 
 interface SitemapEntry {
   url: string;
