@@ -46,7 +46,7 @@ export const tools: Tool[] = [
     mono: 'A',
     color: '#3B4BF0',
     cta: 'Get Apollo',
-    externalUrl: 'https://www.apollo.io',
+    externalUrl: 'https://get.apollo.io/wisdo',
     featured: true,
   },
   {
@@ -64,7 +64,7 @@ export const tools: Tool[] = [
     mono: 'K',
     color: '#6C5CE7',
     cta: 'Get Kaspr',
-    externalUrl: 'https://www.kaspr.io',
+    externalUrl: 'https://kaspr.partnerlinks.io/gwm4l081zvey',
     featured: true,
   },
   {
@@ -82,7 +82,7 @@ export const tools: Tool[] = [
     mono: 'KC',
     color: '#13C28A',
     cta: 'Get KrispCall',
-    externalUrl: 'https://www.krispcall.com',
+    externalUrl: 'https://try.krispcall.com/8xqb028wq9zz',
     featured: false,
   },
   {
@@ -100,7 +100,7 @@ export const tools: Tool[] = [
     mono: 'L',
     color: '#1E73FF',
     cta: 'Get Lemlist',
-    externalUrl: 'https://www.lemlist.com',
+    externalUrl: 'https://market.wisdo.io/product/lemlist-potencia-tus-campanas-de-email-con-personalizacion-avanzada/',
     featured: true,
   },
   {
@@ -118,7 +118,7 @@ export const tools: Tool[] = [
     mono: 'Lu',
     color: '#FF6B2C',
     cta: 'Get Lusha',
-    externalUrl: 'https://www.lusha.com',
+    externalUrl: 'https://market.wisdo.io/product/lusha-datos-b2b-precisos-para-impulsar-tus-ventas/',
     featured: false,
   },
   {
@@ -136,7 +136,7 @@ export const tools: Tool[] = [
     mono: 'M',
     color: '#00B36B',
     cta: 'Get ManyChat',
-    externalUrl: 'https://manychat.com',
+    externalUrl: 'https://market.wisdo.io/product/manychat-revoluciona-tu-marketing-con-chatbots-inteligentes/',
     featured: true,
   },
 ];

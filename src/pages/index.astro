@@ -3,8 +3,6 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import ToolCard from '@components/ToolCard.astro';
 import { tools, categories } from '@data/tools';
 
-const featuredTools = tools.filter(t => t.featured);
-
 const bestForMap: Record<string, string> = {
   apollo:    'At-scale outreach',
   kaspr:     'LinkedIn lead gen',
@@ -13,6 +11,8 @@ const bestForMap: Record<string, string> = {
   lusha:     'B2B enrichment',
   manychat:  'Chatbots & DMs',
 };
+
+const dirCategories = categories.filter(c => c.slug !== 'all');
 ---
 
 <BaseLayout
@@ -33,13 +33,29 @@ const bestForMap: Record<string, string> = {
         Vetted and compared tools for sales teams worldwide.<br class="hide-mobile" />
         No affiliates, no bias.
       </p>
-      <form class="hero__search" action="/tools/" method="get" role="search">
-        <svg class="hero__search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input type="search" name="q" placeholder="Search tools, use cases…" class="hero__search-input" aria-label="Search tools" autocomplete="off" />
-        <button type="submit" class="hero__search-btn">Search</button>
+
+      <form class="hero__console" action="/tools/" method="get" role="search">
+        <div class="hero__console-bar">
+          <span class="hero__console-dot"></span>
+          <span class="hero__console-dot"></span>
+          <span class="hero__console-dot"></span>
+          <span class="hero__console-label">search — wisdo market</span>
+        </div>
+        <div class="hero__console-row">
+          <span class="hero__console-prompt">$</span>
+          <input
+            type="search"
+            name="q"
+            placeholder={'find tools --for "cold email, LinkedIn data, chatbots…"'}
+            class="hero__console-input"
+            aria-label="Search tools"
+            autocomplete="off"
+          />
+          <span class="hero__console-cursor" aria-hidden="true"></span>
+          <button type="submit" class="hero__console-btn">run →</button>
+        </div>
       </form>
+
       <div class="hero__popular">
         <span class="hero__popular-label">Popular:</span>
         <a href="/tools/?q=cold+email" class="hero__popular-tag">Cold email</a>
@@ -66,15 +82,175 @@ const bestForMap: Record<string, string> = {
     </div>
   </section>
 
+  <!-- ===== QUIZ / STACK DIAGNOSTIC ===== -->
+  <section class="quiz" id="quiz">
+    <div class="container">
+      <div class="quiz__intro">
+        <p class="quiz__eyebrow">Stack diagnostic</p>
+        <h2 class="quiz__title">What tools do you need?</h2>
+        <p class="quiz__subtitle">
+          Answer 4 questions and we'll build your exact stack: which tools to use, in what order, and how much it costs per month.
+        </p>
+      </div>
+
+      <div class="quiz__card">
+        <!-- QUESTION VIEW -->
+        <div class="quiz__q-view" id="quiz-q-view">
+          <div class="quiz__q-top">
+            <span class="quiz__step-label" id="quiz-step-label">Step 1 of 4</span>
+            <span class="quiz__q-hint">Personalized stack</span>
+          </div>
+          <div class="quiz__progress">
+            <div class="quiz__progress-bar" id="quiz-progress-bar"></div>
+          </div>
+
+          <!-- Q1 -->
+          <div class="quiz__q" id="quiz-q1">
+            <h3 class="quiz__qtitle">What kind of business do you have?</h3>
+            <div class="quiz__opts">
+              <button class="quiz__opt" data-key="biz" data-val="agency" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Agency</span>
+                  <span class="quiz__opt-desc">You manage clients and campaigns</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="biz" data-val="saas" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">SaaS</span>
+                  <span class="quiz__opt-desc">You sell software by subscription</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="biz" data-val="consultant" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Consultant</span>
+                  <span class="quiz__opt-desc">You sell your expertise directly</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="biz" data-val="ecommerce" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Ecommerce</span>
+                  <span class="quiz__opt-desc">You sell products online</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz__q" id="quiz-q2" hidden>
+            <h3 class="quiz__qtitle">What stage is your business at?</h3>
+            <div class="quiz__opts">
+              <button class="quiz__opt" data-key="stage" data-val="validating" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Validating</span>
+                  <span class="quiz__opt-desc">Searching for product-market fit</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="stage" data-val="growing" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Growing</span>
+                  <span class="quiz__opt-desc">You have customers, you want more</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="stage" data-val="scaling" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Scaling</span>
+                  <span class="quiz__opt-desc">Operating and optimizing at scale</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz__q" id="quiz-q3" hidden>
+            <h3 class="quiz__qtitle">What is your biggest problem right now?</h3>
+            <div class="quiz__opts">
+              <button class="quiz__opt" data-key="problem" data-val="generate-leads" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Generate leads</span>
+                  <span class="quiz__opt-desc">Not enough prospects coming in</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="problem" data-val="close-sales" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Close sales</span>
+                  <span class="quiz__opt-desc">Leads are not converting</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="problem" data-val="retain-customers" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Retain customers</span>
+                  <span class="quiz__opt-desc">They leave sooner than expected</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="problem" data-val="automate-ops" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Automate ops</span>
+                  <span class="quiz__opt-desc">Manual processes slowing you down</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz__q" id="quiz-q4" hidden>
+            <h3 class="quiz__qtitle">How much can you invest in tools per month?</h3>
+            <div class="quiz__opts">
+              <button class="quiz__opt" data-key="budget" data-val="low" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">Up to €100</span>
+                  <span class="quiz__opt-desc">Bootstrapped, maximum impact</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="budget" data-val="medium" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">€100 – 500</span>
+                  <span class="quiz__opt-desc">Solid, complete stack</span>
+                </span>
+              </button>
+              <button class="quiz__opt" data-key="budget" data-val="high" type="button">
+                <span class="quiz__opt-dot" aria-hidden="true"></span>
+                <span class="quiz__opt-body">
+                  <span class="quiz__opt-name">€500 or more</span>
+                  <span class="quiz__opt-desc">No limits, only the best</span>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="quiz__q-nav" id="quiz-q-nav">
+            <button class="quiz__back-btn" id="quiz-back" type="button" hidden>← Back</button>
+            <span class="quiz__q-nav-hint">Select an option to continue</span>
+          </div>
+        </div>
+
+        <!-- RESULT VIEW -->
+        <div class="quiz__result" id="quiz-result" hidden></div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== FEATURED TOOLS ===== -->
   <section class="marketplace" id="marketplace">
     <div class="container">
       <div class="marketplace__header">
         <div>
-          <h2 class="marketplace__title">Featured tools</h2>
-          <p class="marketplace__subtitle">The favorites of sales teams worldwide</p>
+          <p class="marketplace__eyebrow">Featured tools</p>
+          <h2 class="marketplace__title">Browse the marketplace</h2>
         </div>
-        <a href="/tools/" class="btn btn--outline-dark">View all →</a>
+        <span class="marketplace__count" id="marketplace-count">{tools.length} tools</span>
       </div>
       <div class="filter-pills" role="group" aria-label="Filter by category">
         {categories.map(cat => (
@@ -88,128 +264,71 @@ const bestForMap: Record<string, string> = {
         ))}
       </div>
       <div class="tool-grid" id="tool-grid">
-        {featuredTools.map(tool => (
+        {tools.map(tool => (
           <ToolCard tool={tool} />
         ))}
-      </div>
-      <div class="marketplace__cta">
-        <p>Can't find what you're looking for?</p>
-        <a href="/tools/" class="btn btn--purple">View full directory</a>
       </div>
     </div>
   </section>
 
-  <!-- ===== QUIZ / STACK DIAGNOSTIC ===== -->
-  <section class="quiz" id="quiz">
-    <div class="container">
-      <p class="quiz__eyebrow">Stack Diagnostic</p>
-      <h2 class="quiz__title">Find your perfect sales stack</h2>
-      <p class="quiz__subtitle">4 questions to recommend the tools that fit your situation.</p>
-
-      <div class="quiz__frame">
-        <div class="quiz__stepbar" id="quiz-stepbar" aria-label="Quiz progress">
-          <div class="quiz__pill quiz__pill--active" data-s="1"></div>
-          <div class="quiz__pill" data-s="2"></div>
-          <div class="quiz__pill" data-s="3"></div>
-          <div class="quiz__pill" data-s="4"></div>
+  <!-- ===== DIRECTORY ===== -->
+  <section class="directory" id="directory">
+    <div class="container directory__grid">
+      <aside class="directory__sidebar" aria-label="Categories">
+        <p class="directory__sidebar-heading">Categories</p>
+        <div class="directory__nav" id="directory-nav">
+          <button class="dir-pill dir-pill--active" data-dir-filter="all" type="button">
+            <span>All</span>
+            <span class="dir-pill__count">{tools.length}</span>
+          </button>
+          {dirCategories.map(cat => (
+            <button class="dir-pill" data-dir-filter={cat.slug} type="button">
+              <span>{cat.label}</span>
+              <span class="dir-pill__count">{tools.filter(t => t.categorySlug === cat.slug).length}</span>
+            </button>
+          ))}
         </div>
-
-        <!-- Q1 -->
-        <div class="quiz__q" id="quiz-q1">
-          <p class="quiz__qlabel">Question 1 of 4</p>
-          <h3 class="quiz__qtitle">What kind of business do you have?</h3>
-          <div class="quiz__opts">
-            <button class="quiz__opt" data-key="biz" data-val="agency" type="button">
-              <span class="quiz__opt-name">Agency</span>
-              <span class="quiz__opt-desc">You manage clients and campaigns</span>
-            </button>
-            <button class="quiz__opt" data-key="biz" data-val="saas" type="button">
-              <span class="quiz__opt-name">SaaS</span>
-              <span class="quiz__opt-desc">You sell software by subscription</span>
-            </button>
-            <button class="quiz__opt" data-key="biz" data-val="consultant" type="button">
-              <span class="quiz__opt-name">Consultant</span>
-              <span class="quiz__opt-desc">You sell your expertise directly</span>
-            </button>
-            <button class="quiz__opt" data-key="biz" data-val="ecommerce" type="button">
-              <span class="quiz__opt-name">Ecommerce</span>
-              <span class="quiz__opt-desc">You sell products online</span>
-            </button>
-          </div>
+        <div class="directory__promo">
+          <p class="directory__promo-title">Can't decide?</p>
+          <p class="directory__promo-body">Compare the top tools head to head.</p>
+          <a href="#comparator" class="directory__promo-btn">Open comparison</a>
         </div>
+      </aside>
 
-        <!-- Q2 -->
-        <div class="quiz__q" id="quiz-q2" hidden>
-          <p class="quiz__qlabel">Question 2 of 4</p>
-          <h3 class="quiz__qtitle">What stage is your business at?</h3>
-          <div class="quiz__opts quiz__opts--3">
-            <button class="quiz__opt" data-key="stage" data-val="validating" type="button">
-              <span class="quiz__opt-name">Validating</span>
-              <span class="quiz__opt-desc">Searching for product-market fit</span>
-            </button>
-            <button class="quiz__opt" data-key="stage" data-val="growing" type="button">
-              <span class="quiz__opt-name">Growing</span>
-              <span class="quiz__opt-desc">You have customers, you want more</span>
-            </button>
-            <button class="quiz__opt" data-key="stage" data-val="scaling" type="button">
-              <span class="quiz__opt-name">Scaling</span>
-              <span class="quiz__opt-desc">Operating and optimizing at scale</span>
-            </button>
-          </div>
+      <div>
+        <div class="directory__header">
+          <h2 class="directory__heading" id="directory-heading">All tools</h2>
+          <span class="directory__count"><span id="directory-visible-count">{tools.length}</span> tools</span>
         </div>
-
-        <!-- Q3 -->
-        <div class="quiz__q" id="quiz-q3" hidden>
-          <p class="quiz__qlabel">Question 3 of 4</p>
-          <h3 class="quiz__qtitle">What is your biggest problem right now?</h3>
-          <div class="quiz__opts">
-            <button class="quiz__opt" data-key="problem" data-val="generate-leads" type="button">
-              <span class="quiz__opt-name">Generate leads</span>
-              <span class="quiz__opt-desc">Not enough prospects coming in</span>
-            </button>
-            <button class="quiz__opt" data-key="problem" data-val="close-sales" type="button">
-              <span class="quiz__opt-name">Close sales</span>
-              <span class="quiz__opt-desc">Leads are not converting</span>
-            </button>
-            <button class="quiz__opt" data-key="problem" data-val="retain-customers" type="button">
-              <span class="quiz__opt-name">Retain customers</span>
-              <span class="quiz__opt-desc">They leave sooner than expected</span>
-            </button>
-            <button class="quiz__opt" data-key="problem" data-val="automate-ops" type="button">
-              <span class="quiz__opt-name">Automate ops</span>
-              <span class="quiz__opt-desc">Manual processes slowing you down</span>
-            </button>
-          </div>
+        <div class="directory__cards" id="directory-cards">
+          {tools.map(tool => (
+            <article class="dir-card" data-category={tool.categorySlug}>
+              <div class="dir-card__header">
+                <div class="dir-card__mono" style={`background:${tool.color}`}>{tool.mono}</div>
+                <div class="dir-card__title-group">
+                  <h3 class="dir-card__name">{tool.name}</h3>
+                  <span class="dir-card__cat">{tool.category}</span>
+                </div>
+              </div>
+              <p class="dir-card__tagline">{tool.description}</p>
+              <div class="dir-card__footer">
+                <div class="dir-card__meta">
+                  <span class="dir-card__rating">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="#F5B33B" aria-hidden="true">
+                      <path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/>
+                    </svg>
+                    {tool.rating}
+                  </span>
+                  <span class="dir-card__price">{tool.priceLabel}</span>
+                </div>
+                <a href={tool.externalUrl} target="_blank" rel="noopener noreferrer" class="dir-card__link">
+                  {tool.cta} →
+                </a>
+              </div>
+            </article>
+          ))}
         </div>
-
-        <!-- Q4 -->
-        <div class="quiz__q" id="quiz-q4" hidden>
-          <p class="quiz__qlabel">Question 4 of 4</p>
-          <h3 class="quiz__qtitle">How much can you invest in tools per month?</h3>
-          <div class="quiz__opts quiz__opts--3">
-            <button class="quiz__opt" data-key="budget" data-val="low" type="button">
-              <span class="quiz__opt-name">Up to €100</span>
-              <span class="quiz__opt-desc">Bootstrapped, maximum impact</span>
-            </button>
-            <button class="quiz__opt" data-key="budget" data-val="medium" type="button">
-              <span class="quiz__opt-name">€100 – 500</span>
-              <span class="quiz__opt-desc">Solid, complete stack</span>
-            </button>
-            <button class="quiz__opt" data-key="budget" data-val="high" type="button">
-              <span class="quiz__opt-name">€500 or more</span>
-              <span class="quiz__opt-desc">No limits, only the best</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Result (injected by JS) -->
-        <div class="quiz__result" id="quiz-result" hidden></div>
-
-        <!-- Navigation -->
-        <div class="quiz__nav" id="quiz-nav">
-          <button class="quiz__back-btn" id="quiz-back" type="button" hidden>← Back</button>
-          <button class="quiz__restart-btn" id="quiz-restart" type="button" hidden>Start over</button>
-        </div>
+        <p class="directory__no-results" id="directory-no-results" hidden>No tools in this category yet.</p>
       </div>
     </div>
   </section>
@@ -285,6 +404,7 @@ const bestForMap: Record<string, string> = {
           </tbody>
         </table>
       </div>
+      <p class="compare-all__footnote">Some links are partner links — using them supports wisdo at no extra cost to you.</p>
     </div>
   </section>
 
@@ -358,50 +478,103 @@ const bestForMap: Record<string, string> = {
     max-width: 50ch;
   }
 
-  .hero__search {
+  /* ---- Terminal-style search console ---- */
+  .hero__console {
+    max-width: 560px;
+    width: 100%;
+    margin-top: var(--space-2);
+    background: #0F0D19;
+    border: 1px solid #26223F;
+    border-radius: 14px;
+    overflow: hidden;
+    text-align: left;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  }
+
+  .hero__console-bar {
     display: flex;
     align-items: center;
-    max-width: 520px;
-    width: 100%;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 14px;
-    padding: 6px 8px 6px 18px;
-    gap: 10px;
-    margin-top: var(--space-2);
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #201C36;
   }
 
-  .hero__search-icon { color: rgb(255 255 255 / 0.4); flex-shrink: 0; }
+  .hero__console-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #3A3552;
+  }
 
-  .hero__search-input {
+  .hero__console-label {
+    margin-left: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6A6580;
+  }
+
+  .hero__console-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .hero__console-prompt {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--color-purple);
+  }
+
+  .hero__console-input {
     flex: 1;
-    background: none;
+    min-width: 0;
     border: none;
     outline: none;
-    font-family: var(--font-sans);
-    font-size: 15px;
-    color: white;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: #E7E3F5;
+    background: none;
     color-scheme: dark;
-    min-width: 0;
   }
 
-  .hero__search-input::placeholder { color: rgb(255 255 255 / 0.35); }
+  .hero__console-input::placeholder {
+    color: #6A6580;
+  }
 
-  .hero__search-btn {
-    padding: 10px 20px;
-    font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 600;
+  .hero__console-cursor {
+    display: inline-block;
+    width: 7px;
+    height: 16px;
     background: var(--color-green);
-    color: #0B1F17;
+    margin-right: 2px;
+    animation: wm-caret 1s step-start infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes wm-caret {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .hero__console-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    background: var(--color-green);
+    color: var(--color-dark);
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     flex-shrink: 0;
     transition: opacity 0.15s;
   }
 
-  .hero__search-btn:hover { opacity: 0.88; }
+  .hero__console-btn:hover { opacity: 0.88; }
 
   .hero__popular {
     display: flex;
@@ -409,6 +582,7 @@ const bestForMap: Record<string, string> = {
     gap: 8px;
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: var(--space-3);
   }
 
   .hero__popular-label {
@@ -461,6 +635,356 @@ const bestForMap: Record<string, string> = {
 
   .hero__stat-divider { width: 1px; height: 40px; background-color: rgb(255 255 255 / 0.1); }
 
+  /* ===== QUIZ ===== */
+  .quiz {
+    background-color: var(--color-cream);
+    padding: var(--space-24) 0;
+    border-bottom: 1px solid #EFE9DF;
+  }
+
+  .quiz__intro {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto var(--space-9);
+  }
+
+  .quiz__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--color-purple);
+  }
+
+  .quiz__title {
+    margin: 12px 0 0;
+    font-size: clamp(var(--text-3xl), 3.6vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-dark);
+  }
+
+  .quiz__subtitle {
+    margin: 14px auto 0;
+    max-width: 480px;
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text-muted);
+  }
+
+  .quiz__card {
+    max-width: 760px;
+    margin: 0 auto;
+    border-radius: 24px;
+    background: linear-gradient(165deg, #1B1836, #14121F);
+    box-shadow: 0 30px 70px rgba(20, 16, 40, 0.3);
+    border: 1px solid #2A2745;
+    overflow: hidden;
+    color: white;
+  }
+
+  .quiz__q-view {
+    padding: clamp(28px, 4vw, 44px);
+  }
+
+  /* The result panel is injected via innerHTML client-side, so Astro's
+     scoped-style attribute never lands on it — these rules must be :global. */
+  :global(.quiz__result-inner) {
+    padding: clamp(28px, 4vw, 44px);
+  }
+
+  .quiz__q-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .quiz__step-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #9D8CFF;
+  }
+
+  .quiz__q-hint {
+    font-size: 13px;
+    color: rgb(255 255 255 / 0.5);
+  }
+
+  .quiz__progress {
+    height: 6px;
+    border-radius: 999px;
+    background: #2A2745;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  .quiz__progress-bar {
+    height: 100%;
+    width: 25%;
+    background: linear-gradient(90deg, var(--color-purple), var(--color-green));
+    transition: width 0.3s ease;
+  }
+
+  .quiz__qtitle {
+    margin: 26px 0 0;
+    font-size: clamp(var(--text-xl), 2.6vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: white;
+  }
+
+  .quiz__opts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .quiz__opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    text-align: left;
+    padding: 20px 22px;
+    border-radius: 14px;
+    border: 1.5px solid rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.04);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    color: white;
+  }
+
+  .quiz__opt:hover {
+    border-color: var(--color-purple);
+    background: rgb(108 92 231 / 0.12);
+    transform: translateY(-1px);
+  }
+
+  .quiz__opt--selected {
+    border-color: var(--color-purple);
+    background: #241F46;
+  }
+
+  .quiz__opt-dot {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    margin-top: 2px;
+    border-radius: 50%;
+    border: 2px solid #4A4570;
+    background: transparent;
+    transition: border-color 0.15s, border-width 0.15s, background 0.15s;
+  }
+
+  .quiz__opt--selected .quiz__opt-dot {
+    border: 5px solid var(--color-purple);
+    background: #fff;
+  }
+
+  .quiz__opt-body { display: block; }
+
+  .quiz__opt-name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .quiz__opt-desc {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: rgb(255 255 255 / 0.5);
+    line-height: 1.45;
+  }
+
+  .quiz__q-nav {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-height: 32px;
+  }
+
+  .quiz__back-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: #9D8CFF;
+  }
+
+  .quiz__q-nav-hint {
+    font-size: 13px;
+    color: rgb(255 255 255 / 0.4);
+  }
+
+  /* Result — all injected client-side via innerHTML, so every rule
+     targeting it must be :global (Astro's scoping attribute never lands
+     on dynamically-inserted markup). */
+  :global(.quiz__badge) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: rgba(108, 92, 231, 0.18);
+    border: 1px solid var(--color-purple);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 700;
+    color: #C9C0FF;
+  }
+
+  :global(.quiz__badge-dot) {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-green);
+  }
+
+  :global(.quiz__badge-label) {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.5);
+  }
+
+  :global(.quiz__result-name) {
+    margin: 18px 0 0;
+    font-size: clamp(26px, 3.2vw, 38px);
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: white;
+  }
+
+  :global(.quiz__result-cost-row) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 14px;
+    margin-top: 10px;
+  }
+
+  :global(.quiz__result-cost-label) {
+    font-size: 15px;
+    color: rgb(255 255 255 / 0.65);
+  }
+
+  :global(.quiz__result-cost) {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--color-green);
+  }
+
+  :global(.quiz__diff) {
+    margin-top: 24px;
+    border-radius: 14px;
+    background: #0F0D19;
+    border: 1px solid #26223F;
+    overflow: hidden;
+  }
+
+  :global(.quiz__diff-bar) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border-bottom: 1px solid #201C36;
+  }
+
+  :global(.quiz__diff-dot) {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #3A3552;
+  }
+
+  :global(.quiz__diff-label) {
+    margin-left: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6A6580;
+  }
+
+  :global(.quiz__diff-body) {
+    padding: 16px 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.9;
+  }
+
+  :global(.quiz__diff-line) {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    background: rgba(19, 194, 138, 0.09);
+    border-left: 2px solid var(--color-green);
+    margin: 3px 0;
+    padding: 5px 12px 5px 10px;
+    flex-wrap: wrap;
+  }
+
+  :global(.quiz__diff-order) { width: 16px; text-align: right; color: #4A4560; flex: none; }
+  :global(.quiz__diff-name) { color: var(--color-green); flex: none; white-space: nowrap; }
+  :global(.quiz__diff-role) { color: #6A6580; flex: 1; min-width: 120px; }
+  :global(.quiz__diff-free) { color: var(--color-green); flex: none; }
+
+  :global(.quiz__diff-footer) {
+    display: flex;
+    gap: 12px;
+    color: #4A4560;
+    margin-top: 6px;
+  }
+
+  :global(.quiz__result-actions) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 22px;
+    margin-top: 28px;
+  }
+
+  :global(.quiz__view-all-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: var(--color-green);
+    color: var(--color-dark);
+    border-radius: 12px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+
+  :global(.quiz__view-all-btn:hover) { opacity: 0.88; }
+
+  :global(.quiz__restart-btn) {
+    background: none;
+    border: none;
+    color: #9D8CFF;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
   /* ===== MARKETPLACE ===== */
   .marketplace {
     background-color: var(--color-white);
@@ -476,20 +1000,30 @@ const bestForMap: Record<string, string> = {
     flex-wrap: wrap;
   }
 
-  .marketplace__title { font-size: var(--text-3xl); color: var(--color-dark); margin-bottom: var(--space-2); }
-  .marketplace__subtitle { color: var(--color-text-muted); font-size: var(--text-base); }
+  .marketplace__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--color-purple);
+    margin-bottom: var(--space-3);
+  }
+
+  .marketplace__title { font-size: var(--text-3xl); color: var(--color-dark); }
+  .marketplace__count { font-size: var(--text-sm); font-weight: 500; color: var(--color-text-muted); }
 
   .filter-pills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-8); }
 
   .filter-pill {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    padding: var(--space-2) var(--space-4);
+    font-weight: var(--font-semibold);
+    padding: 10px 18px;
     border-radius: var(--radius-full);
-    border: 1px solid var(--color-gray-200);
+    border: 1.5px solid var(--color-gray-200);
     background-color: var(--color-white);
-    color: var(--color-gray-600);
+    color: var(--color-text-muted);
     cursor: pointer;
     transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   }
@@ -499,313 +1033,244 @@ const bestForMap: Record<string, string> = {
 
   .tool-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--space-5);
-    margin-bottom: var(--space-12);
   }
 
-  .marketplace__cta {
-    display: flex;
-    align-items: center;
-    gap: var(--space-6);
-    justify-content: center;
-    padding-top: var(--space-12);
-    border-top: 1px solid var(--color-border);
+  /* ===== DIRECTORY ===== */
+  .directory {
+    background-color: var(--color-cream);
+    padding: clamp(52px, 7vw, 92px) 0;
   }
 
-  .marketplace__cta p { color: var(--color-text-muted); font-size: var(--text-base); }
-
-  /* ===== QUIZ ===== */
-  .quiz {
-    background-color: #0B0A14;
-    padding: var(--space-24) 0;
-    color: white;
-  }
-
-  .quiz__eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #13C28A;
-    margin-bottom: var(--space-4);
-    text-align: center;
-  }
-
-  .quiz__title {
-    font-size: clamp(var(--text-3xl), 4vw, 42px);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    text-align: center;
-    margin-bottom: var(--space-3);
-  }
-
-  .quiz__subtitle {
-    font-size: var(--text-base);
-    color: rgb(255 255 255 / 0.55);
-    text-align: center;
-    margin-bottom: var(--space-12);
-    max-width: 48ch;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .quiz__frame {
-    max-width: 700px;
-    margin: 0 auto;
-  }
-
-  .quiz__stepbar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: var(--space-10);
-    justify-content: center;
-  }
-
-  .quiz__pill {
-    height: 4px;
-    flex: 1;
-    max-width: 80px;
-    border-radius: 99px;
-    background: rgb(255 255 255 / 0.12);
-    transition: background 0.25s;
-  }
-
-  .quiz__pill--active { background: #6C5CE7; }
-  .quiz__pill--done   { background: #13C28A; }
-
-  .quiz__q {}
-
-  .quiz__qlabel {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: rgb(255 255 255 / 0.4);
-    margin-bottom: var(--space-3);
-  }
-
-  .quiz__qtitle {
-    font-size: clamp(var(--text-xl), 3vw, 28px);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: var(--space-8);
-    line-height: 1.2;
-  }
-
-  .quiz__opts {
+  .directory__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: 230px 1fr;
+    gap: clamp(28px, 4vw, 48px);
+    align-items: start;
   }
 
-  .quiz__opts--3 { grid-template-columns: repeat(3, 1fr); }
-
-  .quiz__opt {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    padding: 20px 22px;
-    border-radius: 14px;
-    border: 1px solid rgb(255 255 255 / 0.1);
-    background: rgb(255 255 255 / 0.04);
-    cursor: pointer;
-    text-align: left;
-    transition: border-color 0.15s, background 0.15s, transform 0.1s;
-    color: white;
+  .directory__sidebar {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-6));
   }
 
-  .quiz__opt:hover {
-    border-color: #6C5CE7;
-    background: rgb(108 92 231 / 0.12);
-    transform: translateY(-1px);
-  }
-
-  .quiz__opt--selected {
-    border-color: #6C5CE7;
-    background: rgb(108 92 231 / 0.18);
-  }
-
-  .quiz__opt-name {
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-
-  .quiz__opt-desc {
-    font-size: 13px;
-    color: rgb(255 255 255 / 0.5);
-    line-height: 1.4;
-  }
-
-  /* Result */
-  .quiz__result-inner {
-    background: rgb(255 255 255 / 0.04);
-    border: 1px solid rgb(255 255 255 / 0.1);
-    border-radius: 20px;
-    padding: 32px;
-  }
-
-  .quiz__archetype-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #13C28A;
-    margin-bottom: 6px;
-  }
-
-  .quiz__archetype {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 4px;
-  }
-
-  .quiz__stack-name {
-    font-family: var(--font-mono);
-    font-size: 13px;
-    color: #9D8CFF;
-    margin-bottom: 28px;
-  }
-
-  .quiz__tools-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-
-  .quiz__tool-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    background: rgb(255 255 255 / 0.05);
-    border: 1px solid rgb(255 255 255 / 0.07);
-  }
-
-  .quiz__tool-num {
+  .directory__sidebar-heading {
     font-family: var(--font-mono);
     font-size: 12px;
-    font-weight: 700;
-    color: rgb(255 255 255 / 0.3);
-    width: 20px;
-    flex-shrink: 0;
-  }
-
-  .quiz__tool-mono {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-size: 14px;
-    font-weight: 700;
-    color: white;
-    flex-shrink: 0;
-  }
-
-  .quiz__tool-info { flex: 1; }
-  .quiz__tool-name { font-size: 15px; font-weight: 600; }
-  .quiz__tool-role { font-size: 12px; color: rgb(255 255 255 / 0.45); margin-top: 2px; }
-
-  .quiz__tool-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
     font-weight: 600;
-    letter-spacing: 1px;
-    color: #13C28A;
-    border: 1px solid rgb(19 194 138 / 0.3);
-    border-radius: 5px;
-    padding: 2px 7px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gray-400);
   }
 
-  .quiz__result-footer {
+  .directory__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 14px;
+  }
+
+  .dir-pill {
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 20px;
-    border-top: 1px solid rgb(255 255 255 / 0.08);
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    background: none;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-align: left;
+    transition: background-color 0.12s, color 0.12s;
   }
 
-  .quiz__cost-label {
+  .dir-pill:hover { background: var(--color-gray-100); color: var(--color-dark); }
+
+  .dir-pill--active {
+    background: var(--color-gray-100);
+    color: var(--color-purple);
+  }
+
+  .dir-pill__count {
     font-family: var(--font-mono);
     font-size: 12px;
-    color: rgb(255 255 255 / 0.4);
+    font-weight: 600;
+    color: var(--color-gray-400);
+    background: var(--color-cream-2);
+    border-radius: 6px;
+    padding: 1px 7px;
   }
 
-  .quiz__cost {
+  .dir-pill--active .dir-pill__count {
+    color: var(--color-purple);
+    background: white;
+  }
+
+  .directory__promo {
+    margin-top: 24px;
+    padding: 18px;
+    border-radius: 14px;
+    background: var(--color-dark-2);
+  }
+
+  .directory__promo-title {
     font-family: var(--font-display);
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 700;
     color: white;
   }
 
-  .quiz__explore-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 20px;
-    background: #6C5CE7;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-family: var(--font-sans);
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition: opacity 0.15s;
+  .directory__promo-body {
+    margin: 8px 0 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgb(255 255 255 / 0.7);
   }
 
-  .quiz__explore-btn:hover { opacity: 0.88; }
+  .directory__promo-btn {
+    display: inline-flex;
+    padding: 8px 14px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    background: var(--color-green);
+    color: var(--color-dark);
+    border-radius: var(--radius-md);
+  }
 
-  /* Nav */
-  .quiz__nav {
+  .directory__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .directory__heading {
+    font-size: clamp(var(--text-2xl), 3vw, var(--text-3xl));
+    color: var(--color-dark);
+    letter-spacing: -0.02em;
+  }
+
+  .directory__count { font-size: var(--text-sm); font-weight: 500; color: var(--color-text-muted); }
+
+  .directory__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+  }
+
+  .dir-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #EAE3D6;
+    border-radius: 16px;
+    background: var(--color-white);
+    padding: 22px;
+    box-shadow: 0 8px 22px rgba(40, 30, 20, 0.05);
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+
+  .dir-card:hover {
+    box-shadow: 0 18px 40px rgba(40, 30, 20, 0.1);
+    transform: translateY(-3px);
+  }
+
+  .dir-card__header { display: flex; align-items: center; gap: 12px; }
+
+  .dir-card__mono {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    margin-top: var(--space-6);
-    min-height: 40px;
-  }
-
-  .quiz__back-btn {
-    background: none;
-    border: 1px solid rgb(255 255 255 / 0.15);
-    color: rgb(255 255 255 / 0.55);
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-family: var(--font-sans);
+    justify-content: center;
+    font-family: var(--font-display);
     font-size: 14px;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
   }
 
-  .quiz__back-btn:hover { color: white; border-color: rgb(255 255 255 / 0.35); }
+  .dir-card__title-group { flex: 1; min-width: 0; }
 
-  .quiz__restart-btn {
-    background: none;
-    border: none;
-    color: rgb(255 255 255 / 0.4);
-    font-family: var(--font-sans);
+  .dir-card__name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-dark);
+  }
+
+  .dir-card__cat {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--color-gray-400);
+  }
+
+  .dir-card__tagline {
+    margin: 14px 0 0;
+    flex: 1;
     font-size: 14px;
-    cursor: pointer;
-    text-decoration: underline;
-    transition: color 0.15s;
+    line-height: 1.55;
+    color: var(--color-text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .quiz__restart-btn:hover { color: white; }
+  .dir-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .dir-card__meta { display: flex; align-items: center; gap: 10px; }
+
+  .dir-card__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-dark);
+  }
+
+  .dir-card__price { font-size: 12px; font-weight: 600; color: #0E9E70; }
+
+  .dir-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-purple);
+    text-decoration: none;
+  }
+
+  .dir-card__link:hover { text-decoration: underline; }
+
+  .directory__no-results {
+    text-align: center;
+    padding: var(--space-16) 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+  }
 
   /* ===== COMPARATOR ===== */
   .comparator {
@@ -873,7 +1338,7 @@ const bestForMap: Record<string, string> = {
   }
 
   .comp-chip[aria-pressed="true"] {
-    border-color: #6C5CE7;
+    border-color: var(--color-purple);
     background: rgb(108 92 231 / 0.15);
     color: white;
   }
@@ -892,7 +1357,8 @@ const bestForMap: Record<string, string> = {
     flex-shrink: 0;
   }
 
-  .comp-empty {
+  /* Re-injected via innerHTML when the selection is cleared — must be :global. */
+  :global(.comp-empty) {
     text-align: center;
     color: rgb(255 255 255 / 0.35);
     font-size: var(--text-sm);
@@ -1020,7 +1486,7 @@ const bestForMap: Record<string, string> = {
 
   /* ===== FULL COMPARISON TABLE ===== */
   .compare-all {
-    background-color: var(--color-cream);
+    background-color: var(--color-white);
     padding: var(--space-24) 0;
   }
 
@@ -1032,33 +1498,28 @@ const bestForMap: Record<string, string> = {
     text-transform: uppercase;
     color: var(--color-purple);
     margin-bottom: var(--space-4);
-    text-align: center;
   }
 
   .compare-all__title {
-    font-size: clamp(var(--text-3xl), 4vw, 42px);
+    font-size: clamp(26px, 3.4vw, 40px);
     font-weight: 700;
     letter-spacing: -0.02em;
-    text-align: center;
     color: var(--color-dark);
     margin-bottom: var(--space-3);
+    max-width: 560px;
   }
 
   .compare-all__subtitle {
     font-size: var(--text-base);
     color: var(--color-text-muted);
-    text-align: center;
     margin-bottom: var(--space-10);
     max-width: 48ch;
-    margin-left: auto;
-    margin-right: auto;
   }
 
   .compare-all__scroll {
     overflow-x: auto;
-    border-radius: 16px;
-    border: 1px solid var(--color-border);
-    background: var(--color-white);
+    border-radius: 18px;
+    border: 1px solid #EAE3D6;
   }
 
   .all-table {
@@ -1068,15 +1529,15 @@ const bestForMap: Record<string, string> = {
   }
 
   .all-table__th {
-    padding: 14px 20px;
+    padding: 16px 20px;
     text-align: left;
     font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 1px;
     text-transform: uppercase;
-    color: var(--color-text-muted);
-    border-bottom: 1px solid var(--color-border);
+    color: var(--color-gray-400);
+    border-bottom: 1px solid #EAE3D6;
     background: var(--color-cream);
     white-space: nowrap;
   }
@@ -1084,7 +1545,7 @@ const bestForMap: Record<string, string> = {
   .all-table__th--label { width: 200px; }
 
   .all-table__row {
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid #F0EBE1;
     transition: background 0.12s;
   }
 
@@ -1098,7 +1559,7 @@ const bestForMap: Record<string, string> = {
     vertical-align: middle;
   }
 
-  .all-table__tool-cell { display: flex; align-items: center; gap: 12px; }
+  .all-table__tool-cell { display: flex; align-items: center; gap: 11px; }
 
   .all-table__mono {
     width: 36px;
@@ -1117,27 +1578,20 @@ const bestForMap: Record<string, string> = {
   .all-table__name {
     font-family: var(--font-display);
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--color-dark);
   }
 
   .all-table__cat {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    font-size: 14px;
     color: var(--color-text-muted);
-    background: rgb(108 92 231 / 0.07);
-    border-radius: 5px;
-    padding: 3px 8px;
   }
 
   .all-table__bestfor { color: var(--color-text-muted); }
 
   .all-table__price {
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-family: var(--font-sans);
+    font-size: 14px;
     color: #0E9E70;
     font-weight: 600;
     white-space: nowrap;
@@ -1147,7 +1601,7 @@ const bestForMap: Record<string, string> = {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--color-dark);
   }
@@ -1155,11 +1609,13 @@ const bestForMap: Record<string, string> = {
   .all-table__cta {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    padding: 7px 14px;
+    justify-content: center;
+    gap: 5px;
+    min-width: 120px;
+    padding: 8px 14px;
     background: #171528;
     color: white;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-family: var(--font-sans);
     font-size: 12px;
     font-weight: 700;
@@ -1170,9 +1626,17 @@ const bestForMap: Record<string, string> = {
 
   .all-table__cta:hover { background: #2D2B4A; }
 
+  .compare-all__footnote {
+    margin-top: var(--space-4);
+    font-size: 13px;
+    color: var(--color-gray-400);
+  }
+
   /* ===== CTA ===== */
   .cta-section {
-    background: linear-gradient(135deg, #3B2DAF 0%, #6C5CE7 45%, #0E9D6E 100%);
+    background:
+      radial-gradient(600px 300px at 50% 0%, rgba(255, 255, 255, 0.18), transparent 70%),
+      var(--color-purple);
     padding: var(--space-24) 0;
     text-align: center;
     color: white;
@@ -1190,7 +1654,7 @@ const bestForMap: Record<string, string> = {
 
   .cta-section__body {
     font-size: var(--text-base);
-    color: rgb(255 255 255 / 0.75);
+    color: rgb(255 255 255 / 0.85);
     line-height: var(--leading-relaxed);
     max-width: 46ch;
     margin: 0 auto var(--space-10);
@@ -1207,7 +1671,7 @@ const bestForMap: Record<string, string> = {
   .cta-section__btn {
     display: inline-flex;
     align-items: center;
-    padding: 14px 28px;
+    padding: 15px 26px;
     border-radius: 12px;
     font-family: var(--font-sans);
     font-size: 15px;
@@ -1222,10 +1686,14 @@ const bestForMap: Record<string, string> = {
   .cta-section__btn--outline { background: transparent; color: white; border: 1.5px solid rgba(255,255,255,0.45); }
 
   /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .directory__grid { grid-template-columns: 1fr; }
+    .directory__sidebar { position: static; }
+    .directory__nav { flex-direction: row; flex-wrap: wrap; }
+  }
+
   @media (max-width: 768px) {
     .quiz__opts { grid-template-columns: 1fr; }
-    .quiz__opts--3 { grid-template-columns: 1fr; }
-    .quiz__result-footer { flex-direction: column; align-items: flex-start; }
   }
 
   @media (max-width: 640px) {
@@ -1234,8 +1702,8 @@ const bestForMap: Record<string, string> = {
     .hero__stat-value { font-size: var(--text-2xl); }
     .hide-mobile { display: none; }
     .marketplace__header { flex-direction: column; align-items: flex-start; }
-    .marketplace__cta { flex-direction: column; text-align: center; }
     .tool-grid { grid-template-columns: 1fr; }
+    .directory__cards { grid-template-columns: 1fr; }
     .comp-chips { justify-content: flex-start; }
     .cta-section__btns { flex-direction: column; }
   }
@@ -1245,16 +1713,56 @@ const bestForMap: Record<string, string> = {
   // ===== FILTER PILLS (marketplace) =====
   const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
   const cards = document.querySelectorAll<HTMLElement>('.tool-card');
+  const marketplaceCount = document.getElementById('marketplace-count');
+
+  function applyMarketplaceFilter(filter: string) {
+    let visible = 0;
+    cards.forEach(card => {
+      const match = filter === 'all' || card.dataset.category === filter;
+      card.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    if (marketplaceCount) marketplaceCount.textContent = `${visible} tool${visible === 1 ? '' : 's'}`;
+  }
 
   pills.forEach(pill => {
     pill.addEventListener('click', () => {
       const filter = pill.dataset.filter ?? 'all';
       pills.forEach(p => p.classList.remove('filter-pill--active'));
       pill.classList.add('filter-pill--active');
-      cards.forEach(card => {
+      applyMarketplaceFilter(filter);
+    });
+  });
+
+  // ===== DIRECTORY =====
+  const dirPills = document.querySelectorAll<HTMLButtonElement>('.dir-pill');
+  const dirCards = document.querySelectorAll<HTMLElement>('.dir-card');
+  const dirHeading = document.getElementById('directory-heading');
+  const dirVisibleCount = document.getElementById('directory-visible-count');
+  const dirNoResults = document.getElementById('directory-no-results') as HTMLElement | null;
+  const DIR_LABELS: Record<string, string> = { all: 'All tools' };
+  dirPills.forEach(p => {
+    const key = p.dataset.dirFilter ?? 'all';
+    const label = p.querySelector('span')?.textContent ?? key;
+    if (key !== 'all') DIR_LABELS[key] = label;
+  });
+
+  dirPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const filter = pill.dataset.dirFilter ?? 'all';
+      dirPills.forEach(p => p.classList.remove('dir-pill--active'));
+      pill.classList.add('dir-pill--active');
+
+      let visible = 0;
+      dirCards.forEach(card => {
         const match = filter === 'all' || card.dataset.category === filter;
         card.style.display = match ? '' : 'none';
+        if (match) visible++;
       });
+
+      if (dirHeading) dirHeading.textContent = DIR_LABELS[filter] ?? 'All tools';
+      if (dirVisibleCount) dirVisibleCount.textContent = String(visible);
+      if (dirNoResults) dirNoResults.hidden = visible > 0;
     });
   });
 
@@ -1276,14 +1784,14 @@ const bestForMap: Record<string, string> = {
 
   const COST: Record<string, string> = { low: '~€90/mo', medium: '~€320/mo', high: '€500+/mo' };
 
-  type ToolInfo = { name: string; mono: string; color: string; role: string; pricing: string; isFree: boolean };
+  type ToolInfo = { name: string; mono: string; color: string; role: string; isFree: boolean };
   const QUIZ_TOOLS: Record<string, ToolInfo> = {
-    apollo:    { name: 'Apollo.io',  mono: 'A',  color: '#3B4BF0', role: 'Database & sequences',       pricing: 'Freemium', isFree: true },
-    kaspr:     { name: 'Kaspr',      mono: 'K',  color: '#6C5CE7', role: 'LinkedIn enrichment',        pricing: 'Freemium', isFree: true },
-    krispcall: { name: 'KrispCall',  mono: 'KC', color: '#13C28A', role: 'Cloud calls + AI',           pricing: 'From $15/mo', isFree: false },
-    lemlist:   { name: 'Lemlist',    mono: 'L',  color: '#1E73FF', role: 'Multichannel cold outreach', pricing: 'From $39/mo', isFree: false },
-    lusha:     { name: 'Lusha',      mono: 'Lu', color: '#FF6B2C', role: 'B2B enrichment',             pricing: 'Freemium', isFree: true },
-    manychat:  { name: 'ManyChat',   mono: 'M',  color: '#00B36B', role: 'Chatbots & automation',      pricing: 'Freemium', isFree: true },
+    apollo:    { name: 'Apollo.io',  mono: 'A',  color: '#3B4BF0', role: 'Database & sequences',       isFree: true },
+    kaspr:     { name: 'Kaspr',      mono: 'K',  color: '#6C5CE7', role: 'LinkedIn enrichment',        isFree: true },
+    krispcall: { name: 'KrispCall',  mono: 'KC', color: '#13C28A', role: 'Cloud calls + AI',           isFree: false },
+    lemlist:   { name: 'Lemlist',    mono: 'L',  color: '#1E73FF', role: 'Multichannel cold outreach', isFree: false },
+    lusha:     { name: 'Lusha',      mono: 'Lu', color: '#FF6B2C', role: 'B2B enrichment',             isFree: true },
+    manychat:  { name: 'ManyChat',   mono: 'M',  color: '#00B36B', role: 'Chatbots & automation',      isFree: true },
   };
 
   const STEP_KEYS = ['biz', 'stage', 'problem', 'budget'] as const;
@@ -1291,23 +1799,19 @@ const bestForMap: Record<string, string> = {
   const answers: Record<StepKey, string | null> = { biz: null, stage: null, problem: null, budget: null };
   let step = 1;
 
-  const quizStepbar = document.getElementById('quiz-stepbar');
-  const quizBack    = document.getElementById('quiz-back') as HTMLButtonElement | null;
-  const quizRestart = document.getElementById('quiz-restart') as HTMLButtonElement | null;
-  const quizNav     = document.getElementById('quiz-nav');
-  const quizResult  = document.getElementById('quiz-result');
+  const quizQView    = document.getElementById('quiz-q-view');
+  const quizResult    = document.getElementById('quiz-result');
+  const quizStepLabel = document.getElementById('quiz-step-label');
+  const quizProgress  = document.getElementById('quiz-progress-bar');
+  const quizBack       = document.getElementById('quiz-back') as HTMLButtonElement | null;
 
   function getQuizQ(n: number): HTMLElement | null {
     return document.getElementById(`quiz-q${n}`);
   }
 
-  function updateStepbar() {
-    quizStepbar?.querySelectorAll<HTMLElement>('[data-s]').forEach(el => {
-      const s = parseInt(el.dataset.s ?? '0');
-      el.classList.remove('quiz__pill--active', 'quiz__pill--done');
-      if (s < step) el.classList.add('quiz__pill--done');
-      else if (s === step) el.classList.add('quiz__pill--active');
-    });
+  function updateProgress() {
+    if (quizStepLabel) quizStepLabel.textContent = `Step ${step} of 4`;
+    if (quizProgress) quizProgress.style.width = `${(step / 4) * 100}%`;
   }
 
   function showStep(n: number) {
@@ -1315,38 +1819,28 @@ const bestForMap: Record<string, string> = {
       const el = getQuizQ(i);
       if (el) el.hidden = (i !== n);
     });
+    if (quizQView)  quizQView.hidden = false;
     if (quizResult) quizResult.hidden = true;
-
-    if (quizBack)    quizBack.hidden    = (n <= 1);
-    if (quizRestart) quizRestart.hidden = true;
-    if (quizNav)     quizNav.style.display = '';
-    updateStepbar();
+    if (quizBack)   quizBack.hidden  = (n <= 1);
+    updateProgress();
   }
 
   function showResult() {
-    [1, 2, 3, 4].forEach(i => {
-      const el = getQuizQ(i);
-      if (el) el.hidden = true;
-    });
-
     const archetype  = ARCHETYPES[answers.biz ?? 'saas'] ?? 'The Builder';
     const stackDef   = STACKS[answers.problem ?? 'generate-leads']!;
     const toolSlugs  = stackDef.tools[answers.budget ?? 'medium'] ?? [];
     const costLabel  = COST[answers.budget ?? 'medium'] ?? '';
 
-    let toolsHtml = '';
+    let diffHtml = '';
     toolSlugs.forEach((slug, i) => {
       const t = QUIZ_TOOLS[slug];
       if (!t) return;
-      toolsHtml += `
-        <div class="quiz__tool-item">
-          <span class="quiz__tool-num">${String(i + 1).padStart(2, '0')}</span>
-          <span class="quiz__tool-mono" style="background:${t.color}">${t.mono}</span>
-          <div class="quiz__tool-info">
-            <div class="quiz__tool-name">${t.name}</div>
-            <div class="quiz__tool-role">${t.role}</div>
-          </div>
-          ${t.isFree ? '<span class="quiz__tool-badge">FREE</span>' : ''}
+      diffHtml += `
+        <div class="quiz__diff-line">
+          <span class="quiz__diff-order">${i + 1}</span>
+          <span class="quiz__diff-name">+ ${t.name}</span>
+          <span class="quiz__diff-role">— ${t.role}</span>
+          ${t.isFree ? '<span class="quiz__diff-free">free</span>' : ''}
         </div>
       `;
     });
@@ -1354,26 +1848,45 @@ const bestForMap: Record<string, string> = {
     if (quizResult) {
       quizResult.innerHTML = `
         <div class="quiz__result-inner">
-          <p class="quiz__archetype-label">Your archetype</p>
-          <h3 class="quiz__archetype">${archetype}</h3>
-          <p class="quiz__stack-name">${stackDef.name}</p>
-          <div class="quiz__tools-list">${toolsHtml}</div>
-          <div class="quiz__result-footer">
-            <div>
-              <div class="quiz__cost-label">Estimated investment</div>
-              <div class="quiz__cost">${costLabel}</div>
+          <div class="quiz__badge">
+            <span class="quiz__badge-dot"></span>${archetype}
+            <span class="quiz__badge-label">Your profile</span>
+          </div>
+          <h3 class="quiz__result-name">${stackDef.name}</h3>
+          <div class="quiz__result-cost-row">
+            <span class="quiz__result-cost-label">Estimated cost</span>
+            <span class="quiz__result-cost">${costLabel}</span>
+          </div>
+          <div class="quiz__diff">
+            <div class="quiz__diff-bar">
+              <span class="quiz__diff-dot"></span>
+              <span class="quiz__diff-dot"></span>
+              <span class="quiz__diff-dot"></span>
+              <span class="quiz__diff-label">your-stack.diff</span>
             </div>
-            <a href="/tools/" class="quiz__explore-btn">Explore tools →</a>
+            <div class="quiz__diff-body">
+              ${diffHtml}
+              <div class="quiz__diff-footer"><span style="width:16px;text-align:right;">//</span><span>est. cost <span style="color:#fff;">${costLabel}</span></span></div>
+            </div>
+          </div>
+          <div class="quiz__result-actions">
+            <a href="/tools/" class="quiz__view-all-btn">View all tools →</a>
+            <button type="button" class="quiz__restart-btn" id="quiz-restart-inner">Start over</button>
           </div>
         </div>
       `;
       quizResult.hidden = false;
+      document.getElementById('quiz-restart-inner')?.addEventListener('click', restartQuiz);
     }
 
-    quizStepbar?.querySelectorAll<HTMLElement>('[data-s]').forEach(el => el.classList.add('quiz__pill--done'));
-    if (quizBack)    quizBack.hidden    = true;
-    if (quizRestart) quizRestart.hidden = false;
-    if (quizNav)     quizNav.style.display = '';
+    if (quizQView) quizQView.hidden = true;
+  }
+
+  function restartQuiz() {
+    (Object.keys(answers) as StepKey[]).forEach(k => { answers[k] = null; });
+    step = 1;
+    document.querySelectorAll('.quiz__opt').forEach(b => b.classList.remove('quiz__opt--selected'));
+    showStep(1);
   }
 
   document.querySelectorAll<HTMLButtonElement>('.quiz__opt').forEach(btn => {
@@ -1413,24 +1926,17 @@ const bestForMap: Record<string, string> = {
     }
   });
 
-  quizRestart?.addEventListener('click', () => {
-    (Object.keys(answers) as StepKey[]).forEach(k => { answers[k] = null; });
-    step = 1;
-    document.querySelectorAll('.quiz__opt').forEach(b => b.classList.remove('quiz__opt--selected'));
-    showStep(1);
-  });
-
-  updateStepbar();
+  updateProgress();
 
   // ===== COMPARATOR =====
   type CompToolInfo = { name: string; mono: string; color: string; category: string; bestFor: string; pricing: string; rating: string; link: string; cta: string };
   const COMP_TOOLS: Record<string, CompToolInfo> = {
-    apollo:    { name: 'Apollo.io',  mono: 'A',  color: '#3B4BF0', category: 'Prospecting', bestFor: 'At-scale outreach',        pricing: 'Freemium · from $49/mo',  rating: '4.7', link: 'https://www.apollo.io',      cta: 'Get Apollo' },
-    kaspr:     { name: 'Kaspr',      mono: 'K',  color: '#6C5CE7', category: 'Prospecting', bestFor: 'LinkedIn lead gen',        pricing: 'Freemium · from €30/mo',  rating: '4.4', link: 'https://www.kaspr.io',       cta: 'Get Kaspr' },
-    krispcall: { name: 'KrispCall',  mono: 'KC', color: '#13C28A', category: 'Calling',     bestFor: 'Phone-based sales',        pricing: 'From $15/user/mo',        rating: '4.3', link: 'https://www.krispcall.com',  cta: 'Get KrispCall' },
-    lemlist:   { name: 'Lemlist',    mono: 'L',  color: '#1E73FF', category: 'Outreach',    bestFor: 'Multichannel cold email',  pricing: 'From $39/mo',             rating: '4.6', link: 'https://www.lemlist.com',    cta: 'Get Lemlist' },
-    lusha:     { name: 'Lusha',      mono: 'Lu', color: '#FF6B2C', category: 'Prospecting', bestFor: 'B2B enrichment',           pricing: 'Freemium · from $36/mo',  rating: '4.2', link: 'https://www.lusha.com',      cta: 'Get Lusha' },
-    manychat:  { name: 'ManyChat',   mono: 'M',  color: '#00B36B', category: 'Automation',  bestFor: 'Chatbots & DMs',          pricing: 'Freemium · from $15/mo',  rating: '4.5', link: 'https://manychat.com',       cta: 'Get ManyChat' },
+    apollo:    { name: 'Apollo.io',  mono: 'A',  color: '#3B4BF0', category: 'Prospecting', bestFor: 'At-scale outreach',        pricing: 'Freemium · from $49/mo',  rating: '4.7', link: 'https://get.apollo.io/wisdo', cta: 'Get Apollo' },
+    kaspr:     { name: 'Kaspr',      mono: 'K',  color: '#6C5CE7', category: 'Prospecting', bestFor: 'LinkedIn lead gen',        pricing: 'Freemium · from €30/mo',  rating: '4.4', link: 'https://kaspr.partnerlinks.io/gwm4l081zvey', cta: 'Get Kaspr' },
+    krispcall: { name: 'KrispCall',  mono: 'KC', color: '#13C28A', category: 'Calling',     bestFor: 'Phone-based sales',        pricing: 'From $15/user/mo',        rating: '4.3', link: 'https://try.krispcall.com/8xqb028wq9zz', cta: 'Get KrispCall' },
+    lemlist:   { name: 'Lemlist',    mono: 'L',  color: '#1E73FF', category: 'Outreach',    bestFor: 'Multichannel cold email',  pricing: 'From $39/mo',             rating: '4.6', link: 'https://market.wisdo.io/product/lemlist-potencia-tus-campanas-de-email-con-personalizacion-avanzada/', cta: 'Get Lemlist' },
+    lusha:     { name: 'Lusha',      mono: 'Lu', color: '#FF6B2C', category: 'Prospecting', bestFor: 'B2B enrichment',           pricing: 'Freemium · from $36/mo',  rating: '4.2', link: 'https://market.wisdo.io/product/lusha-datos-b2b-precisos-para-impulsar-tus-ventas/', cta: 'Get Lusha' },
+    manychat:  { name: 'ManyChat',   mono: 'M',  color: '#00B36B', category: 'Automation',  bestFor: 'Chatbots & DMs',          pricing: 'Freemium · from $15/mo',  rating: '4.5', link: 'https://market.wisdo.io/product/manychat-revoluciona-tu-marketing-con-chatbots-inteligentes/', cta: 'Get ManyChat' },
   };
 
   const compChips   = document.querySelectorAll<HTMLButtonElement>('.comp-chip');
@@ -1440,7 +1946,7 @@ const bestForMap: Record<string, string> = {
   function renderComparator() {
     if (!compOutput) return;
     if (selectedSlugs.length === 0) {
-      compOutput.innerHTML = '<p class="comp-empty">Selecciona al menos una herramienta para comparar.</p>';
+      compOutput.innerHTML = '<p class="comp-empty">Select at least one tool to compare.</p>';
       return;
     }
 
