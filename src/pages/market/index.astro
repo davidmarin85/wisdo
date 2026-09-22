@@ -101,7 +101,7 @@ const marketData = {
       <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500;">All tools, at a glance</h2>
       <p style="margin:16px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:560px;">An honest comparison — no affiliates, no paid rankings.</p>
       <div style="margin-top:40px; border:1px solid #1e1e1e; border-radius:8px; overflow:hidden;">
-        <div style="display:grid; grid-template-columns:1.2fr 1fr 1.4fr 1.2fr 0.6fr; gap:16px; padding:12px 24px; background:#1e1e1e; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">
+        <div class="cmp-head" style="display:grid; grid-template-columns:1.2fr 1fr 1.4fr 1.2fr 0.6fr; gap:16px; padding:12px 24px; background:#1e1e1e; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">
           <span>TOOL</span><span>CATEGORY</span><span>BEST FOR</span><span>PRICING</span><span>RATING</span>
         </div>
         <div id="all-rows"></div>
@@ -285,12 +285,12 @@ const marketData = {
     const rows = $('all-rows');
     if (!rows) return;
     rows.innerHTML = TOOLS.map(t =>
-      '<div style="display:grid;grid-template-columns:1.2fr 1fr 1.4fr 1.2fr 0.6fr;gap:16px;padding:16px 24px;background:#141414;border-top:1px solid #1e1e1e;font-size:14px;letter-spacing:-0.25px;">' +
-        `<span style="font-weight:500;">${esc(t.name)}</span>` +
-        `<span style="color:#a7a7a7;">${t.cat}</span>` +
-        `<span style="color:#a7a7a7;">${esc(t.bestFor)}</span>` +
-        `<span style="color:#a7a7a7;">${esc(t.priceLabel)}</span>` +
-        `<span style="color:#6798ff;">${t.rating}</span></div>`).join('');
+      '<div class="cmp-row" style="display:grid;grid-template-columns:1.2fr 1fr 1.4fr 1.2fr 0.6fr;gap:16px;padding:16px 24px;background:#141414;border-top:1px solid #1e1e1e;font-size:14px;letter-spacing:-0.25px;">' +
+        `<span class="cmp-name" style="font-weight:500;">${esc(t.name)}</span>` +
+        `<span data-l="CATEGORY" style="color:#a7a7a7;">${t.cat}</span>` +
+        `<span data-l="BEST FOR" style="color:#a7a7a7;">${esc(t.bestFor)}</span>` +
+        `<span data-l="PRICING" style="color:#a7a7a7;">${esc(t.priceLabel)}</span>` +
+        `<span data-l="RATING" style="color:#6798ff;">${t.rating}</span></div>`).join('');
   }
 
   function renderQuiz() {

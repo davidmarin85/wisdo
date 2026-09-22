@@ -1,0 +1,125 @@
+/* Mobile adjustments for the redesign.
+ *
+ * The design ships with inline `style="..."` attributes on every block, so
+ * these rules have to target those exact inline patterns and use !important
+ * to win the cascade. Grouping them here keeps the pages untouched, so the
+ * layout can be re-exported from the design tool without losing the fixes.
+ *
+ * Measured with headless Chrome at 320 / 375 / 430px.
+ */
+
+/* ---- 1. Two-column splits -------------------------------------------------
+ * `repeat(auto-fit, minmax(380px, 1fr))` keeps a 380px minimum even when the
+ * viewport is narrower, which pushed every page 84px past the screen at 320px.
+ * Below the point where two columns stop fitting, stack them. */
+@media (max-width: 820px) {
+  [style*="minmax(380px"] {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+}
+
+/* ---- 2. Card grids --------------------------------------------------------
+ * One card per row once two no longer fit comfortably. */
+@media (max-width: 600px) {
+  [style*="minmax(300px"],
+  [style*="minmax(260px"],
+  [style*="minmax(240px"],
+  [style*="minmax(220px"],
+  [style*="minmax(200px"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Logo/stat strips: keep two per row instead of forcing three. */
+@media (max-width: 420px) {
+  [style*="minmax(150px"],
+  [style*="minmax(140px"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+/* ---- 3. Section rhythm ----------------------------------------------------
+ * Desktop vertical padding is far too tall on a phone; the side gutter drops
+ * from 24px to 20px to buy back horizontal room. */
+@media (max-width: 640px) {
+  [style*="padding:96px 24px"] { padding: 56px 20px !important; }
+  [style*="padding:80px 24px"] { padding: 48px 20px !important; }
+  [style*="padding:64px 24px"] { padding: 40px 20px !important; }
+  [style*="padding:40px 24px"] { padding: 28px 20px !important; }
+}
+
+/* ---- 4. Comparison table --------------------------------------------------
+ * Five fr columns are unreadable on a phone, so each row becomes a stacked
+ * card and the column titles move into the rows via data-l labels. */
+@media (max-width: 720px) {
+  .cmp-head { display: none !important; }
+
+  .cmp-row {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+    padding: 18px 20px !important;
+  }
+
+  .cmp-row [data-l]::before {
+    content: attr(data-l);
+    display: block;
+    margin-bottom: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.85px;
+    color: #7c7c7c;
+  }
+
+  .cmp-row .cmp-name {
+    font-size: 18px;
+    letter-spacing: -0.42px;
+    margin-bottom: 2px;
+  }
+}
+
+/* ---- 5. Long values -------------------------------------------------------
+ * A long unbroken string (a URL, an email) must wrap rather than push the
+ * layout sideways. Deliberately not using `overflow-x: hidden` on the body:
+ * that would hide real overflow instead of fixing it. */
+@media (max-width: 640px) {
+  p, h1, h2, h3, a { overflow-wrap: break-word; }
+}
+
+/* ---- 6. Navigation --------------------------------------------------------
+ * The `flex:1` spacer pushed "Book a call" onto a third line on phones.
+ * Drop the spacer and send the pills to their own row, so the bar is:
+ *   [ logo ................ Book a call ]
+ *   [ Solutions  Market  AI & Automation ] */
+@media (max-width: 640px) {
+  .site-nav__inner {
+    gap: 12px !important;
+    justify-content: space-between;
+    padding: 12px 20px !important;
+  }
+  .site-nav__spacer { display: none !important; }
+  .site-nav__links {
+    order: 3;
+    flex-basis: 100%;
+    gap: 2px !important;
+  }
+}
+
+/* ---- 7. Logo strip --------------------------------------------------------
+ * The label claimed 260px and left the `flex:1` logo row too narrow, so each
+ * name wrapped onto its own line. Give both full width and tighten the gap. */
+@media (max-width: 720px) {
+  .logo-strip { gap: 16px !important; }
+  .logo-strip__label { max-width: none !important; flex: 1 1 100%; }
+  .logo-strip__items {
+    flex: 1 1 100% !important;
+    gap: 12px 20px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ---- 8. Anchor targets ----------------------------------------------------
+ * The header is sticky, so jumping to #services or #tools would land with the
+ * heading hidden underneath it. */
+section[id] { scroll-margin-top: 88px; }
+@media (max-width: 640px) { section[id] { scroll-margin-top: 124px; } }
