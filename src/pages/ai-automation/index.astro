@@ -1,0 +1,176 @@
+---
+import SiteLayout from '@layouts/SiteLayout.astro';
+import { BOOK_A_CALL_URL } from '@data/site';
+---
+
+<SiteLayout
+  title="AI & marketing automation — wisdo"
+  description="Workflows, lead scoring and predictive budget allocation wired into the tools you already pay for."
+  active="ai-automation"
+>
+
+<section id="top" style="background-color:#0a0a0a; background-image:linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px); background-size:48px 48px; border-bottom:1px solid #1e1e1e;">
+    <div style="max-width:1200px; margin:0 auto; padding:96px 24px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Practice · AI &amp; automation</div>
+      <h1 style="margin:24px 0 0; font-size:clamp(38px,5.2vw,64px); line-height:1.13; letter-spacing:-2.3px; font-weight:500; max-width:900px; text-wrap:balance;">Put the repetitive half of marketing on autopilot.</h1>
+      <p style="margin:24px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:560px;">Lead routing, nurturing, reporting and budget shifts are decisions with rules behind them. We encode those rules — and where judgment is needed, we hand it to models that learn from your own data, with a person reviewing the output.</p>
+      <div style="display:flex; gap:8px; margin-top:32px; flex-wrap:wrap;">
+        <a href={BOOK_A_CALL_URL} style="background:#ffffff; color:#0a0a0a; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h6">Book an automation audit</a>
+        <a href="#how" style="border:1px solid #454545; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h7">See how it works</a>
+      </div>
+    </div>
+  </section>
+
+  <section style="border-bottom:1px solid #1e1e1e;">
+    <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">The problem</div>
+      <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500; max-width:720px;">Your team is doing work a system should be doing.</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:40px;">
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px;">Leads go cold</div>
+          <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">A form fills at 9pm and someone answers on Thursday. Response time is the single biggest lever most teams ignore.</p>
+        </div>
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px;">Reporting eats the week</div>
+          <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Numbers are copied between platforms by hand, then argued about because no two sources agree.</p>
+        </div>
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px;">Budget moves too slowly</div>
+          <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Spend gets rebalanced once a month, long after the signal that should have triggered it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" style="border-bottom:1px solid #1e1e1e;">
+    <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">What we build</div>
+      <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500; max-width:720px;">Four layers, built in order.</h2>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:64px; margin-top:40px; align-items:start;">
+        <div style="display:flex; flex-direction:column; gap:1px; background:#1e1e1e; border:1px solid #1e1e1e; border-radius:8px; overflow:hidden;">
+          <div style="background:#141414; padding:24px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">LAYER 01 — DATA</div>
+            <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:8px;">Clean, connected sources</div>
+            <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">UTM conventions, server-side conversions, deduplicated contacts, and a CRM that reflects what actually happened.</p>
+          </div>
+          <div style="background:#141414; padding:24px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">LAYER 02 — WORKFLOWS</div>
+            <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:8px;">Rules that never sleep</div>
+            <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Instant routing, sequenced follow-up, lifecycle transitions and internal alerts, built in HubSpot and connected tools.</p>
+          </div>
+          <div style="background:#141414; padding:24px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">LAYER 03 — MODELS</div>
+            <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:8px;">Scoring and forecasting</div>
+            <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Lead scores trained on your closed-won history, plus spend recommendations that respond to pipeline, not clicks.</p>
+          </div>
+          <div style="background:#141414; padding:24px;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">LAYER 04 — CONTENT</div>
+            <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:8px;">Assisted production</div>
+            <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Ad variants, landing copy and email drafts generated against your brief and voice, then edited by a human before launch.</p>
+          </div>
+        </div>
+
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="display:flex; align-items:center; gap:8px; padding-bottom:16px; border-bottom:1px solid #1e1e1e;">
+            <span style="width:8px; height:8px; border-radius:2px; background:#6798ff;"></span>
+            <span style="font-size:14px; font-weight:500; letter-spacing:-0.25px;">Lead routing workflow</span>
+            <span style="flex:1;"></span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#a7a7a7; border:1px solid #313131; border-radius:4px; padding:3px 8px;">LIVE</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px; padding-top:16px;">
+            <div style="border:1px solid #313131; border-radius:8px; padding:12px 16px; font-size:14px; letter-spacing:-0.25px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#a7a7a7;">TRIGGER</span><br />Form submitted — Demo request
+            </div>
+            <div style="padding-left:16px; color:#454545;">↓</div>
+            <div style="border:1px solid #313131; border-radius:8px; padding:12px 16px; font-size:14px; letter-spacing:-0.25px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#a7a7a7;">ENRICH</span><br />Company size, sector, prior sessions
+            </div>
+            <div style="padding-left:16px; color:#454545;">↓</div>
+            <div style="border:1px solid #6798ff; border-radius:8px; padding:12px 16px; font-size:14px; letter-spacing:-0.25px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#6798ff;">SCORE</span><br />Model returns 0.82 — high intent
+            </div>
+            <div style="padding-left:16px; color:#454545;">↓</div>
+            <div style="border:1px solid #313131; border-radius:8px; padding:12px 16px; font-size:14px; letter-spacing:-0.25px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#a7a7a7;">ROUTE</span><br />Assign to senior rep · WhatsApp within 5 min
+            </div>
+            <div style="padding-left:16px; color:#454545;">↓</div>
+            <div style="border:1px solid #313131; border-radius:8px; padding:12px 16px; font-size:14px; letter-spacing:-0.25px;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#a7a7a7;">LOG</span><br />Deal created · attribution written back
+            </div>
+          </div>
+          <div style="margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#7c7c7c;">EXAMPLE FLOW — YOURS WILL DIFFER</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background-color:#0a0a0a; background-image:linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px); background-size:48px 48px; border-bottom:1px solid #1e1e1e;">
+    <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
+      <div style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Engagement</div>
+        <h2 style="margin:32px auto 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500; max-width:720px;">From audit to running system in about eight weeks.</h2>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:40px;">
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">WEEK 1–2</div>
+          <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Audit</div>
+          <p style="margin:8px 0 0; font-size:14px; line-height:1.57; color:#a7a7a7;">Stack review, data quality check and a written map of every manual step worth removing.</p>
+        </div>
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">WEEK 3–4</div>
+          <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Foundations</div>
+          <p style="margin:8px 0 0; font-size:14px; line-height:1.57; color:#a7a7a7;">Tracking, integrations and CRM structure put in place so the rest has something solid to sit on.</p>
+        </div>
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">WEEK 5–6</div>
+          <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Build</div>
+          <p style="margin:8px 0 0; font-size:14px; line-height:1.57; color:#a7a7a7;">Workflows and scoring go live in stages, each one tested against real traffic before the next.</p>
+        </div>
+        <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">WEEK 7–8</div>
+          <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Handover</div>
+          <p style="margin:8px 0 0; font-size:14px; line-height:1.57; color:#a7a7a7;">Documentation, team training and a monthly review cadence — you own the system, we stay on call.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="border-bottom:1px solid #1e1e1e;">
+    <div style="max-width:1200px; margin:0 auto; padding:80px 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:64px;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Stack</div>
+        <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500;">We work inside your tools.</h2>
+        <p style="margin:16px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7;">No proprietary platform to rent. Everything we build lives in software you already own and can keep running without us.</p>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; align-content:start;">
+        <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">HUBSPOT</div>
+        <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">GOOGLE ADS</div>
+        <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">META ADS</div>
+        <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">GA4</div>
+        <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">MAKE</div>
+        <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">WHATSAPP API</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" style="background-color:#0a0a0a; background-image:linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px); background-size:48px 48px; border-bottom:1px solid #1e1e1e;">
+    <div style="max-width:1200px; margin:0 auto; padding:96px 24px; text-align:center;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Next step</div>
+      <h2 style="margin:32px auto 0; font-size:clamp(32px,4.4vw,56px); line-height:1.14; letter-spacing:-1.74px; font-weight:500; max-width:800px;">Start with the audit.</h2>
+      <p style="margin:16px auto 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:520px;">Bring us your stack and a month of data. You'll leave with a prioritized list of what to automate first, whether or not you work with us.</p>
+      <div style="display:flex; gap:8px; margin-top:32px; justify-content:center; flex-wrap:wrap;">
+        <a href={BOOK_A_CALL_URL} style="background:#ffffff; color:#0a0a0a; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h8">Book a call</a>
+        <a href="/" style="border:1px solid #454545; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h9">Back to overview</a>
+      </div>
+    </div>
+  </section>
+
+</SiteLayout>
+
+<style>
+  .h6:hover { background:#e6e6e6 !important; color:#0a0a0a !important }
+  .h7:hover { border-color:#7c7c7c !important }
+  .h8:hover { background:#e6e6e6 !important; color:#0a0a0a !important }
+  .h9:hover { border-color:#7c7c7c !important }
+</style>

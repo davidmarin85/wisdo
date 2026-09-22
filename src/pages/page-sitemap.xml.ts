@@ -12,8 +12,8 @@ interface SitemapEntry {
 // Static public pages — extend this list as the site grows
 const PAGES: SitemapEntry[] = [
   { url: `${SITE}/`, priority: 1.0, changefreq: 'weekly' },
-  { url: `${SITE}/about/`, priority: 0.8, changefreq: 'monthly' },
-  { url: `${SITE}/blog/`, priority: 0.9, changefreq: 'daily' },
+  { url: `${SITE}/ai-automation/`, priority: 0.9, changefreq: 'monthly' },
+  { url: `${SITE}/market/`, priority: 0.9, changefreq: 'weekly' },
 ];
 
 function toXmlEntry(entry: SitemapEntry): string {

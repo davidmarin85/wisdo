@@ -1,0 +1,50 @@
+---
+import { BOOK_A_CALL_URL } from '@data/site';
+
+interface Props {
+  /** Which nav pill renders as active */
+  active?: 'solutions' | 'ai-automation' | 'market' | null;
+  /** Where the logo points */
+  logoHref?: string;
+}
+
+const { active = null, logoHref = '/' } = Astro.props;
+
+const pill = 'padding:8px 14px; border-radius:9999px; font-size:14px; font-weight:500;';
+const pillActive = pill + ' background:#141414;';
+const links = [
+  { id: 'solutions',     label: 'Solutions',       href: '/#services' },
+  { id: 'market',        label: 'Market',          href: '/market/' },
+  { id: 'ai-automation', label: 'AI & Automation', href: '/ai-automation/' },
+] as const;
+---
+
+<div style="position:sticky; top:0; z-index:20; background:rgba(10,10,10,0.88); backdrop-filter:blur(12px); border-bottom:1px solid #1e1e1e;">
+  <div style="max-width:1200px; margin:0 auto; padding:16px 24px; display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+    <a href={logoHref} style="display:flex; align-items:center; gap:10px; font-size:16px; font-weight:600; letter-spacing:-0.25px;" aria-label="wisdo — home">
+      <div style="width:9px; height:9px; border-radius:50%; background:#13C28A; box-shadow:0 0 12px #13C28A;"></div>
+      <span style="font:700 21px 'Space Grotesk',sans-serif; letter-spacing:-0.42px; color:#ffffff;">wisdo</span>
+    </a>
+    <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
+      {links.map(l => (
+        <a
+          href={l.href}
+          style={l.id === active ? pillActive : pill}
+          class={l.id === active ? undefined : 'h1'}
+          aria-current={l.id === active ? 'page' : undefined}
+        >
+          {l.label}
+        </a>
+      ))}
+    </div>
+    <div style="flex:1;"></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <a href={BOOK_A_CALL_URL} style="background:#ffffff; color:#0a0a0a; padding:8px 16px; border-radius:8px; font-size:14px; font-weight:500;" class="h5">Book a call</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .h1:hover { background: #141414 !important; }
+  .h5:hover { background: #e6e6e6 !important; color: #0a0a0a !important; }
+</style>

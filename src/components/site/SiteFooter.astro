@@ -1,0 +1,43 @@
+---
+import { BOOK_A_CALL_URL } from '@data/site';
+
+const colHead = "font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase;";
+const col = 'display:flex; flex-direction:column; gap:12px;';
+const link = 'font-size:14px;';
+---
+
+<footer style="max-width:1200px; margin:0 auto; padding:64px 24px;">
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px;">
+    <div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:16px; font-weight:600; letter-spacing:-0.25px;">
+        <div style="width:9px; height:9px; border-radius:50%; background:#13C28A;"></div>
+        <span style="font:700 20px 'Space Grotesk',sans-serif; letter-spacing:-0.42px; color:#ffffff;">wisdo</span>
+      </div>
+      <p style="margin:16px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7; max-width:280px;">
+        Digital marketing and sales consultancy. Certified HubSpot, Google and Meta partners.
+      </p>
+      <div style="margin-top:16px; font-size:14px; color:#a7a7a7;">+(34) 657 05 4441</div>
+    </div>
+
+    <div style={col}>
+      <div style={colHead}>Explore</div>
+      <a href="/#services" style={link}>Solutions</a>
+      <a href="/market/" style={link}>wisdo Market</a>
+      <a href="/ai-automation/" style={link}>AI &amp; Automation</a>
+      <a href="/#method" style={link}>How it works</a>
+    </div>
+
+    <div style={col}>
+      <div style={colHead}>Contact</div>
+      <a href={BOOK_A_CALL_URL} style={link}>Book a call</a>
+      <a href="mailto:davidmarin@wisdglobal.com" style={link}>Email</a>
+      <a href="https://www.linkedin.com/company/godigii" style={link}>LinkedIn</a>
+      <a href="https://www.instagram.com/wisdglobal" style={link}>Instagram</a>
+    </div>
+  </div>
+
+  <div style="margin-top:64px; padding-top:24px; border-top:1px solid #1e1e1e; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-size:14px; color:#7c7c7c;">
+    <span>© 2026 WISD Global. All rights reserved.</span>
+    <span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px;">MADRID · LATAM</span>
+  </div>
+</footer>

@@ -4,7 +4,6 @@ const CANONICAL_HOST = import.meta.env.CANONICAL_HOST ?? 'www.wisdo.io';
 
 const PRIVATE_PATHS = [
   '/dashboard/',
-  '/tools/',
   '/api/',
   '/login/',
 ];

@@ -5,7 +5,6 @@ const SITE = 'https://www.wisdo.io';
 export const GET: APIRoute = () => {
   const sitemaps = [
     `${SITE}/page-sitemap.xml`,
-    `${SITE}/post-sitemap.xml`,
   ];
 
   const urls = sitemaps
