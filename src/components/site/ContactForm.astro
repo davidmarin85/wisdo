@@ -1,0 +1,204 @@
+---
+// Formulario de contacto propio que crea/actualiza el contacto en HubSpot
+// (ver src/lib/hubspot.ts). HubSpot es el ÚNICO destino, así que si el envío
+// falla se enseña un error y se puede reintentar.
+//
+// Campos que el formulario de HubSpot tiene que declarar (y estar publicado):
+//   visibles: email, firstname, company, message
+//   ocultos:  lead_utm_source, lead_utm_medium, lead_utm_campaign, lead_utm_content,
+//             lead_utm_term, lead_landing_url, lead_referrer_url
+---
+
+<form class="cf" data-contact-form novalidate>
+  <div class="cf-row">
+    <label class="cf-field">
+      <span class="cf-label">Name</span>
+      <input class="cf-input" name="firstname" type="text" autocomplete="given-name" maxlength="100" />
+    </label>
+    <label class="cf-field">
+      <span class="cf-label">Work email *</span>
+      <input class="cf-input" name="email" type="email" autocomplete="email" required maxlength="254" />
+    </label>
+  </div>
+  <label class="cf-field">
+    <span class="cf-label">Company</span>
+    <input class="cf-input" name="company" type="text" autocomplete="organization" maxlength="150" />
+  </label>
+  <label class="cf-field">
+    <span class="cf-label">How can we help?</span>
+    <textarea class="cf-input" name="message" rows="4" maxlength="2000"></textarea>
+  </label>
+
+  <!-- Honeypot: invisible para personas, los bots lo rellenan. -->
+  <div class="cf-hp" aria-hidden="true">
+    <label>Website <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <div class="cf-actions">
+    <button class="cf-submit" type="submit">Send message</button>
+    <p class="cf-note">We reply within one business day.</p>
+  </div>
+  <p class="cf-error" role="alert" hidden></p>
+</form>
+<p class="cf-success" role="status" hidden>Thanks, we've got it. We'll get back to you within one business day.</p>
+
+<script>
+  import { getUtmFields, submitToHubSpot } from '@lib/hubspot';
+
+  // Formato razonable, no RFC completo. HubSpot descarta los dominios inexistentes
+  // devolviendo 200 igualmente, así que esto solo filtra erratas obvias.
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  const track = (name: string, extra?: Record<string, unknown>) => window.dataLayer?.push({ event: name, ...extra });
+
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach((form) => {
+    const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const errorBox = form.querySelector<HTMLElement>('.cf-error')!;
+    const successBox = form.nextElementSibling as HTMLElement;
+
+    const showError = (msg: string) => {
+      errorBox.textContent = msg;
+      errorBox.hidden = false;
+    };
+    const showSuccess = () => {
+      form.hidden = true;
+      successBox.hidden = false;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (button.disabled) return; // doble clic o Enter repetido
+      errorBox.hidden = true;
+      const data = new FormData(form);
+      const get = (k: string) => String(data.get(k) ?? '').trim();
+
+      // Honeypot relleno: fingir éxito y no mandar nada.
+      if (get('website') !== '') {
+        showSuccess();
+        return;
+      }
+
+      // novalidate apaga la validación del navegador; la hace este código.
+      const email = get('email');
+      if (!EMAIL_RE.test(email)) {
+        showError('Please check your email address.');
+        form.querySelector<HTMLInputElement>('input[name="email"]')?.focus();
+        return;
+      }
+
+      button.disabled = true;
+      const label = button.textContent;
+      button.textContent = 'Sending…';
+
+      const ok = await submitToHubSpot(
+        {
+          email,
+          firstname: get('firstname'),
+          company: get('company'),
+          message: get('message'),
+          ...getUtmFields(),
+        },
+        { onEvent: track }
+      );
+
+      if (ok) {
+        showSuccess();
+        return;
+      }
+      button.disabled = false;
+      button.textContent = label;
+      showError("We couldn't send your message. Please try again or book a call.");
+    });
+  });
+</script>
+
+<style>
+  /* display:grid anularía el atributo hidden */
+  [hidden] { display: none !important; }
+  .cf {
+    display: grid;
+    gap: 16px;
+    max-width: 560px;
+    margin: 48px auto 0;
+    text-align: left;
+  }
+  .cf-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 560px) {
+    .cf-row { grid-template-columns: 1fr; }
+  }
+  .cf-field {
+    display: grid;
+    gap: 8px;
+  }
+  .cf-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.85px;
+    text-transform: uppercase;
+    color: #a7a7a7;
+  }
+  .cf-input {
+    width: 100%;
+    background: #0f0f0f;
+    border: 1px solid #313131;
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 16px; /* 16px evita el zoom automático de iOS al enfocar */
+    resize: vertical;
+  }
+  .cf-input:focus {
+    outline: none;
+    border-color: #6798ff;
+  }
+  .cf-hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .cf-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .cf-submit {
+    background: #ffffff;
+    color: #0a0a0a;
+    border: 0;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .cf-submit:hover { background: #e6e6e6; }
+  .cf-submit:disabled { opacity: 0.6; cursor: default; }
+  .cf-note {
+    margin: 0;
+    font-size: 14px;
+    color: #7c7c7c;
+  }
+  .cf-error {
+    margin: 0;
+    font-size: 14px;
+    color: #ff7a7a;
+  }
+  .cf-success {
+    max-width: 560px;
+    margin: 48px auto 0;
+    padding: 20px;
+    border: 1px solid #313131;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #ffffff;
+  }
+</style>

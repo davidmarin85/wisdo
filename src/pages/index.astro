@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '@layouts/SiteLayout.astro';
 import { BOOK_A_CALL_URL } from '@data/site';
+import ContactForm from '@components/site/ContactForm.astro';
 ---
 
 <SiteLayout
@@ -240,6 +241,7 @@ import { BOOK_A_CALL_URL } from '@data/site';
         <a href={BOOK_A_CALL_URL} style="background:#ffffff; color:#0a0a0a; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h12">Book a call</a>
         <a href="mailto:davidmarin@wisdglobal.com" style="border:1px solid #454545; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h13">Email us instead</a>
       </div>
+      <ContactForm />
     </div>
   </section>
 
