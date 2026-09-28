@@ -3,8 +3,9 @@
 // (ver src/lib/hubspot.ts). HubSpot es el ÚNICO destino, así que si el envío
 // falla se enseña un error y se puede reintentar.
 //
-// Campos que el formulario de HubSpot tiene que declarar (y estar publicado):
-//   visibles: email, firstname, company, message
+// Campos que el formulario de HubSpot "New contact form Astro" tiene que declarar
+// (y estar PUBLICADO), o se descartan en silencio:
+//   visibles: firstname, lastname, email, phone, company, message
 //   ocultos:  lead_utm_source, lead_utm_medium, lead_utm_campaign, lead_utm_content,
 //             lead_utm_term, lead_landing_url, lead_referrer_url
 ---
@@ -12,12 +13,22 @@
 <form class="cf" data-contact-form novalidate>
   <div class="cf-row">
     <label class="cf-field">
-      <span class="cf-label">Name</span>
+      <span class="cf-label">First name</span>
       <input class="cf-input" name="firstname" type="text" autocomplete="given-name" maxlength="100" />
     </label>
     <label class="cf-field">
+      <span class="cf-label">Last name</span>
+      <input class="cf-input" name="lastname" type="text" autocomplete="family-name" maxlength="100" />
+    </label>
+  </div>
+  <div class="cf-row">
+    <label class="cf-field">
       <span class="cf-label">Work email *</span>
       <input class="cf-input" name="email" type="email" autocomplete="email" required maxlength="254" />
+    </label>
+    <label class="cf-field">
+      <span class="cf-label">Phone</span>
+      <input class="cf-input" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="+34 600 000 000" />
     </label>
   </div>
   <label class="cf-field">
@@ -94,6 +105,8 @@
         {
           email,
           firstname: get('firstname'),
+          lastname: get('lastname'),
+          phone: get('phone'),
           company: get('company'),
           message: get('message'),
           ...getUtmFields(),

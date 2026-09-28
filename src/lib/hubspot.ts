@@ -6,8 +6,9 @@
 // Cada nombre de campo de aquí tiene que existir como propiedad de contacto y
 // estar en el formulario (los que pone el código, como las UTMs, ocultos).
 
-const PORTAL_ID = import.meta.env.PUBLIC_HUBSPOT_PORTAL_ID;
-const FORM_GUID = import.meta.env.PUBLIC_HUBSPOT_FORM_GUID;
+// Públicos por diseño: se ven en cualquier inspección del navegador. Portal na1.
+const PORTAL_ID = '7668836';
+const FORM_GUID = 'fb56bb45-ef50-4062-b2b9-ed18b37cc4c4'; // "New contact form Astro"
 
 export type Fields = Record<string, string | number | boolean | undefined | null>;
 
@@ -68,12 +69,6 @@ export function getUtmFields(): Fields {
 /** Nunca lanza: devuelve true/false y reporta por onEvent. */
 export async function submitToHubSpot(fields: Fields, options: { onEvent?: OnEvent } = {}): Promise<boolean> {
   const { onEvent } = options;
-
-  if (!PORTAL_ID || !FORM_GUID) {
-    console.error('[hubspot] Faltan PUBLIC_HUBSPOT_PORTAL_ID o PUBLIC_HUBSPOT_FORM_GUID');
-    onEvent?.('hubspot_error', { status: 'not_configured' });
-    return false;
-  }
 
   const body = {
     // Sin vacíos: un "" en una enumeración tumba el envío entero.
