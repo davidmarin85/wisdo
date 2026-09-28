@@ -1,16 +1,24 @@
 ---
-// Formulario de contacto propio que crea/actualiza el contacto en HubSpot
-// (ver src/lib/hubspot.ts). HubSpot es el ÚNICO destino, así que si el envío
-// falla se enseña un error y se puede reintentar.
+// Formulario de contacto propio que crea/actualiza el contacto en HubSpot.
+// El navegador envía a /api/contact/ (mismo dominio) y el servidor lo reenvía a
+// HubSpot: así los bloqueadores de anuncios no lo cortan. HubSpot es el ÚNICO
+// destino, así que si el envío falla se enseña un error y se puede reintentar.
+//
+// Sin JavaScript (o si el script no carga) el formulario hace un POST normal al
+// mismo endpoint, que vuelve aquí con ?contact=sent o ?contact=error.
 //
 // Campos que el formulario de HubSpot "New contact form Astro" tiene que declarar
 // (y estar PUBLICADO), o se descartan en silencio:
 //   visibles: firstname, lastname, email, phone, company, message
 //   ocultos:  lead_utm_source, lead_utm_medium, lead_utm_campaign, lead_utm_content,
 //             lead_utm_term, lead_landing_url, lead_referrer_url
+const status = Astro.url.searchParams.get('contact');
+const sent = status === 'sent';
+const failed = status === 'error';
 ---
 
-<form class="cf" data-contact-form novalidate>
+<form class="cf" data-contact-form method="post" action="/api/contact/" novalidate hidden={sent}>
+  <input type="hidden" name="pageUri" value={Astro.url.href} />
   <div class="cf-row">
     <label class="cf-field">
       <span class="cf-label">First name</span>
@@ -49,12 +57,12 @@
     <button class="cf-submit" type="submit">Send message</button>
     <p class="cf-note">We reply within one business day.</p>
   </div>
-  <p class="cf-error" role="alert" hidden></p>
+  <p class="cf-error" role="alert" hidden={!failed}>{failed && "We couldn't send your message. Please try again or book a call."}</p>
 </form>
-<p class="cf-success" role="status" hidden>Thanks, we've got it. We'll get back to you within one business day.</p>
+<p class="cf-success" role="status" hidden={!sent}>Thanks, we've got it. We'll get back to you within one business day.</p>
 
 <script>
-  import { getUtmFields, submitToHubSpot } from '@lib/hubspot';
+  import { getUtmFields } from '@lib/lead-utm';
 
   // Formato razonable, no RFC completo. HubSpot descarta los dominios inexistentes
   // devolviendo 200 igualmente, así que esto solo filtra erratas obvias.
@@ -101,18 +109,28 @@
       const label = button.textContent;
       button.textContent = 'Sending…';
 
-      const ok = await submitToHubSpot(
-        {
-          email,
-          firstname: get('firstname'),
-          lastname: get('lastname'),
-          phone: get('phone'),
-          company: get('company'),
-          message: get('message'),
-          ...getUtmFields(),
-        },
-        { onEvent: track }
-      );
+      let ok = false;
+      try {
+        const res = await fetch('/api/contact/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            firstname: get('firstname'),
+            lastname: get('lastname'),
+            phone: get('phone'),
+            company: get('company'),
+            message: get('message'),
+            ...getUtmFields(),
+            pageUri: window.location.href,
+            pageName: document.title,
+          }),
+        });
+        ok = res.ok;
+      } catch {
+        ok = false;
+      }
+      track(ok ? 'contact_submit' : 'contact_error');
 
       if (ok) {
         showSuccess();
