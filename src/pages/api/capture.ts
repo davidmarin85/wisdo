@@ -24,6 +24,8 @@ interface LeadRow {
   tipo_negocio: string | null;
   etapa: string | null;
   answers_raw: QuizAnswers | null;
+  website_url: string | null;
+  website_profile: { resumen?: string; cliente_ideal?: string } | null;
 }
 
 function jsonResponse(payload: Record<string, unknown>, status = 200): Response {
@@ -51,7 +53,7 @@ export const POST: APIRoute = async ({ request }) => {
   // — 1. Recuperar el lead —
   const { data: lead, error: fetchError } = await supabase
     .from('leads')
-    .select('id, email, email_captured_at, problema_raiz, situacion_actual, tipo_negocio, etapa, answers_raw')
+    .select('id, email, email_captured_at, problema_raiz, situacion_actual, tipo_negocio, etapa, answers_raw, website_url, website_profile')
     .eq('id', id)
     .single<LeadRow>();
 
@@ -117,7 +119,7 @@ DATOS DEL USUARIO:
 - Cómo lo resuelve hoy: ${lead.situacion_actual ?? 'no especificado'}
 - Tipo de negocio: ${lead.tipo_negocio ?? 'no especificado'}
 - Etapa: ${lead.etapa ?? 'no especificado'}
-- Arquetipo asignado: ${archetype.name} (${archetype.tagline})
+${lead.website_profile?.resumen ? `- Su negocio (según su web ${lead.website_url}): ${lead.website_profile.resumen} Cliente ideal: ${lead.website_profile.cliente_ideal ?? 'no especificado'}\n` : ''}- Arquetipo asignado: ${archetype.name} (${archetype.tagline})
 
 STACK RECOMENDADO — "${stack.name}" (${stack.cost}):
 ${toolList}
