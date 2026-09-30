@@ -142,6 +142,7 @@ export function buildDiagnosisEmailHtml(p: DiagnosisEmailParams): string {
 
         <tr>
           <td style="padding:24px 4px 0;font-size:12px;line-height:1.6;color:${C.faint};">
+            Algunos enlaces de este email son de afiliado: si te das de alta a través de ellos podemos recibir una comisión, sin coste extra para ti.<br><br>
             Recibes este email porque pediste un diagnóstico en wisdo.io. Guárdalo: tu diagnóstico está siempre en el enlace de arriba.
           </td>
         </tr>
@@ -172,7 +173,9 @@ export function buildDiagnosisEmailText(p: DiagnosisEmailParams): string {
     '',
     `Ver tu diagnóstico completo: ${p.resultUrl}`,
     '',
-    `¿Te lo montamos nosotros? Reserva una llamada: ${BOOK_A_CALL_URL}`
+    `¿Te lo montamos nosotros? Reserva una llamada: ${BOOK_A_CALL_URL}`,
+    '',
+    'Algunos enlaces de este email son de afiliado: si te das de alta a través de ellos podemos recibir una comisión, sin coste extra para ti.'
   );
   return lines.join('\n');
 }
