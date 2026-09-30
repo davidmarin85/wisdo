@@ -111,7 +111,7 @@ export const tools: Tool[] = [
     mono: 'L',
     color: '#1E73FF',
     cta: 'View Lemlist',
-    externalUrl: 'https://market.wisdo.io/product/lemlist-potencia-tus-campanas-de-email-con-personalizacion-avanzada/',
+    externalUrl: 'https://get.lemlist.com/22o5s4s396mz',
     featured: true,
   },
   {
@@ -131,7 +131,7 @@ export const tools: Tool[] = [
     mono: 'Lu',
     color: '#FF6B2C',
     cta: 'View Lusha',
-    externalUrl: 'https://market.wisdo.io/product/lusha-datos-b2b-precisos-para-impulsar-tus-ventas/',
+    externalUrl: 'https://partnerstack.lusha.com/ytoxkheu0feb',
     featured: false,
   },
   {
@@ -151,7 +151,7 @@ export const tools: Tool[] = [
     mono: 'M',
     color: '#00B36B',
     cta: 'View ManyChat',
-    externalUrl: 'https://market.wisdo.io/product/manychat-revoluciona-tu-marketing-con-chatbots-inteligentes/',
+    externalUrl: 'https://manychat.partnerlinks.io/4p9bnpg0tw4o',
     featured: true,
   },
 ];
