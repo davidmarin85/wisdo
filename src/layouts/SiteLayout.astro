@@ -12,6 +12,7 @@ interface Props {
   ogImage?: string;
   /** Which nav pill renders as active */
   active?: 'solutions' | 'ai-automation' | 'market' | null;
+  lang?: string;
 }
 
 const {
@@ -21,11 +22,12 @@ const {
   canonical,
   ogImage,
   active = null,
+  lang = 'en',
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

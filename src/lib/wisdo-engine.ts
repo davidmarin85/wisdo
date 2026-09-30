@@ -25,58 +25,60 @@ export interface QuizQuestion {
   options: QuizOption[];
 }
 
+// Textos en inglés (la web está en inglés). Los `value` son los códigos que
+// se guardan en Supabase y validan los CHECK de la tabla leads: no traducir.
 export const QUESTIONS: QuizQuestion[] = [
   {
     id: 'problema_raiz',
-    question: '¿Qué es lo que más te está frenando ahora mismo?',
-    sub: 'Vamos directo a lo que duele. Elige lo que más te suene.',
+    question: "What's holding your sales back the most right now?",
+    sub: 'Pick the one that sounds most like you.',
     options: [
-      { value: 'no_llegan_leads', icon: '🎯', label: 'No llegan suficientes clientes potenciales', desc: 'Tienes buena oferta pero pocos prospectos con quien hablar' },
-      { value: 'prospeccion_manual', icon: '🐌', label: 'Pierdo horas buscando contactos a mano', desc: 'Copias datos de LinkedIn, buscas emails uno a uno, no escala' },
-      { value: 'leads_no_cierran', icon: '🤝', label: 'Hablo con gente pero no cierro', desc: 'Los prospectos llegan pero se enfrían o desaparecen' },
-      { value: 'sin_seguimiento', icon: '📉', label: 'Se me caen los seguimientos', desc: 'No tienes un sistema para dar continuidad y se pierden ventas' },
+      { value: 'no_llegan_leads', icon: '🎯', label: 'Not enough leads coming in', desc: 'Your offer is good, but you have too few prospects to talk to' },
+      { value: 'prospeccion_manual', icon: '🐌', label: 'I spend hours finding contacts by hand', desc: 'Copying data from LinkedIn and hunting emails one by one' },
+      { value: 'leads_no_cierran', icon: '🤝', label: 'I talk to prospects but don’t close', desc: 'Leads come in, then go cold or disappear' },
+      { value: 'sin_seguimiento', icon: '📉', label: 'Follow-ups slip through the cracks', desc: 'No system to keep conversations going, so deals get lost' },
     ],
   },
   {
     id: 'situacion_actual',
-    question: '¿Cómo lo estás resolviendo hoy?',
-    sub: 'Esto nos dice si te falta una herramienta o si tienes una mal usada.',
+    question: 'How are you handling it today?',
+    sub: 'This tells us whether you’re missing a tool or underusing one.',
     options: [
-      { value: 'todo_manual', icon: '✍️', label: 'Todo a mano / hojas de cálculo', desc: 'Sin herramientas dedicadas todavía' },
-      { value: 'herramientas_sueltas', icon: '🧩', label: 'Tengo alguna herramienta suelta', desc: 'Pero no están conectadas ni las aprovecho del todo' },
-      { value: 'equipo_externo', icon: '👥', label: 'Lo delego a alguien / agencia', desc: 'Pagas por ello pero no tienes control ni visibilidad' },
-      { value: 'nada', icon: '🚫', label: 'No lo estoy resolviendo', desc: 'Sabes que es un problema pero aún no le has metido mano' },
+      { value: 'todo_manual', icon: '✍️', label: 'Manually / spreadsheets', desc: 'No dedicated tools yet' },
+      { value: 'herramientas_sueltas', icon: '🧩', label: 'A few separate tools', desc: 'Not connected, and not fully used' },
+      { value: 'equipo_externo', icon: '👥', label: 'Someone else does it / an agency', desc: 'You pay for it but have little control or visibility' },
+      { value: 'nada', icon: '🚫', label: 'Not handling it yet', desc: 'You know it’s a problem but haven’t tackled it' },
     ],
   },
   {
     id: 'tipo_negocio',
-    question: '¿Qué tipo de negocio tienes?',
-    sub: 'Para ajustar el stack a tu realidad.',
+    question: 'What kind of business do you run?',
+    sub: 'So the stack fits how you actually sell.',
     options: [
-      { value: 'agencia', icon: '🏢', label: 'Agencia', desc: 'Gestionas clientes y campañas' },
-      { value: 'saas', icon: '☁️', label: 'SaaS', desc: 'Vendes software por suscripción' },
-      { value: 'consultor', icon: '🧠', label: 'Consultor / Freelance', desc: 'Vendes tu expertise' },
-      { value: 'ecommerce', icon: '🛍️', label: 'Ecommerce', desc: 'Vendes productos online' },
+      { value: 'agencia', icon: '🏢', label: 'Agency', desc: 'You manage clients and campaigns' },
+      { value: 'saas', icon: '☁️', label: 'SaaS', desc: 'You sell software on subscription' },
+      { value: 'consultor', icon: '🧠', label: 'Consultant / Freelancer', desc: 'You sell your expertise' },
+      { value: 'ecommerce', icon: '🛍️', label: 'Ecommerce', desc: 'You sell products online' },
     ],
   },
   {
     id: 'etapa',
-    question: '¿En qué momento está el negocio?',
-    sub: 'El stack correcto para validar no es el mismo que para escalar.',
+    question: 'What stage is the business at?',
+    sub: 'The right stack to validate is not the right stack to scale.',
     options: [
-      { value: 'validando', icon: '🔬', label: 'Validando', desc: 'Buscando los primeros clientes' },
-      { value: 'creciendo', icon: '📈', label: 'Creciendo', desc: 'Ya vendes, quieres más volumen' },
-      { value: 'escalando', icon: '🚀', label: 'Escalando', desc: 'Optimizando una máquina que ya funciona' },
+      { value: 'validando', icon: '🔬', label: 'Validating', desc: 'Looking for your first customers' },
+      { value: 'creciendo', icon: '📈', label: 'Growing', desc: 'Already selling, want more volume' },
+      { value: 'escalando', icon: '🚀', label: 'Scaling', desc: 'Optimizing a machine that already works' },
     ],
   },
   {
     id: 'presupuesto',
-    question: '¿Cuánto puedes invertir en herramientas al mes?',
-    sub: 'Te damos el mejor stack posible para tu rango. Sin sorpresas.',
+    question: 'How much can you invest in tools each month?',
+    sub: 'We recommend the best stack for your range.',
     options: [
-      { value: '0-100', icon: '🌱', label: 'Hasta 100€', desc: 'Bootstrapped, máximo impacto por euro' },
-      { value: '100-500', icon: '📊', label: '100 – 500€', desc: 'Stack sólido y completo' },
-      { value: '500+', icon: '👑', label: '500€ o más', desc: 'Sin restricciones, lo mejor disponible' },
+      { value: '0-100', icon: '🌱', label: 'Up to €100', desc: 'Bootstrapped: maximum impact per euro' },
+      { value: '100-500', icon: '📊', label: '€100 – €500', desc: 'A solid, complete stack' },
+      { value: '500+', icon: '👑', label: '€500 or more', desc: 'The best available, no constraints' },
     ],
   },
 ];
@@ -88,10 +90,10 @@ export interface Archetype {
 }
 
 export const ARCHETYPES: Record<string, Archetype> = {
-  agencia: { name: 'The Ruler', emoji: '👑', tagline: 'Control, proceso y resultados medibles.' },
-  saas: { name: 'The Magician', emoji: '✨', tagline: 'Automatización e inteligencia a escala.' },
-  consultor: { name: 'The Sage', emoji: '🧭', tagline: 'Autoridad, confianza y relaciones profundas.' },
-  ecommerce: { name: 'The Hero', emoji: '⚡', tagline: 'Velocidad, volumen y conversión directa.' },
+  agencia: { name: 'The Ruler', emoji: '👑', tagline: 'Control, process and measurable results.' },
+  saas: { name: 'The Magician', emoji: '✨', tagline: 'Automation and intelligence at scale.' },
+  consultor: { name: 'The Sage', emoji: '🧭', tagline: 'Authority, trust and deep relationships.' },
+  ecommerce: { name: 'The Hero', emoji: '⚡', tagline: 'Speed, volume and direct conversion.' },
 };
 
 export interface StackTool {
@@ -109,124 +111,130 @@ export interface Stack {
   alt: string | null;
 }
 
+// Herramientas con programa de afiliado activo en PartnerStack (ver
+// src/data/partner-links.ts), elegidas según lo que necesita cada problema.
+// Sin programa, solo PandaDoc (propuestas y firma) y Synthflow AI (agente de
+// voz): no hay alternativa en PartnerStack para esas necesidades.
+// `cost` es una estimación por tramo de presupuesto; revisar con precios reales.
 export const STACKS: Record<string, Stack> = {
-  // — NO LLEGAN LEADS —
+  // — NOT ENOUGH LEADS —
   captacion_lean: {
-    name: 'Stack de Captación Lean', cost: '~50€/mes',
+    name: 'Lean Lead Generation Stack', cost: '~€50/mo',
     tools: [
-      { name: 'Apollo.io', role: 'Base de datos B2B: encuentra prospectos sin buscar a ciegas', partner: true, activated: true, free: true },
-      { name: 'Manychat', role: 'Convierte comentarios de Instagram en leads automáticamente', partner: true, activated: true, free: true },
-      { name: 'Sender', role: 'Email marketing para nutrir a los que aún no compran', partner: true },
+      { name: 'Apollo.io', role: 'B2B database: find prospects instead of searching blindly', partner: true, activated: true, free: true },
+      { name: 'ManyChat', role: 'Turns Instagram comments and DMs into leads automatically', partner: true, activated: true, free: true },
+      { name: 'GetResponse', role: 'Email marketing and landing pages to nurture people who aren’t ready to buy', partner: true, activated: true },
     ],
-    alt: 'Apollo free + Manychat free (0€ para empezar)',
+    alt: 'Apollo + ManyChat free plans (€0 to start)',
   },
   captacion_completa: {
-    name: 'Stack de Captación Completo', cost: '~200€/mes',
+    name: 'Complete Lead Generation Stack', cost: '~€200/mo',
     tools: [
-      { name: 'Apollo.io', role: 'Encuentra y segmenta a tus clientes ideales', partner: true, activated: true },
-      { name: 'lemlist', role: 'Secuencias de outreach personalizadas en automático', partner: true, activated: true },
-      { name: 'Leadpages', role: 'Landing pages que convierten visitas en leads', partner: true },
-      { name: 'Manychat', role: 'Captación por DM en redes sociales', partner: true, activated: true },
+      { name: 'Apollo.io', role: 'Find and segment your ideal customers', partner: true, activated: true },
+      { name: 'lemlist', role: 'Personalized outreach sequences that run on their own', partner: true, activated: true },
+      { name: 'GetResponse', role: 'Landing pages and email automation that turn visits into leads', partner: true, activated: true },
+      { name: 'ManyChat', role: 'Lead capture through social media DMs', partner: true, activated: true },
     ],
-    alt: 'Apollo + lemlist + Manychat free (~120€)',
+    alt: 'Apollo + lemlist + ManyChat free (~€120)',
   },
   captacion_premium: {
-    name: 'Stack de Captación Premium', cost: '~450€/mes',
+    name: 'Premium Lead Generation Stack', cost: '~€450/mo',
     tools: [
-      { name: 'Apollo.io', role: 'Inteligencia de ventas end-to-end', partner: true, activated: true },
-      { name: 'lemlist', role: 'Outreach multicanal con personalización IA', partner: true, activated: true },
-      { name: 'Instapage', role: 'Landing pages de alto rendimiento con A/B testing', partner: true },
-      { name: 'Adwisely', role: 'Ads en Meta y Google gestionados con IA', partner: true },
-      { name: 'HubSpot CRM', role: 'CRM para centralizar todos los leads que entran', free: true },
+      { name: 'Apollo.io', role: 'End-to-end sales intelligence', partner: true, activated: true },
+      { name: 'lemlist', role: 'Multichannel outreach with AI personalization', partner: true, activated: true },
+      { name: 'GetResponse', role: 'High-converting landing pages, webinars and nurturing', partner: true, activated: true },
+      { name: 'Bïrch', role: 'Automated rules to manage and scale Meta and Google ads', partner: true, activated: true },
+      { name: 'Nutshell', role: 'CRM that centralizes every lead that comes in', partner: true, activated: true },
     ],
     alt: null,
   },
 
-  // — PROSPECCIÓN MANUAL —
+  // — MANUAL PROSPECTING —
   antimanual_lean: {
-    name: 'Stack Anti-Manual Lean', cost: '~60€/mes',
+    name: 'Lean Anti-Manual Stack', cost: '~€60/mo',
     tools: [
-      { name: 'Apollo.io', role: 'Listas segmentadas al instante: adiós al copiar-pegar', partner: true, activated: true, free: true },
-      { name: 'Lusha', role: 'Datos de contacto directos desde LinkedIn', partner: true, activated: true },
+      { name: 'Apollo.io', role: 'Segmented lists in seconds: no more copy-pasting', partner: true, activated: true, free: true },
+      { name: 'Lusha', role: 'Direct contact details straight from LinkedIn', partner: true, activated: true, free: true },
     ],
-    alt: 'Apollo free tier + Lusha free (~0-30€)',
+    alt: 'Apollo + Lusha free plans (~€0–30)',
   },
   antimanual_pro: {
-    name: 'Stack Anti-Manual Pro', cost: '~180€/mes',
+    name: 'Pro Anti-Manual Stack', cost: '~€180/mo',
     tools: [
-      { name: 'Apollo.io', role: 'Prospección automática con secuencias integradas', partner: true, activated: true },
-      { name: 'Lusha', role: 'Enriquecimiento de contactos desde LinkedIn', partner: true, activated: true },
-      { name: 'lemlist', role: 'Las secuencias se ejecutan solas mientras trabajas', partner: true, activated: true },
+      { name: 'Apollo.io', role: 'Automated prospecting with built-in sequences', partner: true, activated: true },
+      { name: 'Lusha', role: 'Contact enrichment from LinkedIn', partner: true, activated: true },
+      { name: 'lemlist', role: 'Sequences run on their own while you work', partner: true, activated: true },
     ],
-    alt: 'Apollo + Lusha (~90€)',
+    alt: 'Apollo + Lusha (~€90)',
   },
   antimanual_premium: {
-    name: 'Stack Anti-Manual Premium', cost: '~400€/mes',
+    name: 'Premium Anti-Manual Stack', cost: '~€400/mo',
     tools: [
-      { name: 'Apollo.io', role: 'Plataforma de inteligencia de ventas', partner: true, activated: true },
-      { name: 'RocketReach', role: '700M+ contactos: datos que Apollo no tiene', partner: true },
-      { name: 'lemlist', role: 'Outreach multicanal automatizado', partner: true, activated: true },
-      { name: 'Closely', role: 'Automatización de LinkedIn + email (30% lifetime)', partner: true },
+      { name: 'Amplemarket', role: 'AI sales platform: finds, enriches and contacts prospects for you', partner: true, activated: true },
+      { name: 'Lusha', role: 'Verified emails and phone numbers to fill the gaps', partner: true, activated: true },
+      { name: 'lemlist', role: 'Automated email and LinkedIn outreach', partner: true, activated: true },
+      { name: 'n8n', role: 'Connects your tools so new contacts reach the CRM without manual work', partner: true, activated: true },
     ],
     alt: null,
   },
 
-  // — LEADS NO CIERRAN —
+  // — LEADS DON'T CLOSE —
   cierre_esencial: {
-    name: 'Stack de Cierre Esencial', cost: '~30€/mes',
+    name: 'Essential Closing Stack', cost: '~€30/mo',
     tools: [
-      { name: 'HubSpot CRM', role: 'Pipeline visual para ver en qué punto está cada deal', free: true },
-      { name: 'Wati.io', role: 'Cierra por WhatsApp: donde tus leads sí responden', partner: true, activated: true },
+      { name: 'Capsule', role: 'Visual pipeline to see where every deal stands', partner: true, activated: true, free: true },
+      { name: 'Wati.io', role: 'Close on WhatsApp, where your leads actually reply', partner: true, activated: true },
     ],
-    alt: 'HubSpot free + Wati plan básico (~20€)',
+    alt: 'Capsule free plan + Wati basic plan (~€20)',
   },
   cierre_optimizado: {
-    name: 'Stack de Cierre Optimizado', cost: '~250€/mes',
+    name: 'Optimized Closing Stack', cost: '~€250/mo',
     tools: [
-      { name: 'Pipedrive', role: 'CRM #1 en usabilidad: automatiza tareas de venta', partner: true },
-      { name: 'KrispCall', role: 'Llamadas de seguimiento registradas por contacto', partner: true, activated: true },
-      { name: 'Wati.io', role: 'Nurturing y cierre por WhatsApp', partner: true, activated: true },
-      { name: 'PandaDoc', role: 'Propuestas y firma electrónica para cerrar más rápido', partner: true },
+      { name: 'Nutshell', role: 'Easy-to-use CRM that automates sales tasks', partner: true, activated: true },
+      { name: 'KrispCall', role: 'Follow-up calls logged against each contact', partner: true, activated: true },
+      { name: 'Wati.io', role: 'Nurturing and closing on WhatsApp', partner: true, activated: true },
+      { name: 'PandaDoc', role: 'Proposals and e-signatures to close faster' },
     ],
-    alt: 'HubSpot free + Wati + KrispCall (~120€)',
+    alt: 'Capsule free + Wati + KrispCall (~€120)',
   },
   cierre_premium: {
-    name: 'Stack de Revenue Operations', cost: '~550€/mes',
+    name: 'Revenue Operations Stack', cost: '~€550/mo',
     tools: [
-      { name: 'Pipedrive', role: 'CRM con automatización avanzada de pipeline', partner: true },
-      { name: 'KrispCall', role: 'Centro de llamadas virtual para el equipo', partner: true, activated: true },
-      { name: 'PandaDoc', role: 'Propuestas, quotes y e-sign en un flujo', partner: true },
-      { name: 'Synthflow AI', role: 'Agente de voz IA que califica y agenda solo', partner: true },
-      { name: 'Wati.io', role: 'WhatsApp Business API para todo el ciclo', partner: true, activated: true },
+      { name: 'Nutshell', role: 'CRM with advanced pipeline automation', partner: true, activated: true },
+      { name: 'KrispCall', role: 'Virtual call center for the whole team', partner: true, activated: true },
+      { name: 'PandaDoc', role: 'Proposals, quotes and e-signatures in one flow' },
+      { name: 'Synthflow AI', role: 'AI voice agent that qualifies leads and books meetings' },
+      { name: 'Wati.io', role: 'WhatsApp Business API for the whole sales cycle', partner: true, activated: true },
     ],
     alt: null,
   },
 
-  // — SIN SEGUIMIENTO —
+  // — NO FOLLOW-UP —
   seguimiento_lean: {
-    name: 'Stack de Seguimiento Lean', cost: '~40€/mes',
+    name: 'Lean Follow-up Stack', cost: '~€40/mo',
     tools: [
-      { name: 'HubSpot CRM', role: 'Recordatorios y tareas para que nada se caiga', free: true },
-      { name: 'Manychat', role: 'Seguimiento automático por DM para reactivar fríos', partner: true, activated: true, free: true },
+      { name: 'Capsule', role: 'Reminders and tasks so nothing slips', partner: true, activated: true, free: true },
+      { name: 'ManyChat', role: 'Automatic DM follow-ups to re-engage cold leads', partner: true, activated: true, free: true },
     ],
-    alt: 'HubSpot free + Manychat free (0€)',
+    alt: 'Capsule + ManyChat free plans (€0)',
   },
   seguimiento_pro: {
-    name: 'Stack de Seguimiento Pro', cost: '~200€/mes',
+    name: 'Pro Follow-up Stack', cost: '~€200/mo',
     tools: [
-      { name: 'Keap', role: 'CRM + automatización de follow-up para pymes', partner: true },
-      { name: 'lemlist', role: 'Cadencias de email que insisten sin ser pesadas', partner: true, activated: true },
-      { name: 'Wati.io', role: 'Seguimiento por WhatsApp con alta apertura', partner: true, activated: true },
+      { name: 'folk', role: 'Relationship CRM with follow-up reminders and email sequences', partner: true, activated: true },
+      { name: 'lemlist', role: 'Email cadences that keep following up without being pushy', partner: true, activated: true },
+      { name: 'Wati.io', role: 'WhatsApp follow-ups with high open rates', partner: true, activated: true },
     ],
-    alt: 'HubSpot free + lemlist (~50€)',
+    alt: 'Capsule free + lemlist (~€50)',
   },
   seguimiento_premium: {
-    name: 'Stack de Seguimiento Premium', cost: '~350€/mes',
+    name: 'Premium Follow-up Stack', cost: '~€350/mo',
     tools: [
-      { name: 'Keap', role: 'Automatización de marketing y ventas todo-en-uno', partner: true },
-      { name: 'lemlist', role: 'Secuencias multicanal de reactivación', partner: true, activated: true },
-      { name: 'Salesmsg', role: 'SMS y llamadas nativas para HubSpot/Salesforce', partner: true },
-      { name: 'Wati.io', role: 'WhatsApp para seguimiento de alto contacto', partner: true, activated: true },
+      { name: 'Nutshell', role: 'CRM with automated follow-up sequences', partner: true, activated: true },
+      { name: 'GetResponse', role: 'Marketing automation to re-engage leads by behavior', partner: true, activated: true },
+      { name: 'lemlist', role: 'Multichannel re-engagement sequences', partner: true, activated: true },
+      { name: 'CallHippo', role: 'Calls and SMS for high-touch follow-up', partner: true, activated: true },
+      { name: 'Wati.io', role: 'WhatsApp for high-touch follow-up', partner: true, activated: true },
     ],
     alt: null,
   },

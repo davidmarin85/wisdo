@@ -1,7 +1,7 @@
 // POST /api/diagnose
 // Recibe las respuestas del quiz, deriva el diagnóstico con el motor de
 // reglas, guarda el lead en Supabase y devuelve el id único para redirigir a
-// /resultado/{id}/. La generación del texto IA se dispara aparte (en
+// /diagnosis/{id}/. La generación del texto IA se dispara aparte (en
 // /api/capture) para no bloquear la respuesta al usuario.
 import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
@@ -71,6 +71,6 @@ export const POST: APIRoute = async ({ request }) => {
     id: lead.id,
     archetype: archetype.name,
     stackKey,
-    redirect: `/resultado/${lead.id}/`,
+    redirect: `/diagnosis/${lead.id}/`,
   });
 };
