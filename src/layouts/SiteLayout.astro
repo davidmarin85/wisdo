@@ -55,6 +55,12 @@ const {
   </body>
 </html>
 
+<script>
+  // UTMs de primer toque: se leen al aterrizar, no al enviar el formulario.
+  import { captureUtms } from '@lib/lead-utm';
+  captureUtms();
+</script>
+
 <style is:global>
   body {
     margin: 0;
