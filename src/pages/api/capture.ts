@@ -41,12 +41,12 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     body = await request.json();
   } catch {
-    return jsonResponse({ error: 'JSON inválido' }, 400);
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
   }
 
   const { id, email } = body;
   if (!id || !UUID_RE.test(id) || !email || !EMAIL_RE.test(email)) {
-    return jsonResponse({ error: 'id o email inválido' }, 400);
+    return jsonResponse({ error: 'Invalid id or email' }, 400);
   }
 
   const supabase = createSupabaseAdminClient();
@@ -59,10 +59,10 @@ export const POST: APIRoute = async ({ request }) => {
     .single<LeadRow>();
 
   if (fetchError || !lead) {
-    return jsonResponse({ error: 'Diagnóstico no encontrado' }, 404);
+    return jsonResponse({ error: 'Diagnosis not found' }, 404);
   }
 
-  const redirect = `/resultado/${id}/`;
+  const redirect = `/diagnosis/${id}/`;
 
   // Ya se capturó antes: no regeneramos la IA ni reenviamos el email
   // (evita gastar cuota de Claude/Resend en reintentos o doble-click).
@@ -94,7 +94,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   if (updateError) {
     console.error('[api/capture] update error:', updateError.message);
-    return jsonResponse({ error: 'Error al guardar el email' }, 502);
+    return jsonResponse({ error: 'Couldn’t save the email' }, 502);
   }
 
   // — 4. Enviar email con Resend —
@@ -126,25 +126,26 @@ function optionLabel(questionId: string, value: string | null): string | null {
 async function generateDiagnosis(lead: LeadRow, archetype: Archetype, stack: Stack): Promise<string | null> {
   const toolList = stack.tools.map((t) => `- ${t.name}: ${t.role}`).join('\n');
 
-  const prompt = `Eres el estratega de wisdo, experto en stacks de ventas para pymes.
-Un usuario ha completado un diagnóstico. Escribe un párrafo breve (máximo 4 frases, en español, tono directo y cercano de founder a founder) explicando por qué este stack resuelve su problema concreto. No saludes ni te presentes. No uses listas. Habla de su situación específica.
+  const na = 'not specified';
+  const prompt = `You are wisdo's strategist, an expert in sales stacks for small and mid-sized businesses.
+A user has completed a diagnosis. Write a short paragraph (4 sentences max, in English, direct and friendly, founder to founder) explaining why this stack solves their specific problem. Don't greet or introduce yourself. No lists. Talk about their specific situation.
 
-Reglas:
-- Usa solo los datos de abajo. No inventes hechos sobre su negocio (de dónde le llegan los clientes, qué le pasa, cómo trabaja) que no estén en los datos.
-- Di para qué sirve cada herramienta en su caso, con frases directas.
-- No uses contrastes del tipo "no es X, es Y", ni guiones largos (—), ni una frase final que resuma lo ya dicho.
+Rules:
+- Use only the data below. Don't invent facts about their business (where their clients come from, what's happening to them, how they work) that aren't in the data.
+- Say what each tool does in their case, in plain sentences.
+- Don't use "it's not X, it's Y" contrasts, em dashes (—), or a closing sentence that sums up what you already said.
 
-DATOS DEL USUARIO:
-- Problema principal: ${optionLabel('problema_raiz', lead.problema_raiz) ?? 'no especificado'}
-- Cómo lo resuelve hoy: ${optionLabel('situacion_actual', lead.situacion_actual) ?? 'no especificado'}
-- Tipo de negocio: ${optionLabel('tipo_negocio', lead.tipo_negocio) ?? 'no especificado'}
-- Etapa: ${optionLabel('etapa', lead.etapa) ?? 'no especificado'}
-${lead.website_profile?.resumen ? `- Su negocio (según su web ${lead.website_url}): ${lead.website_profile.resumen} Modelo de negocio: ${lead.website_profile.modelo_negocio ?? 'no especificado'}. Nicho: ${lead.website_profile.nicho ?? 'no especificado'}. Cliente ideal: ${lead.website_profile.cliente_ideal ?? 'no especificado'}\n` : ''}- Arquetipo asignado: ${archetype.name} (${archetype.tagline})
+USER DATA:
+- Main problem: ${optionLabel('problema_raiz', lead.problema_raiz) ?? na}
+- How they handle it today: ${optionLabel('situacion_actual', lead.situacion_actual) ?? na}
+- Business type: ${optionLabel('tipo_negocio', lead.tipo_negocio) ?? na}
+- Stage: ${optionLabel('etapa', lead.etapa) ?? na}
+${lead.website_profile?.resumen ? `- Their business (from their website ${lead.website_url}): ${lead.website_profile.resumen} Business model: ${lead.website_profile.modelo_negocio ?? na}. Niche: ${lead.website_profile.nicho ?? na}. Ideal customer: ${lead.website_profile.cliente_ideal ?? na}\n` : ''}- Assigned archetype: ${archetype.name} (${archetype.tagline})
 
-STACK RECOMENDADO — "${stack.name}" (${stack.cost}):
+RECOMMENDED STACK: "${stack.name}" (${stack.cost}):
 ${toolList}
 
-Escribe el párrafo del "por qué este stack es para ti":`;
+Write the "why this stack fits you" paragraph:`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -188,7 +189,7 @@ interface SendEmailParams {
 // Envía el email de diagnóstico con Resend. Devuelve si se envió con éxito.
 async function sendEmail({ email, id, archetype, stack, aiDiagnosis, resumen, siteHost }: SendEmailParams): Promise<boolean> {
   const siteUrl = import.meta.env.PUBLIC_SITE_URL;
-  const resultUrl = `${siteUrl}/resultado/${id}/`;
+  const resultUrl = `${siteUrl}/diagnosis/${id}/`;
   const params = { archetype, stack, aiDiagnosis, resumen, siteHost, resultUrl, leadId: id, siteUrl };
 
   const res = await fetch('https://api.resend.com/emails', {
@@ -198,7 +199,7 @@ async function sendEmail({ email, id, archetype, stack, aiDiagnosis, resumen, si
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'wisdo <diagnostico@wisdo.io>',
+      from: 'wisdo <diagnosis@wisdo.io>',
       to: [email],
       subject: diagnosisEmailSubject(stack),
       html: buildDiagnosisEmailHtml(params),

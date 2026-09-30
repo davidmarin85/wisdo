@@ -18,7 +18,7 @@ const BOT_RE =
 export const GET: APIRoute = async ({ params, url, request }) => {
   const partner = partnerBySlug(params.slug ?? '');
   if (!partner) {
-    return new Response('Enlace no encontrado', { status: 404 });
+    return new Response('Link not found', { status: 404 });
   }
 
   const fromParam = url.searchParams.get('from') as ClickSource | null;

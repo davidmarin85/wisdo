@@ -1,43 +1,42 @@
 ---
-// /diagnostico/ — entrada del diagnóstico: URL de la web + UNA pregunta.
+// /diagnosis/ — entrada del diagnóstico: URL de la web + UNA pregunta.
 // Al enviar, llama a /api/analyze y va pintando en directo lo que descubre
 // (stream NDJSON): web leída, herramientas, modelo de negocio, servicios,
-// nicho, cliente y stack. Al terminar redirige a /resultado/{id}/.
+// nicho, cliente y stack. Al terminar redirige a /diagnosis/{id}/.
 import SiteLayout from '@layouts/SiteLayout.astro';
 import { QUESTIONS } from '@lib/wisdo-engine';
 
 const problema = QUESTIONS.find((q) => q.id === 'problema_raiz')!;
 
-// Viene del formulario del hero de la home (/diagnostico/?url=…).
+// Viene del formulario del hero de la home (/diagnosis/?url=…).
 const prefillUrl = (Astro.url.searchParams.get('url') ?? '').slice(0, 300);
 
 const STEPS = [
-  { id: 'site', label: 'Leyendo tu web' },
-  { id: 'tools', label: 'Herramientas que ya usas' },
-  { id: 'modelo', label: 'Modelo de negocio' },
-  { id: 'servicios', label: 'Servicios' },
-  { id: 'nicho', label: 'Nicho' },
-  { id: 'cliente', label: 'Perfil de cliente' },
-  { id: 'stack', label: 'Tu stack recomendado' },
+  { id: 'site', label: 'Reading your website' },
+  { id: 'tools', label: 'Tools you already use' },
+  { id: 'modelo', label: 'Business model' },
+  { id: 'servicios', label: 'Services' },
+  { id: 'nicho', label: 'Niche' },
+  { id: 'cliente', label: 'Customer profile' },
+  { id: 'stack', label: 'Your recommended stack' },
 ];
 ---
 
 <SiteLayout
-  title="Diagnóstico de stack de ventas — wisdo"
-  description="Analizamos tu web y te decimos qué herramientas necesitas para captar y cerrar más clientes."
-  lang="es"
+  title="Sales stack diagnosis — wisdo"
+  description="We analyze your website and tell you which tools you need to find and close more clients."
 >
   <div class="dg">
     <section class="dg-hero">
-      <div class="dg-eyebrow">Diagnóstico gratuito</div>
-      <h1 class="dg-h1">¿Qué stack de ventas necesita tu negocio?</h1>
-      <p class="dg-lead">Analizamos tu web y te recomendamos las herramientas para captar y cerrar más clientes. Tarda unos segundos.</p>
+      <div class="dg-eyebrow">Free diagnosis</div>
+      <h1 class="dg-h1">Which sales stack does your business need?</h1>
+      <p class="dg-lead">We analyze your website and recommend the tools to find and close more clients. It takes a few seconds.</p>
     </section>
 
     <form class="dg-form" data-dg-form novalidate>
       <label class="dg-field">
-        <span class="dg-label">01 · Tu web</span>
-        <input class="dg-input" name="url" type="text" inputmode="url" autocomplete="url" placeholder="tuempresa.com" maxlength="300" required value={prefillUrl} />
+        <span class="dg-label">01 · Your website</span>
+        <input class="dg-input" name="url" type="text" inputmode="url" autocomplete="url" placeholder="yourcompany.com" maxlength="300" required value={prefillUrl} />
       </label>
 
       <fieldset class="dg-field">
@@ -59,13 +58,13 @@ const STEPS = [
       </div>
 
       <p class="dg-error" role="alert" hidden></p>
-      <button class="dg-submit" type="submit">Analizar mi web</button>
+      <button class="dg-submit" type="submit">Analyze my website</button>
     </form>
 
     <section class="dg-panel" data-dg-panel hidden aria-live="polite">
       <div class="dg-panel-head">
         <span class="dg-pulse" aria-hidden="true"></span>
-        <span data-dg-status>Analizando tu web</span>
+        <span data-dg-status>Analyzing your website</span>
         <span class="dg-host" data-dg-host></span>
       </div>
       <ol class="dg-steps">
@@ -81,7 +80,7 @@ const STEPS = [
       </ol>
       <div class="dg-panel-error" data-dg-panel-error hidden>
         <p></p>
-        <button type="button" class="dg-retry" data-dg-retry>Probar con otra web</button>
+        <button type="button" class="dg-retry" data-dg-retry>Try another website</button>
       </div>
     </section>
   </div>
@@ -113,7 +112,7 @@ const STEPS = [
     const valueEl = el.querySelector<HTMLElement>('.dg-step-value')!;
     valueEl.replaceChildren();
     if (state === 'active' && value === undefined) {
-      valueEl.textContent = 'Analizando…';
+      valueEl.textContent = 'Analyzing…';
     } else if (Array.isArray(value)) {
       for (const v of value) {
         const chip = document.createElement('span');
@@ -148,22 +147,22 @@ const STEPS = [
     panel.querySelectorAll<HTMLLIElement>('.dg-step').forEach((el) => setStep(el.dataset.step!, 'pending'));
     panelError.hidden = true;
     panel.dataset.failed = 'false';
-    statusEl.textContent = 'Analizando tu web';
+    statusEl.textContent = 'Analyzing your website';
     hostEl.textContent = '';
   }
 
   function failPanel(message: string) {
     stopRotation();
     panel.dataset.failed = 'true';
-    statusEl.textContent = 'No hemos podido terminar el análisis';
+    statusEl.textContent = 'We couldn’t finish the analysis';
     panelError.querySelector('p')!.textContent = message;
     panelError.hidden = false;
   }
 
   const READ_ERRORS: Record<string, string> = {
-    empty: 'Tu web no muestra contenido sin JavaScript y no hemos podido leerla. Prueba con otra página de tu web, como la de servicios.',
-    not_html: 'Esa dirección no devuelve una página web. Revisa la URL.',
-    fetch_failed: 'No hemos podido conectar con tu web. Revisa la URL o inténtalo en un rato.',
+    empty: 'Your website doesn’t show content without JavaScript, so we couldn’t read it. Try another page of your site, like your services page.',
+    not_html: 'That address doesn’t return a web page. Check the URL.',
+    fetch_failed: 'We couldn’t reach your website. Check the URL or try again later.',
   };
 
   function utms() {
@@ -182,7 +181,7 @@ const STEPS = [
         setStep('site', 'done', String(event.title || event.host || ''));
         await sleep(350);
         const tools = (event.tools as string[]) ?? [];
-        setStep('tools', 'done', tools.length ? tools : 'Ninguna de ventas o marketing');
+        setStep('tools', 'done', tools.length ? tools : 'No sales or marketing tools');
         await sleep(350);
         startRotation();
         return true;
@@ -206,13 +205,13 @@ const STEPS = [
       }
       case 'done': {
         setStep('stack', 'done', String(event.stack ?? ''));
-        statusEl.textContent = 'Análisis completado';
+        statusEl.textContent = 'Analysis complete';
         await sleep(1200);
         window.location.href = String(event.redirect);
         return false;
       }
       case 'error': {
-        failPanel(String(event.error ?? 'Algo ha fallado. Inténtalo de nuevo.'));
+        failPanel(String(event.error ?? 'Something went wrong. Please try again.'));
         return false;
       }
       default:
@@ -228,12 +227,12 @@ const STEPS = [
     const url = String(data.get('url') ?? '').trim();
     const problema_raiz = data.get('problema_raiz');
     if (!url) {
-      formError.textContent = 'Escribe la dirección de tu web.';
+      formError.textContent = 'Enter your website address.';
       formError.hidden = false;
       return;
     }
     if (!problema_raiz) {
-      formError.textContent = 'Elige qué es lo que más te está frenando.';
+      formError.textContent = 'Choose what’s holding you back the most.';
       formError.hidden = false;
       return;
     }
@@ -253,7 +252,7 @@ const STEPS = [
 
       if (!res.ok || !res.body) {
         const err = await res.json().catch(() => ({}));
-        failPanel(READ_ERRORS[err.code] ?? err.error ?? 'Algo ha fallado. Inténtalo de nuevo.');
+        failPanel(READ_ERRORS[err.code] ?? err.error ?? 'Something went wrong. Please try again.');
         return;
       }
 
@@ -272,9 +271,9 @@ const STEPS = [
         }
       }
       // El stream se cerró sin "done" ni "error" (timeout de la función…).
-      failPanel('El análisis se ha cortado. Inténtalo de nuevo.');
+      failPanel('The analysis was interrupted. Please try again.');
     } catch {
-      failPanel('Se ha perdido la conexión. Inténtalo de nuevo.');
+      failPanel('The connection was lost. Please try again.');
     }
   });
 

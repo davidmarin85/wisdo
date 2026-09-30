@@ -40,26 +40,26 @@ export class SiteReadError extends Error {
 export function normalizeUrl(input: string): URL {
   const raw = input.trim();
   if (/^[a-z][a-z0-9+.-]*:\/\//i.test(raw) && !/^https?:\/\//i.test(raw)) {
-    throw new SiteReadError('invalid_url', 'Solo se admiten URLs http(s)');
+    throw new SiteReadError('invalid_url', 'Only http(s) URLs are allowed');
   }
   let url: URL;
   try {
     url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
   } catch {
-    throw new SiteReadError('invalid_url', 'URL inválida');
+    throw new SiteReadError('invalid_url', 'Invalid URL');
   }
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-    throw new SiteReadError('invalid_url', 'Solo se admiten URLs http(s)');
+    throw new SiteReadError('invalid_url', 'Only http(s) URLs are allowed');
   }
   if (url.username || url.password) {
-    throw new SiteReadError('invalid_url', 'La URL no puede llevar credenciales');
+    throw new SiteReadError('invalid_url', 'The URL can’t contain credentials');
   }
   if (url.port && url.port !== '80' && url.port !== '443') {
-    throw new SiteReadError('invalid_url', 'Puerto no permitido');
+    throw new SiteReadError('invalid_url', 'Port not allowed');
   }
   // Exigimos un dominio con punto: fuera "localhost", "intranet", etc.
   if (!url.hostname.includes('.') || isIP(url.hostname)) {
-    throw new SiteReadError('invalid_url', 'Introduce un dominio, no una IP');
+    throw new SiteReadError('invalid_url', 'Enter a domain name, not an IP address');
   }
   url.hash = '';
   return url;
@@ -78,11 +78,11 @@ export async function readSite(input: string): Promise<SiteSnapshot> {
         headers: {
           'User-Agent': 'Mozilla/5.0 (compatible; wisdo-diagnostico/1.0; +https://www.wisdo.io)',
           Accept: 'text/html,application/xhtml+xml',
-          'Accept-Language': 'es,en;q=0.8',
+          'Accept-Language': 'en,es;q=0.8',
         },
       });
     } catch {
-      throw new SiteReadError('fetch_failed', 'No se pudo conectar con la web');
+      throw new SiteReadError('fetch_failed', 'Couldn’t connect to the website');
     }
 
     const location = res.headers.get('location');
@@ -94,11 +94,11 @@ export async function readSite(input: string): Promise<SiteSnapshot> {
   }
 
   if (!res || !res.ok) {
-    throw new SiteReadError('fetch_failed', `La web respondió ${res?.status ?? 'sin respuesta'}`);
+    throw new SiteReadError('fetch_failed', `The website responded with ${res?.status ?? 'no response'}`);
   }
   const contentType = res.headers.get('content-type') ?? '';
   if (!contentType.includes('html')) {
-    throw new SiteReadError('not_html', 'La URL no devuelve una página web');
+    throw new SiteReadError('not_html', 'The URL doesn’t return a web page');
   }
 
   const html = await readLimited(res);
@@ -111,7 +111,7 @@ export async function readSite(input: string): Promise<SiteSnapshot> {
 
   // Webs 100% JavaScript (SPA, algunos Wix) devuelven casi nada sin navegador.
   if (text.length < 200 && !description) {
-    throw new SiteReadError('empty', 'No hemos podido leer el contenido de la web');
+    throw new SiteReadError('empty', 'We couldn’t read the website’s content');
   }
 
   return { finalUrl: url.toString(), title, description, text, detectedTools: detectTools(html) };
@@ -122,10 +122,10 @@ async function assertPublicHost(hostname: string): Promise<void> {
   try {
     addresses = await lookup(hostname, { all: true });
   } catch {
-    throw new SiteReadError('fetch_failed', 'El dominio no existe');
+    throw new SiteReadError('fetch_failed', 'The domain doesn’t exist');
   }
   if (addresses.length === 0 || addresses.some((a) => isPrivateAddress(a.address))) {
-    throw new SiteReadError('blocked_host', 'Dominio no permitido');
+    throw new SiteReadError('blocked_host', 'Domain not allowed');
   }
 }
 

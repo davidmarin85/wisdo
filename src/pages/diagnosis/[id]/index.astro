@@ -1,5 +1,5 @@
 ---
-// /resultado/{id}/ — el informe del diagnóstico.
+// /diagnosis/{id}/ — el informe del diagnóstico.
 // El uuid es la única llave (no hay login), así que la página es noindex y
 // no se cachea. Se lee con service_role y solo se piden las columnas que se
 // pintan: el email del lead nunca sale al HTML.
@@ -70,16 +70,16 @@ function optionLabel(questionId: string, value: string | null): string | null {
 }
 
 const problemaLabel = optionLabel('problema_raiz', lead.problema_raiz);
-const tipoLabel = optionLabel('tipo_negocio', lead.tipo_negocio) ?? 'Otro';
+const tipoLabel = optionLabel('tipo_negocio', lead.tipo_negocio) ?? 'Other';
 const etapaLabel = optionLabel('etapa', lead.etapa) ?? '—';
 
 const profile = lead.website_profile;
 const detectedTools = profile?.detected_tools ?? [];
 // Leads analizados antes de que existieran estos campos no los tienen.
 const analysis = [
-  { label: 'Modelo de negocio', value: profile?.modelo_negocio },
-  { label: 'Nicho', value: profile?.nicho },
-  { label: 'Perfil de cliente', value: profile?.cliente_ideal },
+  { label: 'Business model', value: profile?.modelo_negocio },
+  { label: 'Niche', value: profile?.nicho },
+  { label: 'Customer profile', value: profile?.cliente_ideal },
 ].filter((a): a is { label: string; value: string } => Boolean(a.value));
 const servicios = profile?.servicios ?? [];
 const siteHost = lead.website_url ? new URL(lead.website_url).hostname.replace(/^www\./, '') : null;
@@ -89,18 +89,17 @@ const aiText = lead.ai_diagnosis;
 ---
 
 <SiteLayout
-  title={`Tu stack: ${stack.name} — wisdo`}
-  description="Tu diagnóstico de stack de ventas personalizado."
+  title={`Your stack: ${stack.name} — wisdo`}
+  description="Your personalized sales stack diagnosis."
   noindex
-  lang="es"
 >
   <div class="res">
     <!-- 1. Análisis de la web -->
     <section class="res-hero">
-      <div class="res-eyebrow">Diagnóstico wisdo{siteHost && <> · {siteHost}</>}</div>
+      <div class="res-eyebrow">wisdo diagnosis{siteHost && <> · {siteHost}</>}</div>
       {profile?.resumen ? (
         <>
-          <h1 class="res-h1">Hemos analizado tu web.</h1>
+          <h1 class="res-h1">We analyzed your website.</h1>
           <p class="res-lead">{profile.resumen}</p>
           {(analysis.length > 0 || servicios.length > 0) && (
             <div class="analysis">
@@ -112,7 +111,7 @@ const aiText = lead.ai_diagnosis;
               ))}
               {servicios.length > 0 && (
                 <div class="analysis-item analysis-item--wide">
-                  <div class="tile-label">Servicios</div>
+                  <div class="tile-label">Services</div>
                   <div class="chips">{servicios.map((sv) => <span class="chip chip--text">{sv}</span>)}</div>
                 </div>
               )}
@@ -121,8 +120,8 @@ const aiText = lead.ai_diagnosis;
         </>
       ) : (
         <>
-          <h1 class="res-h1">Tu diagnóstico está listo.</h1>
-          <p class="res-lead">Este es el stack que mejor encaja con lo que nos has contado.</p>
+          <h1 class="res-h1">Your diagnosis is ready.</h1>
+          <p class="res-lead">This is the stack that best fits what you told us.</p>
         </>
       )}
     </section>
@@ -130,28 +129,28 @@ const aiText = lead.ai_diagnosis;
     <!-- 2. Fichas -->
     <section class="res-tiles" aria-label="Resumen">
       <div class="tile">
-        <div class="tile-label">Problema</div>
+        <div class="tile-label">Problem</div>
         <div class="tile-value tile-value--sm">{problemaLabel}</div>
       </div>
       <div class="tile">
-        <div class="tile-label">Negocio</div>
+        <div class="tile-label">Business</div>
         <div class="tile-value">{tipoLabel}</div>
       </div>
       <div class="tile">
-        <div class="tile-label">Etapa</div>
+        <div class="tile-label">Stage</div>
         <div class="tile-value">{etapaLabel}</div>
       </div>
       <div class="tile">
-        <div class="tile-label">Coste del stack</div>
+        <div class="tile-label">Stack cost</div>
         <div class="tile-value tile-value--accent">{stack.cost}</div>
       </div>
       {lead.website_url && (
         <div class="tile tile--wide">
-          <div class="tile-label">Herramientas detectadas en tu web</div>
+          <div class="tile-label">Tools detected on your website</div>
           {detectedTools.length > 0 ? (
             <div class="chips">{detectedTools.map((t) => <span class="chip">{t}</span>)}</div>
           ) : (
-            <div class="tile-note">No hemos encontrado herramientas de ventas ni de marketing, así que no tendrás nada que migrar.</div>
+            <div class="tile-note">We didn’t find any sales or marketing tools, so you won’t have anything to migrate.</div>
           )}
         </div>
       )}
@@ -159,7 +158,7 @@ const aiText = lead.ai_diagnosis;
 
     <!-- 3. Arquetipo + stack -->
     <section class="res-section">
-      <div class="res-eyebrow">Tu perfil</div>
+      <div class="res-eyebrow">Your profile</div>
       <div class="archetype">
         <span class="archetype-emoji" aria-hidden="true">{archetype.emoji}</span>
         <div>
@@ -177,47 +176,47 @@ const aiText = lead.ai_diagnosis;
               <div class="tool-head">
                 <span class="res-mono tool-num">{String(i + 1).padStart(2, '0')}</span>
                 <span class="tool-name">{t.name}</span>
-                {t.free && <span class="tool-badge">Plan gratis</span>}
+                {t.free && <span class="tool-badge">Free plan</span>}
               </div>
               <p class="tool-role">{t.role}</p>
               {url && (
-                <a class="tool-cta" href={url} target="_blank" rel="noopener sponsored">Probar {t.name} →</a>
+                <a class="tool-cta" href={url} target="_blank" rel="noopener sponsored">Try {t.name} →</a>
               )}
             </article>
           );
         })}
       </div>
-      {stack.alt && <p class="res-sub"><span class="res-mono">Alternativa</span> {stack.alt}</p>}
-      <p class="res-disclosure">Algunos enlaces son de afiliado: si te das de alta a través de ellos podemos recibir una comisión, sin coste extra para ti.</p>
+      {stack.alt && <p class="res-sub"><span class="res-mono">Budget option</span> {stack.alt}</p>}
+      <p class="res-disclosure">Some links are affiliate links: if you sign up through them we may earn a commission, at no extra cost to you.</p>
     </section>
 
     <!-- 4. Por qué este stack (bloqueado hasta dejar el email) -->
     <section class="res-section">
-      <div class="res-eyebrow">Por qué este stack es para ti</div>
+      <div class="res-eyebrow">Why this stack fits you</div>
       {unlocked ? (
         <div class="why">
           {aiText ? (
             <p class="why-text">{aiText}</p>
           ) : (
-            <p class="why-text">Te hemos enviado el diagnóstico completo por email. Si no lo ves, revisa la carpeta de spam o promociones.</p>
+            <p class="why-text">We’ve sent the full diagnosis to your email. If you can’t find it, check your spam or promotions folder.</p>
           )}
         </div>
       ) : (
         <div class="lock">
           <div class="lock-preview" aria-hidden="true">
-            <p>Este stack ataca el problema que nos has marcado con las herramientas que mejor encajan en la etapa de tu negocio. Te explicamos por qué cada una tiene sentido en tu caso.</p>
-            <p>Te llega también por email en cuanto nos dejes tu dirección.</p>
+            <p>This stack tackles the problem you picked with the tools that best fit your business stage. We explain why each one makes sense in your case.</p>
+            <p>You also get it by email as soon as you leave your address.</p>
           </div>
           <form class="lock-card" data-capture-form novalidate>
-            <div class="lock-title">Desbloquea tu diagnóstico personalizado</div>
-            <p class="lock-text">Te explicamos por qué este stack encaja con tu negocio y te enviamos el informe por email.</p>
+            <div class="lock-title">Unlock your personalized diagnosis</div>
+            <p class="lock-text">We explain why this stack fits your business and email you the report.</p>
             <input type="hidden" name="id" value={lead.id} />
             <div class="lock-row">
-              <input class="lock-input" name="email" type="email" required autocomplete="email" placeholder="tu@empresa.com" maxlength="254" aria-label="Email" />
-              <button class="lock-btn" type="submit">Desbloquear</button>
+              <input class="lock-input" name="email" type="email" required autocomplete="email" placeholder="you@company.com" maxlength="254" aria-label="Email" />
+              <button class="lock-btn" type="submit">Unlock</button>
             </div>
             <p class="lock-error" role="alert" hidden></p>
-            <p class="lock-legal">Solo usamos tu email para enviarte el diagnóstico y, de vez en cuando, ideas para vender más. Puedes darte de baja cuando quieras.</p>
+            <p class="lock-legal">We only use your email to send you the diagnosis and, now and then, ideas to sell more. You can unsubscribe at any time.</p>
           </form>
         </div>
       )}
@@ -226,10 +225,10 @@ const aiText = lead.ai_diagnosis;
     <!-- 5. CTA agencia -->
     <section class="res-section cta">
       <div>
-        <h2 class="res-h2 cta-title">¿Te lo montamos nosotros?</h2>
-        <p class="res-sub">Somos partners certificados de HubSpot, Google y Meta. En una llamada revisamos tu diagnóstico contigo y te contamos cómo lo pondríamos en marcha.</p>
+        <h2 class="res-h2 cta-title">Want us to set it up for you?</h2>
+        <p class="res-sub">We’re certified HubSpot, Google and Meta partners. On a call we’ll go through your diagnosis with you and explain how we’d put it in place.</p>
       </div>
-      <a class="cta-btn" href={BOOK_A_CALL_URL} target="_blank" rel="noopener">Reservar una llamada</a>
+      <a class="cta-btn" href={BOOK_A_CALL_URL} target="_blank" rel="noopener">Book a call</a>
     </section>
   </div>
 </SiteLayout>
@@ -252,13 +251,13 @@ const aiText = lead.ai_diagnosis;
       errorEl.hidden = true;
       const email = input.value.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        showError('Introduce un email válido.');
+        showError('Enter a valid email.');
         input.focus();
         return;
       }
 
       btn.disabled = true;
-      btn.textContent = 'Preparando tu diagnóstico…';
+      btn.textContent = 'Preparing your diagnosis…';
       try {
         const res = await fetch('/api/capture/', {
           method: 'POST',
@@ -269,8 +268,8 @@ const aiText = lead.ai_diagnosis;
         window.location.reload();
       } catch {
         btn.disabled = false;
-        btn.textContent = 'Desbloquear';
-        showError('No hemos podido guardar tu email. Inténtalo de nuevo.');
+        btn.textContent = 'Unlock';
+        showError('We couldn’t save your email. Please try again.');
       }
     });
   }
