@@ -9,7 +9,7 @@
 // Claude y envía el email; al volver recargamos la página ya desbloqueada.
 import SiteLayout from '@layouts/SiteLayout.astro';
 import { BOOK_A_CALL_URL } from '@data/site';
-import { tools } from '@data/tools';
+import { toolUrl } from '@lib/tool-links';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
 import { ARCHETYPES, QUESTIONS, STACKS, resolveDiagnosis, type QuizAnswers } from '@lib/wisdo-engine';
 
@@ -83,11 +83,6 @@ const analysis = [
 ].filter((a): a is { label: string; value: string } => Boolean(a.value));
 const servicios = profile?.servicios ?? [];
 const siteHost = lead.website_url ? new URL(lead.website_url).hostname.replace(/^www\./, '') : null;
-
-// Enlaces de afiliado: el motor y el marketplace escriben algunos nombres
-// distinto ("Manychat" / "ManyChat"), así que se casan normalizados.
-const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
-const toolUrl = new Map(tools.map((t) => [normalize(t.name), t.externalUrl]));
 
 const unlocked = Boolean(lead.email_captured_at);
 const aiText = lead.ai_diagnosis;
@@ -176,7 +171,7 @@ const aiText = lead.ai_diagnosis;
       <h2 class="res-h2">{stack.name}</h2>
       <div class="stack">
         {stack.tools.map((t, i) => {
-          const url = toolUrl.get(normalize(t.name));
+          const url = toolUrl(t.name);
           return (
             <article class="tool">
               <div class="tool-head">

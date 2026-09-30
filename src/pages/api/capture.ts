@@ -2,9 +2,10 @@
 // Se llama cuando el usuario deja su email en la pantalla post-quiz. Hace 3 cosas:
 //   1. Guarda el email en el lead existente (por id)
 //   2. Genera el texto de diagnóstico personalizado con la API de Claude (híbrido)
-//   3. Dispara el email transaccional con Resend
+//   3. Dispara el email transaccional con Resend (src/lib/diagnosis-email.ts)
 import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
+import { buildDiagnosisEmailHtml, buildDiagnosisEmailText, diagnosisEmailSubject } from '@lib/diagnosis-email';
 import { QUESTIONS, resolveDiagnosis, type Archetype, type QuizAnswers, type Stack } from '@lib/wisdo-engine';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -97,7 +98,15 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // — 4. Enviar email con Resend —
-  const emailSent = await sendEmail({ email, id, archetype, stack, aiDiagnosis });
+  const emailSent = await sendEmail({
+    email,
+    id,
+    archetype,
+    stack,
+    aiDiagnosis,
+    resumen: lead.website_profile?.resumen ?? null,
+    siteHost: lead.website_url ? new URL(lead.website_url).hostname.replace(/^www\./, '') : null,
+  });
   if (!emailSent) {
     console.error('[api/capture] Resend failed to send to lead', id);
   }
@@ -172,12 +181,14 @@ interface SendEmailParams {
   archetype: Archetype;
   stack: Stack;
   aiDiagnosis: string | null;
+  resumen: string | null;
+  siteHost: string | null;
 }
 
 // Envía el email de diagnóstico con Resend. Devuelve si se envió con éxito.
-async function sendEmail({ email, id, archetype, stack, aiDiagnosis }: SendEmailParams): Promise<boolean> {
+async function sendEmail({ email, id, archetype, stack, aiDiagnosis, resumen, siteHost }: SendEmailParams): Promise<boolean> {
   const resultUrl = `${import.meta.env.PUBLIC_SITE_URL}/resultado/${id}/`;
-  const html = buildEmailHtml({ archetype, stack, aiDiagnosis, resultUrl });
+  const params = { archetype, stack, aiDiagnosis, resumen, siteHost, resultUrl };
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -188,8 +199,9 @@ async function sendEmail({ email, id, archetype, stack, aiDiagnosis }: SendEmail
     body: JSON.stringify({
       from: 'wisdo <diagnostico@wisdo.io>',
       to: [email],
-      subject: `Tu stack está listo: ${stack.name}`,
-      html,
+      subject: diagnosisEmailSubject(stack),
+      html: buildDiagnosisEmailHtml(params),
+      text: buildDiagnosisEmailText(params),
     }),
   });
 
@@ -197,43 +209,4 @@ async function sendEmail({ email, id, archetype, stack, aiDiagnosis }: SendEmail
     console.error('[api/capture] Resend error:', res.status, await res.text());
   }
   return res.ok;
-}
-
-interface EmailHtmlParams {
-  archetype: Archetype;
-  stack: Stack;
-  aiDiagnosis: string | null;
-  resultUrl: string;
-}
-
-// Template del email (inline styles porque los clientes de correo lo exigen).
-function buildEmailHtml({ archetype, stack, aiDiagnosis, resultUrl }: EmailHtmlParams): string {
-  const tools = stack.tools
-    .map(
-      (t, i) => `
-      <tr>
-        <td style="padding:12px 0;border-bottom:1px solid #2A2745;">
-          <span style="color:#00E5C8;font-family:monospace;font-size:12px;">${String(i + 1).padStart(2, '0')}</span>
-          &nbsp;<strong style="color:#F0EAFF;">${t.name}</strong>
-          ${t.free ? '<span style="color:#13C28A;font-size:10px;">&nbsp;FREE</span>' : ''}
-          <br/>
-          <span style="color:#A8A2BD;font-size:13px;">${t.role}</span>
-        </td>
-      </tr>`
-    )
-    .join('');
-
-  return `
-  <div style="background:#14121F;padding:32px;font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;border-radius:16px;">
-    <div style="color:#F0EAFF;font-size:20px;font-weight:700;margin-bottom:24px;">wisdo</div>
-    <div style="display:inline-block;background:rgba(108,92,231,0.2);border:1px solid #6C5CE7;border-radius:999px;padding:6px 12px;margin-bottom:16px;">
-      <span style="color:#9747FF;font-size:12px;font-weight:700;">${archetype.emoji} ${archetype.name}</span>
-    </div>
-    <h1 style="color:#F0EAFF;font-size:26px;margin:0 0 8px;">${stack.name}</h1>
-    <p style="color:#A8A2BD;font-size:14px;margin:0 0 20px;">Coste estimado: <strong style="color:#00E5C8;">${stack.cost}</strong></p>
-    ${aiDiagnosis ? `<p style="color:#C9B8FF;font-size:15px;line-height:1.6;background:rgba(108,92,231,0.1);padding:16px;border-radius:12px;border-left:3px solid #6C5CE7;margin:0 0 24px;">${aiDiagnosis}</p>` : ''}
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">${tools}</table>
-    <a href="${resultUrl}" style="display:inline-block;background:#6C5CE7;color:#fff;text-decoration:none;padding:14px 28px;border-radius:12px;font-weight:700;">Ver tu diagnóstico completo →</a>
-    <p style="color:#7E7995;font-size:12px;margin-top:24px;">Guarda este email. Tu diagnóstico vive en el enlace de arriba.</p>
-  </div>`;
 }
