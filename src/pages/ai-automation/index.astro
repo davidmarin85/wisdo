@@ -2,6 +2,7 @@
 import SiteLayout from '@layouts/SiteLayout.astro';
 import { BOOK_A_CALL_URL } from '@data/site';
 import ContactForm from '@components/site/ContactForm.astro';
+import DiagnosisForm from '@components/site/DiagnosisForm.astro';
 ---
 
 <SiteLayout
@@ -151,6 +152,19 @@ import ContactForm from '@components/site/ContactForm.astro';
         <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">GA4</div>
         <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">MAKE</div>
         <div style="border:1px solid #1e1e1e; border-radius:8px; padding:16px; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">WHATSAPP API</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="diagnosis" style="border-bottom:1px solid #1e1e1e;">
+    <div style="max-width:1200px; margin:0 auto; padding:80px 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:48px; align-items:center;">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Free diagnosis</div>
+        <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500; max-width:560px;">Not sure where to start?</h2>
+        <p style="margin:16px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:520px;">Enter your website and get the sales stack that fits your business: which tools to use, what each one does for you and what it costs.</p>
+      </div>
+      <div>
+        <DiagnosisForm id="ai-dg-url" label="Analyze your website" />
       </div>
     </div>
   </section>

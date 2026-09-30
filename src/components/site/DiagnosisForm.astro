@@ -1,0 +1,74 @@
+---
+// Formulario compacto del diagnóstico: campo de URL que envía a
+// /diagnosis/?url=… (funciona sin JavaScript). Se usa en el hero de la home
+// y en AI & Automation.
+import { BOOK_A_CALL_URL } from '@data/site';
+
+interface Props {
+  /** id del input: único por página. */
+  id: string;
+  label?: string;
+}
+
+const { id, label = 'Free sales-stack diagnosis' } = Astro.props;
+---
+
+<form action="/diagnosis/" method="get" class="hero-dg">
+  <label class="hero-dg-label" for={id}>{label}</label>
+  <div class="hero-dg-row">
+    <input id={id} class="hero-dg-input" name="url" type="text" inputmode="url" autocomplete="url" placeholder="yourcompany.com" maxlength="300" required />
+    <button class="hero-dg-btn" type="submit">Analyze my website</button>
+  </div>
+  <p class="hero-dg-note">We read your site and recommend the tools to win more clients. Takes about 10 seconds. Or <a href={BOOK_A_CALL_URL}>book a call</a>.</p>
+</form>
+
+<style>
+  .hero-dg { margin-top: 32px; max-width: 520px; }
+  .hero-dg-label {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.85px;
+    text-transform: uppercase;
+    color: #6798ff;
+    margin-bottom: 10px;
+  }
+  .hero-dg-row {
+    display: flex;
+    gap: 6px;
+    background: #141414;
+    border: 1px solid #313131;
+    border-radius: 10px;
+    padding: 6px;
+  }
+  .hero-dg-row:focus-within { border-color: #6798ff; }
+  .hero-dg-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    padding: 10px 12px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 15px;
+  }
+  .hero-dg-input:focus { outline: none; }
+  .hero-dg-btn {
+    background: #ffffff;
+    color: #0a0a0a;
+    border: 0;
+    border-radius: 7px;
+    padding: 10px 16px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .hero-dg-note { margin: 10px 0 0; font-size: 13px; line-height: 1.5; color: #7c7c7c; }
+  .hero-dg-note a { color: #a7a7a7; text-decoration: underline; text-underline-offset: 2px; }
+  @media (max-width: 480px) {
+    .hero-dg-row { flex-direction: column; }
+    .hero-dg-btn { padding: 12px 16px; }
+  }
+</style>
