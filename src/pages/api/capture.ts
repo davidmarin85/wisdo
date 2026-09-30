@@ -5,7 +5,7 @@
 //   3. Dispara el email transaccional con Resend
 import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
-import { resolveDiagnosis, type Archetype, type QuizAnswers, type Stack } from '@lib/wisdo-engine';
+import { QUESTIONS, resolveDiagnosis, type Archetype, type QuizAnswers, type Stack } from '@lib/wisdo-engine';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -105,6 +105,12 @@ export const POST: APIRoute = async ({ request }) => {
   return jsonResponse({ ok: true, redirect, emailSent });
 };
 
+// Etiqueta legible de una respuesta del quiz ("no_llegan_leads" → "No llegan…").
+function optionLabel(questionId: string, value: string | null): string | null {
+  if (!value) return null;
+  return QUESTIONS.find((q) => q.id === questionId)?.options.find((o) => o.value === value)?.label ?? value;
+}
+
 // Genera el diagnóstico personalizado — el diferencial de wisdo.
 // Modelo híbrido: las reglas ya eligieron el stack; la IA explica el PORQUÉ
 // de forma personalizada al problema y situación concreta del usuario.
@@ -112,13 +118,18 @@ async function generateDiagnosis(lead: LeadRow, archetype: Archetype, stack: Sta
   const toolList = stack.tools.map((t) => `- ${t.name}: ${t.role}`).join('\n');
 
   const prompt = `Eres el estratega de wisdo, experto en stacks de ventas para pymes.
-Un usuario ha completado un diagnóstico. Escribe un párrafo breve (máximo 4 frases, en español, tono directo y cercano de founder a founder) explicando POR QUÉ este stack resuelve su problema concreto. No saludes ni te presentes. No uses listas. Habla de su situación específica.
+Un usuario ha completado un diagnóstico. Escribe un párrafo breve (máximo 4 frases, en español, tono directo y cercano de founder a founder) explicando por qué este stack resuelve su problema concreto. No saludes ni te presentes. No uses listas. Habla de su situación específica.
+
+Reglas:
+- Usa solo los datos de abajo. No inventes hechos sobre su negocio (de dónde le llegan los clientes, qué le pasa, cómo trabaja) que no estén en los datos.
+- Di para qué sirve cada herramienta en su caso, con frases directas.
+- No uses contrastes del tipo "no es X, es Y", ni guiones largos (—), ni una frase final que resuma lo ya dicho.
 
 DATOS DEL USUARIO:
-- Problema principal: ${lead.problema_raiz ?? 'no especificado'}
-- Cómo lo resuelve hoy: ${lead.situacion_actual ?? 'no especificado'}
-- Tipo de negocio: ${lead.tipo_negocio ?? 'no especificado'}
-- Etapa: ${lead.etapa ?? 'no especificado'}
+- Problema principal: ${optionLabel('problema_raiz', lead.problema_raiz) ?? 'no especificado'}
+- Cómo lo resuelve hoy: ${optionLabel('situacion_actual', lead.situacion_actual) ?? 'no especificado'}
+- Tipo de negocio: ${optionLabel('tipo_negocio', lead.tipo_negocio) ?? 'no especificado'}
+- Etapa: ${optionLabel('etapa', lead.etapa) ?? 'no especificado'}
 ${lead.website_profile?.resumen ? `- Su negocio (según su web ${lead.website_url}): ${lead.website_profile.resumen} Modelo de negocio: ${lead.website_profile.modelo_negocio ?? 'no especificado'}. Nicho: ${lead.website_profile.nicho ?? 'no especificado'}. Cliente ideal: ${lead.website_profile.cliente_ideal ?? 'no especificado'}\n` : ''}- Arquetipo asignado: ${archetype.name} (${archetype.tagline})
 
 STACK RECOMENDADO — "${stack.name}" (${stack.cost}):

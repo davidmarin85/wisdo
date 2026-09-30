@@ -15,6 +15,7 @@
 //   {"type":"done", id, redirect, stack}     lead guardado
 //   {"type":"error", code, error}            fallo tras empezar el stream
 import type { APIRoute } from 'astro';
+import { createHmac } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { z } from 'zod';
@@ -25,6 +26,7 @@ import { resolveDiagnosis, validateAnswers, type QuizAnswers } from '@lib/wisdo-
 interface AnalyzeRequestBody {
   url?: string;
   problema_raiz?: string;
+  website?: string; // honeypot: campo oculto que solo rellenan los bots
   utm?: { source?: string; medium?: string; campaign?: string };
 }
 
@@ -59,7 +61,28 @@ const SALES_TOOLS = new Set([
   'ActiveCampaign', 'Brevo', 'Intercom', 'Crisp', 'Tidio', 'Calendly', 'Typeform',
 ]);
 
+// Límites de uso. Cada análisis es una llamada a Claude (~1 céntimo), así que
+// el tope global acota el gasto diario aunque el abuso venga de muchas IPs.
+const RATE_PER_IP = 5;
+const RATE_IP_WINDOW = '1 hour';
+const RATE_GLOBAL_DAILY = 200;
+
+const RATE_MESSAGES: Record<string, string> = {
+  ip: 'Has hecho varios análisis seguidos. Espera un rato y vuelve a intentarlo.',
+  global: 'Hoy hemos recibido muchos análisis. Vuelve a intentarlo mañana o reserva una llamada con nosotros.',
+};
+
 const anthropic = new Anthropic({ apiKey: import.meta.env.ANTHROPIC_API_KEY });
+
+function isSameOrigin(request: Request): boolean {
+  const origin = request.headers.get('origin');
+  if (!origin) return false;
+  try {
+    return new URL(origin).host === new URL(request.url).host;
+  } catch {
+    return false; // "null" u otros valores que no son una URL
+  }
+}
 
 function jsonResponse(payload: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(payload), {
@@ -68,7 +91,13 @@ function jsonResponse(payload: Record<string, unknown>, status = 200): Response 
   });
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  // Solo aceptamos peticiones hechas desde nuestra propia web. Un script puede
+  // falsear Origin, pero esto corta el uso directo desde otras webs.
+  if (!isSameOrigin(request)) {
+    return jsonResponse({ error: 'Origen no permitido' }, 403);
+  }
+
   let body: AnalyzeRequestBody;
   try {
     body = await request.json();
@@ -76,13 +105,37 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse({ error: 'JSON inválido' }, 400);
   }
 
-  const { url, problema_raiz, utm } = body;
+  const { url, problema_raiz, utm, website } = body;
+  if (website) {
+    return jsonResponse({ error: 'Petición no válida' }, 400);
+  }
   if (typeof url !== 'string' || url.length > 300) {
     return jsonResponse({ error: 'URL inválida', code: 'invalid_url' }, 400);
   }
   const problemaCheck = validateAnswers({ problema_raiz });
   if (!problema_raiz || problemaCheck.invalid.includes('problema_raiz')) {
     return jsonResponse({ error: 'problema_raiz inválido' }, 400);
+  }
+
+  // — 0. Límite de uso (antes de gastar nada en leer la web o en Claude) —
+  const supabase = createSupabaseAdminClient();
+  const ipHash = createHmac('sha256', import.meta.env.SUPABASE_SERVICE_ROLE_KEY)
+    .update(clientAddress ?? 'unknown')
+    .digest('hex');
+  const { data: rate, error: rateError } = await supabase.rpc('analyze_rate_check', {
+    p_ip_hash: ipHash,
+    p_per_ip: RATE_PER_IP,
+    p_ip_window: RATE_IP_WINDOW,
+    p_global_daily: RATE_GLOBAL_DAILY,
+  });
+  if (rateError) {
+    // Si el límite no se puede comprobar, cerramos: mejor un fallo que gasto sin control.
+    console.error('[api/analyze] rate check failed:', rateError.message);
+    return jsonResponse({ error: 'Servicio no disponible, inténtalo en un rato', code: 'unavailable' }, 503);
+  }
+  if (rate !== 'ok') {
+    console.warn('[api/analyze] rate limited:', rate);
+    return jsonResponse({ error: RATE_MESSAGES[rate] ?? RATE_MESSAGES.ip, code: 'rate_limited' }, 429);
   }
 
   // — 1. Leer la web (antes del stream, para poder responder 4xx) —
@@ -138,7 +191,6 @@ export const POST: APIRoute = async ({ request }) => {
         const { archetype, stackKey, stack } = resolveDiagnosis(answers);
 
         // — 4. Guardar en Supabase —
-        const supabase = createSupabaseAdminClient();
         const { data: lead, error } = await supabase
           .from('leads')
           .insert({

@@ -50,6 +50,11 @@ const STEPS = [
         </div>
       </fieldset>
 
+      <!-- Honeypot: invisible para personas, los bots lo rellenan. -->
+      <div class="dg-hp" aria-hidden="true">
+        <label>Website <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
       <p class="dg-error" role="alert" hidden></p>
       <button class="dg-submit" type="submit">Analizar mi web</button>
     </form>
@@ -240,7 +245,7 @@ const STEPS = [
       const res = await fetch('/api/analyze/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, problema_raiz, utm: utms() }),
+        body: JSON.stringify({ url, problema_raiz, website: data.get('website') ?? '', utm: utms() }),
       });
 
       if (!res.ok || !res.body) {
@@ -349,6 +354,7 @@ const STEPS = [
   .dg-option input { position: absolute; opacity: 0; pointer-events: none; }
   .dg-option-title { font-size: 15px; font-weight: 500; letter-spacing: -0.2px; }
   .dg-option-desc { font-size: 13px; line-height: 1.45; color: #a7a7a7; }
+  .dg-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .dg-error { margin: 0; font-size: 14px; color: #ff7a7a; }
   .dg-submit {
     align-self: flex-start;
