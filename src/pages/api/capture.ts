@@ -187,8 +187,9 @@ interface SendEmailParams {
 
 // Envía el email de diagnóstico con Resend. Devuelve si se envió con éxito.
 async function sendEmail({ email, id, archetype, stack, aiDiagnosis, resumen, siteHost }: SendEmailParams): Promise<boolean> {
-  const resultUrl = `${import.meta.env.PUBLIC_SITE_URL}/resultado/${id}/`;
-  const params = { archetype, stack, aiDiagnosis, resumen, siteHost, resultUrl };
+  const siteUrl = import.meta.env.PUBLIC_SITE_URL;
+  const resultUrl = `${siteUrl}/resultado/${id}/`;
+  const params = { archetype, stack, aiDiagnosis, resumen, siteHost, resultUrl, leadId: id, siteUrl };
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',

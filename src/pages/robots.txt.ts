@@ -6,6 +6,7 @@ const PRIVATE_PATHS = [
   '/dashboard/',
   '/api/',
   '/login/',
+  '/go/',
 ];
 
 export const GET: APIRoute = ({ request }) => {

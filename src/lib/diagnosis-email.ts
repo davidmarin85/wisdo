@@ -5,7 +5,7 @@
 // Todo lo que viene de Claude o de la web del usuario se escapa: el análisis
 // sale de contenido de terceros y no puede meter HTML en el email.
 import { BOOK_A_CALL_URL } from '@data/site';
-import { toolUrl } from '@lib/tool-links';
+import { toolLink } from '@lib/tool-links';
 import type { Archetype, Stack } from '@lib/wisdo-engine';
 
 export interface DiagnosisEmailParams {
@@ -15,6 +15,9 @@ export interface DiagnosisEmailParams {
   resumen: string | null;
   siteHost: string | null;
   resultUrl: string;
+  leadId: string;
+  /** Origen absoluto de la web (https://www.wisdo.io), para los enlaces /go/. */
+  siteUrl: string;
 }
 
 const C = {
@@ -51,7 +54,7 @@ export function diagnosisEmailSubject(stack: Stack): string {
 export function buildDiagnosisEmailHtml(p: DiagnosisEmailParams): string {
   const tools = p.stack.tools
     .map((t, i) => {
-      const url = toolUrl(t.name);
+      const url = toolLink(t.name, { from: 'email', lead: p.leadId, origin: p.siteUrl });
       return `
         <tr>
           <td style="padding:16px 0;border-top:1px solid ${C.border};">
@@ -162,7 +165,7 @@ export function buildDiagnosisEmailText(p: DiagnosisEmailParams): string {
   if (p.aiDiagnosis) lines.push('Por qué este stack es para ti', p.aiDiagnosis, '');
   lines.push('Tu stack');
   p.stack.tools.forEach((t, i) => {
-    const url = toolUrl(t.name);
+    const url = toolLink(t.name, { from: 'email', lead: p.leadId, origin: p.siteUrl });
     lines.push(`${i + 1}. ${t.name}: ${t.role}${url ? ` (${url})` : ''}`);
   });
   lines.push(
