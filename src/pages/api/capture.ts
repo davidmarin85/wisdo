@@ -5,6 +5,7 @@
 //   3. Dispara el email transaccional con Resend (src/lib/diagnosis-email.ts)
 import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
+import { logAiUsage, type TokenUsage } from '@lib/ai-usage';
 import { buildDiagnosisEmailHtml, buildDiagnosisEmailText, diagnosisEmailSubject } from '@lib/diagnosis-email';
 import { QUESTIONS, resolveDiagnosis, type Archetype, type QuizAnswers, type Stack } from '@lib/wisdo-engine';
 
@@ -166,7 +167,14 @@ Write the "why this stack fits you" paragraph:`;
     return null;
   }
 
-  const data = (await res.json()) as { content?: { type: string; text?: string }[] };
+  const data = (await res.json()) as {
+    model?: string;
+    usage?: TokenUsage;
+    content?: { type: string; text?: string }[];
+  };
+  if (data.usage) {
+    await logAiUsage({ route: 'capture', model: data.model ?? 'claude-sonnet-5', usage: data.usage, leadId: lead.id });
+  }
   const text = data.content
     ?.filter((b) => b.type === 'text')
     .map((b) => b.text ?? '')
