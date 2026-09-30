@@ -25,7 +25,7 @@ interface LeadRow {
   etapa: string | null;
   answers_raw: QuizAnswers | null;
   website_url: string | null;
-  website_profile: { resumen?: string; cliente_ideal?: string } | null;
+  website_profile: { resumen?: string; modelo_negocio?: string; nicho?: string; cliente_ideal?: string } | null;
 }
 
 function jsonResponse(payload: Record<string, unknown>, status = 200): Response {
@@ -119,7 +119,7 @@ DATOS DEL USUARIO:
 - Cómo lo resuelve hoy: ${lead.situacion_actual ?? 'no especificado'}
 - Tipo de negocio: ${lead.tipo_negocio ?? 'no especificado'}
 - Etapa: ${lead.etapa ?? 'no especificado'}
-${lead.website_profile?.resumen ? `- Su negocio (según su web ${lead.website_url}): ${lead.website_profile.resumen} Cliente ideal: ${lead.website_profile.cliente_ideal ?? 'no especificado'}\n` : ''}- Arquetipo asignado: ${archetype.name} (${archetype.tagline})
+${lead.website_profile?.resumen ? `- Su negocio (según su web ${lead.website_url}): ${lead.website_profile.resumen} Modelo de negocio: ${lead.website_profile.modelo_negocio ?? 'no especificado'}. Nicho: ${lead.website_profile.nicho ?? 'no especificado'}. Cliente ideal: ${lead.website_profile.cliente_ideal ?? 'no especificado'}\n` : ''}- Arquetipo asignado: ${archetype.name} (${archetype.tagline})
 
 STACK RECOMENDADO — "${stack.name}" (${stack.cost}):
 ${toolList}

@@ -17,6 +17,9 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 interface WebsiteProfile {
   resumen?: string;
+  modelo_negocio?: string;
+  servicios?: string[];
+  nicho?: string;
   cliente_ideal?: string;
   confianza?: string;
   detected_tools?: string[];
@@ -72,6 +75,13 @@ const etapaLabel = optionLabel('etapa', lead.etapa) ?? '—';
 
 const profile = lead.website_profile;
 const detectedTools = profile?.detected_tools ?? [];
+// Leads analizados antes de que existieran estos campos no los tienen.
+const analysis = [
+  { label: 'Modelo de negocio', value: profile?.modelo_negocio },
+  { label: 'Nicho', value: profile?.nicho },
+  { label: 'Perfil de cliente', value: profile?.cliente_ideal },
+].filter((a): a is { label: string; value: string } => Boolean(a.value));
+const servicios = profile?.servicios ?? [];
 const siteHost = lead.website_url ? new URL(lead.website_url).hostname.replace(/^www\./, '') : null;
 
 // Enlaces de afiliado: el motor y el marketplace escriben algunos nombres
@@ -90,21 +100,34 @@ const aiText = lead.ai_diagnosis;
   lang="es"
 >
   <div class="res">
-    <!-- 1. Hemos leído tu web -->
+    <!-- 1. Análisis de la web -->
     <section class="res-hero">
       <div class="res-eyebrow">Diagnóstico wisdo{siteHost && <> · {siteHost}</>}</div>
       {profile?.resumen ? (
         <>
-          <h1 class="res-h1">Hemos leído tu web.</h1>
+          <h1 class="res-h1">Hemos analizado tu web.</h1>
           <p class="res-lead">{profile.resumen}</p>
-          {profile.cliente_ideal && (
-            <p class="res-sub"><span class="res-mono">Cliente ideal</span> {profile.cliente_ideal}</p>
+          {(analysis.length > 0 || servicios.length > 0) && (
+            <div class="analysis">
+              {analysis.map((a) => (
+                <div class="analysis-item">
+                  <div class="tile-label">{a.label}</div>
+                  <div class="analysis-value">{a.value}</div>
+                </div>
+              ))}
+              {servicios.length > 0 && (
+                <div class="analysis-item analysis-item--wide">
+                  <div class="tile-label">Servicios</div>
+                  <div class="chips">{servicios.map((sv) => <span class="chip chip--text">{sv}</span>)}</div>
+                </div>
+              )}
+            </div>
           )}
         </>
       ) : (
         <>
           <h1 class="res-h1">Tu diagnóstico está listo.</h1>
-          <p class="res-lead">Con lo que nos has contado, este es el stack que más rápido ataca tu problema.</p>
+          <p class="res-lead">Este es el stack que mejor encaja con lo que nos has contado.</p>
         </>
       )}
     </section>
@@ -133,7 +156,7 @@ const aiText = lead.ai_diagnosis;
           {detectedTools.length > 0 ? (
             <div class="chips">{detectedTools.map((t) => <span class="chip">{t}</span>)}</div>
           ) : (
-            <div class="tile-note">Ninguna herramienta de ventas o marketing. Empiezas desde cero: mejor, sin nada que migrar.</div>
+            <div class="tile-note">No hemos encontrado herramientas de ventas ni de marketing, así que no tendrás nada que migrar.</div>
           )}
         </div>
       )}
@@ -186,12 +209,12 @@ const aiText = lead.ai_diagnosis;
       ) : (
         <div class="lock">
           <div class="lock-preview" aria-hidden="true">
-            <p>Tu negocio necesita un sistema que convierta visitas en conversaciones sin depender de que alguien lo haga a mano cada día. Con este stack, la captación y el seguimiento pasan a funcionar solos mientras tú te centras en cerrar.</p>
-            <p>El orden importa: primero la herramienta que alimenta el embudo, después la que mantiene vivos los contactos, y por último la que te avisa de quién está listo para comprar.</p>
+            <p>Este stack ataca el problema que nos has marcado con las herramientas que mejor encajan en la etapa de tu negocio. Te explicamos por qué cada una tiene sentido en tu caso.</p>
+            <p>Te llega también por email en cuanto nos dejes tu dirección.</p>
           </div>
           <form class="lock-card" data-capture-form novalidate>
             <div class="lock-title">Desbloquea tu diagnóstico personalizado</div>
-            <p class="lock-text">Te explicamos por qué este stack encaja con tu negocio y te lo mandamos por email para que lo tengas a mano.</p>
+            <p class="lock-text">Te explicamos por qué este stack encaja con tu negocio y te enviamos el informe por email.</p>
             <input type="hidden" name="id" value={lead.id} />
             <div class="lock-row">
               <input class="lock-input" name="email" type="email" required autocomplete="email" placeholder="tu@empresa.com" maxlength="254" aria-label="Email" />
@@ -208,7 +231,7 @@ const aiText = lead.ai_diagnosis;
     <section class="res-section cta">
       <div>
         <h2 class="res-h2 cta-title">¿Te lo montamos nosotros?</h2>
-        <p class="res-sub">Somos partners certificados de HubSpot, Google y Meta. En una llamada de 30 minutos revisamos tu diagnóstico y te decimos cómo ponerlo en marcha.</p>
+        <p class="res-sub">Somos partners certificados de HubSpot, Google y Meta. En una llamada revisamos tu diagnóstico contigo y te contamos cómo lo pondríamos en marcha.</p>
       </div>
       <a class="cta-btn" href={BOOK_A_CALL_URL} target="_blank" rel="noopener">Reservar una llamada</a>
     </section>
@@ -306,6 +329,34 @@ const aiText = lead.ai_diagnosis;
     max-width: 640px;
   }
   .res-sub .res-mono { margin-right: 8px; }
+
+  /* Análisis de la web */
+  .analysis {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .analysis-item {
+    padding: 18px;
+    border-right: 1px solid #1e1e1e;
+    min-width: 0;
+  }
+  .analysis-item:nth-child(3n) { border-right: 0; }
+  .analysis-item--wide {
+    grid-column: 1 / -1;
+    border-right: 0;
+    border-top: 1px solid #1e1e1e;
+  }
+  .analysis-value {
+    margin-top: 8px;
+    font-size: 15px;
+    line-height: 1.45;
+    color: #e6e6e6;
+  }
+  .chip--text { font-family: inherit; font-size: 13px; }
 
   /* Fichas */
   .res-tiles {
@@ -476,6 +527,9 @@ const aiText = lead.ai_diagnosis;
     .res { padding: 48px 16px 72px; gap: 44px; }
     .res-lead { font-size: 18px; }
     .res-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .analysis { grid-template-columns: 1fr; }
+    .analysis-item { border-right: 0; border-bottom: 1px solid #1e1e1e; }
+    .analysis-item--wide { border-top: 0; border-bottom: 0; }
     .cta { flex-direction: column; align-items: flex-start; padding: 24px; }
   }
   @media (max-width: 480px) {
