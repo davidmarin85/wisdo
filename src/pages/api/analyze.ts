@@ -20,7 +20,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { z } from 'zod';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
-import { readSite, SiteReadError, type SiteSnapshot } from '@lib/site-reader';
+import { normalizeUrl, readSite, SiteReadError, type SiteSnapshot } from '@lib/site-reader';
 import { resolveDiagnosis, validateAnswers, type QuizAnswers } from '@lib/wisdo-engine';
 
 interface AnalyzeRequestBody {
@@ -115,6 +115,14 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const problemaCheck = validateAnswers({ problema_raiz });
   if (!problema_raiz || problemaCheck.invalid.includes('problema_raiz')) {
     return jsonResponse({ error: 'problema_raiz inválido' }, 400);
+  }
+
+  // Formato de la URL antes de contar la petición: una errata no gasta intento.
+  try {
+    normalizeUrl(url);
+  } catch (e) {
+    const message = e instanceof SiteReadError ? e.message : 'URL inválida';
+    return jsonResponse({ error: message, code: 'invalid_url' }, 400);
   }
 
   // — 0. Límite de uso (antes de gastar nada en leer la web o en Claude) —

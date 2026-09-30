@@ -8,6 +8,9 @@ import { QUESTIONS } from '@lib/wisdo-engine';
 
 const problema = QUESTIONS.find((q) => q.id === 'problema_raiz')!;
 
+// Viene del formulario del hero de la home (/diagnostico/?url=…).
+const prefillUrl = (Astro.url.searchParams.get('url') ?? '').slice(0, 300);
+
 const STEPS = [
   { id: 'site', label: 'Leyendo tu web' },
   { id: 'tools', label: 'Herramientas que ya usas' },
@@ -34,7 +37,7 @@ const STEPS = [
     <form class="dg-form" data-dg-form novalidate>
       <label class="dg-field">
         <span class="dg-label">01 · Tu web</span>
-        <input class="dg-input" name="url" type="text" inputmode="url" autocomplete="url" placeholder="tuempresa.com" maxlength="300" required />
+        <input class="dg-input" name="url" type="text" inputmode="url" autocomplete="url" placeholder="tuempresa.com" maxlength="300" required value={prefillUrl} />
       </label>
 
       <fieldset class="dg-field">
