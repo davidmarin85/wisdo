@@ -2,7 +2,9 @@
 // /diagnosis/ — entrada del diagnóstico: URL de la web + UNA pregunta.
 // Al enviar, llama a /api/analyze y va pintando en directo lo que descubre
 // (stream NDJSON): web leída, herramientas, modelo de negocio, servicios,
-// nicho, cliente y stack. Al terminar redirige a /diagnosis/{id}/.
+// nicho, cliente y stack. Al terminar NO enseña el stack: pide el email
+// (/api/capture guarda el email, genera el "por qué" y envía el informe) y
+// solo entonces redirige a /diagnosis/{id}/, que ya sale desbloqueada.
 import SiteLayout from '@layouts/SiteLayout.astro';
 import { QUESTIONS } from '@lib/wisdo-engine';
 
@@ -82,6 +84,16 @@ const STEPS = [
         <p></p>
         <button type="button" class="dg-retry" data-dg-retry>Try another website</button>
       </div>
+      <form class="dg-gate" data-dg-gate hidden novalidate>
+        <div class="dg-gate-title">Your stack is ready.</div>
+        <p class="dg-gate-text">Leave your email to see the tools we recommend and why they fit your business. We also send you the full report.</p>
+        <div class="dg-gate-row">
+          <input class="dg-input" name="email" type="email" required autocomplete="email" placeholder="you@company.com" maxlength="254" aria-label="Email" />
+          <button class="dg-submit" type="submit">See my stack</button>
+        </div>
+        <p class="dg-error" role="alert" hidden></p>
+        <p class="dg-gate-legal">We only use your email to send you the diagnosis and, now and then, ideas to sell more. You can unsubscribe at any time.</p>
+      </form>
     </section>
   </div>
 </SiteLayout>
@@ -102,6 +114,17 @@ const STEPS = [
   const statusEl = panel.querySelector<HTMLElement>('[data-dg-status]')!;
   const hostEl = panel.querySelector<HTMLElement>('[data-dg-host]')!;
   const panelError = panel.querySelector<HTMLElement>('[data-dg-panel-error]')!;
+  const gate = panel.querySelector<HTMLFormElement>('[data-dg-gate]')!;
+  const gateInput = gate.querySelector<HTMLInputElement>('input[name="email"]')!;
+  const gateBtn = gate.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const gateError = gate.querySelector<HTMLParagraphElement>('.dg-error')!;
+  const GATE_BTN_LABEL = gateBtn.textContent;
+
+  // Lead recién guardado por /api/analyze; se rellena con el evento "done" y
+  // es lo que la puerta de email manda a /api/capture.
+  let pending: { id: string; redirect: string } | null = null;
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
   const stepEl = (id: string) => panel.querySelector<HTMLLIElement>(`[data-step="${id}"]`)!;
@@ -149,6 +172,12 @@ const STEPS = [
     panel.dataset.failed = 'false';
     statusEl.textContent = 'Analyzing your website';
     hostEl.textContent = '';
+    pending = null;
+    gate.hidden = true;
+    gate.reset();
+    gateError.hidden = true;
+    gateBtn.disabled = false;
+    gateBtn.textContent = GATE_BTN_LABEL;
   }
 
   function failPanel(message: string) {
@@ -204,10 +233,14 @@ const STEPS = [
         return true;
       }
       case 'done': {
-        setStep('stack', 'done', String(event.stack ?? ''));
+        // El nombre del stack no se enseña: es lo que desbloquea el email.
+        setStep('stack', 'done', 'Ready');
         statusEl.textContent = 'Analysis complete';
-        await sleep(1200);
-        window.location.href = String(event.redirect);
+        pending = { id: String(event.id), redirect: String(event.redirect) };
+        await sleep(600);
+        gate.hidden = false;
+        gate.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        gateInput.focus({ preventScroll: true });
         return false;
       }
       case 'error': {
@@ -274,6 +307,37 @@ const STEPS = [
       failPanel('The analysis was interrupted. Please try again.');
     } catch {
       failPanel('The connection was lost. Please try again.');
+    }
+  });
+
+  gate.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!pending) return;
+    gateError.hidden = true;
+
+    const email = gateInput.value.trim();
+    if (!EMAIL_RE.test(email)) {
+      gateError.textContent = 'Enter a valid email.';
+      gateError.hidden = false;
+      gateInput.focus();
+      return;
+    }
+
+    gateBtn.disabled = true;
+    gateBtn.textContent = 'Preparing your diagnosis…';
+    try {
+      const res = await fetch('/api/capture/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pending.id, email }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      window.location.href = pending.redirect;
+    } catch {
+      gateBtn.disabled = false;
+      gateBtn.textContent = GATE_BTN_LABEL;
+      gateError.textContent = 'We couldn’t save your email. Please try again.';
+      gateError.hidden = false;
     }
   });
 
@@ -478,7 +542,26 @@ const STEPS = [
     cursor: pointer;
   }
 
+  /* Puerta de email al terminar el análisis */
+  .dg-gate {
+    margin-top: 20px;
+    padding: 24px;
+    background: #0a0a0a;
+    border: 1px solid #313131;
+    border-radius: 8px;
+    animation: dg-in 0.35s ease-out;
+  }
+  .dg-gate-title { font-size: 20px; font-weight: 500; letter-spacing: -0.4px; }
+  .dg-gate-text { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: #a7a7a7; max-width: 520px; }
+  .dg-gate-row { display: flex; gap: 8px; margin-top: 16px; max-width: 520px; }
+  .dg-gate-row .dg-input { flex: 1; min-width: 0; padding: 12px 14px; font-size: 15px; }
+  .dg-gate-row .dg-submit { align-self: auto; padding: 12px 18px; font-size: 14px; white-space: nowrap; }
+  .dg-gate .dg-error { margin-top: 10px; font-size: 13px; }
+  .dg-gate .dg-submit:disabled { opacity: 0.7; cursor: progress; }
+  .dg-gate-legal { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: #7c7c7c; max-width: 520px; }
+
   @media (prefers-reduced-motion: reduce) {
+    .dg-gate,
     .dg-pulse,
     .dg-step[data-state='active'] .dg-step-icon,
     .dg-step[data-state='done'] .dg-step-value { animation: none; }
@@ -489,5 +572,9 @@ const STEPS = [
     .dg-submit { align-self: stretch; }
     .dg-panel { padding: 18px; }
     .dg-host { margin-left: 18px; width: 100%; }
+    .dg-gate { padding: 18px; }
+  }
+  @media (max-width: 480px) {
+    .dg-gate-row { flex-direction: column; }
   }
 </style>
