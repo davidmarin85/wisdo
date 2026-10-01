@@ -37,7 +37,8 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
     return redirect(`${back}&error=invalid_email`, 303);
   }
 
-  const supabase = createSupabaseServerClient({ request, cookies });
+  // Sin PKCE: así el token del email no va ligado a este navegador.
+  const supabase = createSupabaseServerClient({ request, cookies, flowType: 'implicit' });
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {

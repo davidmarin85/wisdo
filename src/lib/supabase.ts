@@ -5,9 +5,13 @@ import type { AstroCookies } from 'astro';
 interface ServerClientOptions {
   request: Request;
   cookies: AstroCookies;
+  /** 'pkce' (por defecto) para OAuth con ?code=. 'implicit' para los magic
+   *  links: el token del email se verifica en el callback con verifyOtp y no
+   *  necesita el code_verifier del navegador que pidió el enlace. */
+  flowType?: 'pkce' | 'implicit';
 }
 
-export function createSupabaseServerClient({ request, cookies }: ServerClientOptions) {
+export function createSupabaseServerClient({ request, cookies, flowType = 'pkce' }: ServerClientOptions) {
   const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL as string;
   const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY as string;
 
@@ -34,5 +38,5 @@ export function createSupabaseServerClient({ request, cookies }: ServerClientOpt
     },
   };
 
-  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, { cookies: cookieMethods });
+  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, { cookies: cookieMethods, auth: { flowType } });
 }
