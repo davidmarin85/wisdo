@@ -23,7 +23,8 @@ const ERRORS: Record<string, string> = {
   invalid_email: 'Enter a valid email address.',
   rate_limited: 'Too many requests. Wait a few minutes and try again.',
   magic_failed: 'We couldn’t send the link. Please try again.',
-  auth_failed: 'That link didn’t work. It may have expired, or been opened in a different browser. Request a new one.',
+  auth_failed: 'That link didn’t work. It may have expired or already been used. Request a new one.',
+  otp_expired: 'That link has expired or was already used. Request a new one.',
   missing_code: 'That link didn’t work. Request a new one.',
 };
 const errorMessage = error ? (ERRORS[error] ?? ERRORS.magic_failed) : null;
@@ -48,7 +49,7 @@ Astro.response.headers.set('Cache-Control', 'private, no-store');
     {sent ? (
       <>
         <h1 class="lg-h1">Check your email.</h1>
-        <p class="lg-lead">We sent a sign-in link{sentTo && <> to <strong>{sentTo}</strong></>}. Open it on this device and you’re in. If you can’t find it, check your spam folder.</p>
+        <p class="lg-lead">We sent a sign-in link{sentTo && <> to <strong>{sentTo}</strong></>}. Open it and you’re in. If you can’t find it, check your spam folder.</p>
         <a class="lg-back" href={`/login/?next=${encodeURIComponent(next)}`}>Use a different email</a>
       </>
     ) : (

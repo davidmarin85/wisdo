@@ -1,7 +1,7 @@
 // POST /api/auth/magic-link
 // Login sin contraseña: el formulario de /login/ manda el email y Supabase
-// envía un enlace. El enlace vuelve a /api/auth/callback/ con ?code=, el
-// mismo flujo PKCE que Google, así que el callback no cambia.
+// envía un enlace. Las plantillas de email (ver src/pages/api/auth/callback.ts)
+// enlazan a nuestro callback con token_hash, que lo verifica allí.
 //
 // Es el acceso natural al dashboard: el lead ya nos dio su email en el
 // diagnóstico, y los diagnósticos se le asocian por ese email.
