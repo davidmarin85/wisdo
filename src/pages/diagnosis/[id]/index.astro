@@ -232,6 +232,11 @@ const aiText = lead.ai_diagnosis;
       </div>
       <a class="cta-btn" href={BOOK_A_CALL_URL} target="_blank" rel="noopener">Book a call</a>
     </section>
+
+    <!-- 6. Dashboard -->
+    <p class="res-dash">
+      Want to come back to this? <a href="/login/?next=%2Fdashboard%2F">Open your dashboard</a> with the email you just left: your score, your stack and every analysis in one place.
+    </p>
   </div>
   )}
 </SiteLayout>
@@ -510,6 +515,9 @@ const aiText = lead.ai_diagnosis;
     white-space: nowrap;
   }
   .cta-btn:hover { color: #0a0a0a; opacity: 0.9; }
+  .res-dash { margin: -24px 0 0; font-size: 14px; line-height: 1.55; color: #7c7c7c; }
+  .res-dash a { color: #a7a7a7; text-decoration: underline; text-underline-offset: 3px; }
+  .res-dash a:hover { color: #ffffff; }
 
   @media (max-width: 720px) {
     .res { padding: 48px 16px 72px; gap: 44px; }
