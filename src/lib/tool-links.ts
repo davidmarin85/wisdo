@@ -8,7 +8,7 @@
 // pierde: el destino final es el mismo enlace.
 import { PARTNER_LINKS, type PartnerLink } from '@data/partner-links';
 
-export type ClickSource = 'market' | 'resultado' | 'email' | 'otro';
+export type ClickSource = 'market' | 'resultado' | 'email' | 'dashboard' | 'otro';
 
 const normalize = (s: string) =>
   s

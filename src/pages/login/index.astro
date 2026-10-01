@@ -1,15 +1,32 @@
 ---
-import BaseLayout from '@layouts/BaseLayout.astro';
+// /login/ — acceso al dashboard.
+// Magic link por email (el lead ya nos dio su email en el diagnóstico) y, como
+// alternativa, Google. Ambos vuelven a /api/auth/callback/?code=… y de ahí a
+// ?next= (por defecto /dashboard/).
+import SiteLayout from '@layouts/SiteLayout.astro';
 import { createSupabaseServerClient } from '@lib/supabase';
 import { getOAuthRedirectUrl } from '@lib/auth';
 
 const supabase = createSupabaseServerClient({ request: Astro.request, cookies: Astro.cookies });
 const { data: { user } } = await supabase.auth.getUser();
 
-if (user) return Astro.redirect('/dashboard/', 302);
+const rawNext = Astro.url.searchParams.get('next') ?? '/dashboard/';
+const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard/';
 
-const next = Astro.url.searchParams.get('next') ?? '/dashboard/';
+if (user) return Astro.redirect(next, 302);
+
+const sent = Astro.url.searchParams.get('sent') === '1';
+const sentTo = (Astro.url.searchParams.get('email') ?? '').slice(0, 254);
 const error = Astro.url.searchParams.get('error');
+
+const ERRORS: Record<string, string> = {
+  invalid_email: 'Enter a valid email address.',
+  rate_limited: 'Too many requests. Wait a few minutes and try again.',
+  magic_failed: 'We couldn’t send the link. Please try again.',
+  auth_failed: 'That link didn’t work. It may have expired, or been opened in a different browser. Request a new one.',
+  missing_code: 'That link didn’t work. Request a new one.',
+};
+const errorMessage = error ? (ERRORS[error] ?? ERRORS.magic_failed) : null;
 
 const { data: oauthData, error: oauthError } = await supabase.auth.signInWithOAuth({
   provider: 'google',
@@ -19,65 +36,141 @@ const { data: oauthData, error: oauthError } = await supabase.auth.signInWithOAu
     skipBrowserRedirect: true,
   },
 });
+if (oauthError) console.error('[login] signInWithOAuth error:', oauthError.message);
+const googleUrl = oauthData?.url ?? null;
 
-if (oauthError || !oauthData.url) {
-  throw new Error('Failed to build OAuth URL');
-}
-
-const googleUrl = oauthData.url;
+Astro.response.headers.set('Cache-Control', 'private, no-store');
 ---
 
-<BaseLayout title="Sign in — wisdo" description="Sign in to wisdo." noindex={true}>
-  <div class="login-container">
-    <h1>Sign in</h1>
+<SiteLayout title="Sign in — wisdo" description="Sign in to see your sales stack dashboard." noindex>
+  <div class="lg">
+    <div class="lg-eyebrow">Your dashboard</div>
+    {sent ? (
+      <>
+        <h1 class="lg-h1">Check your email.</h1>
+        <p class="lg-lead">We sent a sign-in link{sentTo && <> to <strong>{sentTo}</strong></>}. Open it on this device and you’re in. If you can’t find it, check your spam folder.</p>
+        <a class="lg-back" href={`/login/?next=${encodeURIComponent(next)}`}>Use a different email</a>
+      </>
+    ) : (
+      <>
+        <h1 class="lg-h1">Sign in to wisdo.</h1>
+        <p class="lg-lead">Use the email you left with your diagnosis and we’ll send you a link. No password.</p>
 
-    {error && <p class="error-message" role="alert">Authentication failed. Please try again.</p>}
+        <form class="lg-form" method="post" action="/api/auth/magic-link/">
+          <input type="hidden" name="next" value={next} />
+          <div class="lg-hp" aria-hidden="true">
+            <label>Website <input name="website" type="text" tabindex="-1" autocomplete="off" /></label>
+          </div>
+          <label class="lg-label" for="login-email">Email</label>
+          <div class="lg-row">
+            <input id="login-email" class="lg-input" name="email" type="email" required autocomplete="email" placeholder="you@company.com" maxlength="254" />
+            <button class="lg-btn" type="submit">Send me a link</button>
+          </div>
+          {errorMessage && <p class="lg-error" role="alert">{errorMessage}</p>}
+        </form>
 
-    <a href={googleUrl} class="btn-google">
-      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-        <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
-        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
-      </svg>
-      Continue with Google
-    </a>
+        {googleUrl && (
+          <>
+            <div class="lg-or"><span>or</span></div>
+            <a href={googleUrl} class="lg-google">
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+                <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+                <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/>
+              </svg>
+              Continue with Google
+            </a>
+          </>
+        )}
+
+        <p class="lg-note">No diagnosis yet? <a href="/diagnosis/">Analyze your website</a> first, it takes a few seconds.</p>
+      </>
+    )}
   </div>
-</BaseLayout>
+</SiteLayout>
 
 <style>
-  .login-container {
-    max-width: 24rem;
-    margin: var(--space-16) auto;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-    align-items: center;
-    text-align: center;
+  .lg {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 96px 24px 120px;
   }
-
-  .btn-google {
+  .lg-eyebrow,
+  .lg-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.85px;
+    text-transform: uppercase;
+    color: #a7a7a7;
+  }
+  .lg-h1 {
+    margin: 20px 0 0;
+    font-size: clamp(32px, 5vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    font-weight: 500;
+  }
+  .lg-lead { margin: 16px 0 0; font-size: 16px; line-height: 1.55; color: #a7a7a7; }
+  .lg-lead strong { color: #ffffff; font-weight: 500; }
+  .lg-form { margin-top: 32px; display: flex; flex-direction: column; gap: 10px; }
+  .lg-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .lg-row { display: flex; gap: 8px; }
+  .lg-input {
+    flex: 1;
+    min-width: 0;
+    background: #141414;
+    border: 1px solid #313131;
+    border-radius: 8px;
+    padding: 13px 16px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 16px;
+  }
+  .lg-input:focus { outline: none; border-color: #6798ff; }
+  .lg-btn {
+    background: #ffffff;
+    color: #0a0a0a;
+    border: 0;
+    border-radius: 8px;
+    padding: 13px 20px;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .lg-btn:hover { background: #e6e6e6; }
+  .lg-error { margin: 4px 0 0; font-size: 14px; color: #ff7a7a; }
+  .lg-or {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0;
+    color: #7c7c7c;
+    font-size: 13px;
+  }
+  .lg-or::before,
+  .lg-or::after { content: ''; flex: 1; height: 1px; background: #1e1e1e; }
+  .lg-google {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-6);
-    background: var(--color-surface);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    color: var(--color-text);
-    font-weight: var(--font-medium);
-    box-shadow: var(--shadow-sm);
-    transition: box-shadow var(--transition-fast);
+    gap: 10px;
+    background: #141414;
+    border: 1px solid #313131;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffffff;
   }
-
-  .btn-google:hover {
-    box-shadow: var(--shadow-md);
-    color: var(--color-text);
-  }
-
-  .error-message {
-    color: var(--color-error);
-    font-size: var(--text-sm);
+  .lg-google:hover { border-color: #454545; color: #ffffff; }
+  .lg-note { margin: 40px 0 0; font-size: 14px; color: #7c7c7c; }
+  .lg-note a,
+  .lg-back { color: #a7a7a7; text-decoration: underline; text-underline-offset: 3px; }
+  .lg-back { display: inline-block; margin-top: 28px; font-size: 14px; }
+  @media (max-width: 480px) {
+    .lg { padding: 64px 16px 96px; }
+    .lg-row { flex-direction: column; }
   }
 </style>

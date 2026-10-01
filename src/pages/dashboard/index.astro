@@ -1,11 +1,493 @@
 ---
+// /dashboard/ — el diagnóstico del usuario como panel.
+// El middleware ya ha comprobado la sesión. Los diagnósticos se asocian al
+// usuario por email (leads.email, guardado en minúsculas en /api/capture).
+// Se lee con service_role: el usuario solo ve filas con su propio email.
+//
+// Layout (inspirado en un panel bancario): saludo + acciones rápidas, una
+// tarjeta grande con el score de madurez comercial, la lista del stack a la
+// derecha y tres tarjetas abajo (negocio, herramientas detectadas, por qué).
 import DashboardLayout from '@layouts/DashboardLayout.astro';
+import { BOOK_A_CALL_URL } from '@data/site';
+import { createSupabaseAdminClient } from '@lib/supabase-admin';
+import { salesReadiness } from '@lib/sales-readiness';
+import { toolLink } from '@lib/tool-links';
+import { ARCHETYPES, QUESTIONS, STACKS, resolveDiagnosis, type QuizAnswers } from '@lib/wisdo-engine';
 
-// locals.user is set by middleware (already authenticated)
+interface WebsiteProfile {
+  resumen?: string;
+  modelo_negocio?: string;
+  servicios?: string[];
+  nicho?: string;
+  cliente_ideal?: string;
+  detected_tools?: string[];
+}
+
+interface LeadRow {
+  id: string;
+  created_at: string;
+  problema_raiz: string;
+  tipo_negocio: string | null;
+  etapa: string | null;
+  archetype: string | null;
+  stack_key: string | null;
+  answers_raw: QuizAnswers | null;
+  ai_diagnosis: string | null;
+  website_url: string | null;
+  website_profile: WebsiteProfile | null;
+}
+
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+
 const user = Astro.locals.user!;
+const email = (user.email ?? '').toLowerCase();
+
+const supabase = createSupabaseAdminClient();
+const { data: rows, error } = email
+  ? await supabase
+      .from('leads')
+      .select('id, created_at, problema_raiz, tipo_negocio, etapa, archetype, stack_key, answers_raw, ai_diagnosis, website_url, website_profile')
+      .eq('email', email)
+      .not('email_captured_at', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(10)
+      .overrideTypes<LeadRow[]>()
+  : { data: [], error: null };
+if (error) console.error('[dashboard] leads query failed:', error.message);
+
+const leads = rows ?? [];
+const lead = leads[0] ?? null;
+const previous = leads.slice(1);
+
+const hostOf = (url: string | null) => (url ? new URL(url).hostname.replace(/^www\./, '') : null);
+const dateOf = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+function optionLabel(questionId: string, value: string | null): string | null {
+  if (!value) return null;
+  return QUESTIONS.find((q) => q.id === questionId)?.options.find((o) => o.value === value)?.label ?? null;
+}
+
+// Todo lo derivado del último diagnóstico. Si el stack guardado ya no
+// existe (renombrado en el motor), se recalcula como en la página de informe.
+const view = lead
+  ? (() => {
+      const fallback = resolveDiagnosis(lead.answers_raw ?? {});
+      const stack = (lead.stack_key && STACKS[lead.stack_key]) || fallback.stack;
+      const archetype = Object.values(ARCHETYPES).find((a) => a.name === lead.archetype) ?? fallback.archetype;
+      const profile = lead.website_profile;
+      const detectedTools = profile?.detected_tools ?? [];
+      return {
+        host: hostOf(lead.website_url),
+        date: dateOf(lead.created_at),
+        reportHref: `/diagnosis/${lead.id}/`,
+        stack,
+        archetype,
+        profile,
+        detectedTools,
+        readiness: salesReadiness(detectedTools, stack),
+        problema: optionLabel('problema_raiz', lead.problema_raiz),
+        tipo: optionLabel('tipo_negocio', lead.tipo_negocio) ?? 'Other',
+        etapa: optionLabel('etapa', lead.etapa) ?? '—',
+        business: [
+          { label: 'Business model', value: profile?.modelo_negocio },
+          { label: 'Niche', value: profile?.nicho },
+          { label: 'Customer profile', value: profile?.cliente_ideal },
+        ].filter((b): b is { label: string; value: string } => Boolean(b.value)),
+      };
+    })()
+  : null;
+
+// Circunferencia del anillo del score (r = 54).
+const RING = 2 * Math.PI * 54;
 ---
 
-<DashboardLayout title="Dashboard" user={user}>
-  <h1>Dashboard</h1>
-  <p>Welcome back, {user.email}.</p>
+<DashboardLayout title="Dashboard" user={user} reportHref={view?.reportHref ?? null}>
+  {view && lead ? (
+    <>
+      <header class="hd">
+        <div>
+          <h1 class="hd-h1">Welcome back</h1>
+          <p class="hd-sub">
+            {view.host ? <a class="hd-host" href={lead.website_url!} target="_blank" rel="noopener">{view.host}</a> : 'Your diagnosis'}
+            <span class="hd-dot" aria-hidden="true">·</span>
+            analyzed {view.date}
+          </p>
+        </div>
+      </header>
+
+      <div class="actions">
+        <a class="action action--primary" href="/diagnosis/">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M4 12h16" /></svg>
+          New analysis
+        </a>
+        <a class="action" href={view.reportHref}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm8 0v5h5M9 13h6M9 17h6" /></svg>
+          Full report
+        </a>
+        <a class="action" href="/market/">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10l1.5-5h13L20 10M4 10h16M4 10v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9M10 20v-6h4v6" /></svg>
+          Browse tools
+        </a>
+        <a class="action" href={BOOK_A_CALL_URL} target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z" /></svg>
+          Book a call
+        </a>
+      </div>
+
+      <div class="grid grid--top">
+        <!-- Score de madurez comercial -->
+        <section class="card card--score" aria-labelledby="score-title">
+          <div class="card-head">
+            <h2 class="card-title" id="score-title">Sales readiness</h2>
+            <span class="pill">{view.readiness.label}</span>
+          </div>
+          <div class="score">
+            <div class="ring" role="img" aria-label={`${view.readiness.score} out of 100`}>
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle class="ring-track" cx="60" cy="60" r="54" />
+                <circle
+                  class="ring-fill"
+                  cx="60"
+                  cy="60"
+                  r="54"
+                  stroke-dasharray={RING}
+                  stroke-dashoffset={RING * (1 - view.readiness.score / 100)}
+                />
+              </svg>
+              <div class="ring-value"><span class="ring-num">{view.readiness.score}</span><span class="ring-max">/100</span></div>
+            </div>
+            <p class="score-text">
+              Based on the sales and marketing tools we found on {view.host ?? 'your website'}. Re-run the analysis after you set up a tool to see it move.
+            </p>
+          </div>
+          <ul class="areas">
+            {view.readiness.areas.map((a) => (
+              <li class="area" data-covered={a.covered.length > 0 ? 'true' : 'false'}>
+                <div class="area-row">
+                  <span class="area-label">{a.label}</span>
+                  <span class="area-value">
+                    {a.covered.length > 0 ? a.covered.join(', ') : a.suggestion ? <>Missing · try <strong>{a.suggestion}</strong></> : 'Missing'}
+                  </span>
+                </div>
+                <div class="bar"><div class="bar-fill" style={`width:${a.covered.length > 0 ? 100 : 0}%`}></div></div>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <!-- Stack recomendado -->
+        <section class="card" aria-labelledby="stack-title">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title" id="stack-title">Your stack</h2>
+              <p class="card-sub">{view.stack.name} · {view.stack.cost}</p>
+            </div>
+            <span class="archetype" title={view.archetype.tagline}>
+              <span aria-hidden="true">{view.archetype.emoji}</span> {view.archetype.name}
+            </span>
+          </div>
+          <ol class="tools">
+            {view.stack.tools.map((t, i) => {
+              const url = toolLink(t.name, { from: 'dashboard', lead: lead.id });
+              return (
+                <li class="tool">
+                  <span class="tool-num">{String(i + 1).padStart(2, '0')}</span>
+                  <div class="tool-body">
+                    <div class="tool-name">
+                      {t.name}
+                      {t.free && <span class="badge">Free plan</span>}
+                    </div>
+                    <div class="tool-role">{t.role}</div>
+                  </div>
+                  {url && <a class="tool-cta" href={url} target="_blank" rel="noopener sponsored">Try →</a>}
+                </li>
+              );
+            })}
+          </ol>
+          {view.stack.alt && <p class="card-foot"><span class="mono">Budget option</span> {view.stack.alt}</p>}
+        </section>
+      </div>
+
+      <div class="grid grid--bottom">
+        <!-- Negocio -->
+        <section class="card" aria-labelledby="biz-title">
+          <div class="card-head">
+            <h2 class="card-title" id="biz-title">Your business</h2>
+          </div>
+          <dl class="facts">
+            <div class="fact"><dt>Problem</dt><dd>{view.problema}</dd></div>
+            <div class="fact"><dt>Type</dt><dd>{view.tipo}</dd></div>
+            <div class="fact"><dt>Stage</dt><dd>{view.etapa}</dd></div>
+            {view.business.map((b) => (
+              <div class="fact"><dt>{b.label}</dt><dd>{b.value}</dd></div>
+            ))}
+          </dl>
+          {view.profile?.servicios?.length ? (
+            <div class="chips">{view.profile.servicios.map((s) => <span class="chip chip--text">{s}</span>)}</div>
+          ) : null}
+        </section>
+
+        <!-- Herramientas detectadas -->
+        <section class="card" aria-labelledby="tools-title">
+          <div class="card-head">
+            <h2 class="card-title" id="tools-title">On your website</h2>
+            <span class="count">{view.detectedTools.length}</span>
+          </div>
+          {view.detectedTools.length > 0 ? (
+            <div class="chips">{view.detectedTools.map((t) => <span class="chip">{t}</span>)}</div>
+          ) : (
+            <p class="empty">We didn’t find any sales or marketing tools on your site. Nothing to migrate: you start clean.</p>
+          )}
+          <p class="card-foot">Detected from the HTML of {view.host ?? 'your website'}.</p>
+        </section>
+
+        <!-- Por qué este stack -->
+        <section class="card card--why" aria-labelledby="why-title">
+          <div class="card-head">
+            <h2 class="card-title" id="why-title">Why this stack</h2>
+          </div>
+          <p class="why">
+            {lead.ai_diagnosis ?? 'This stack tackles the problem you picked with the tools that best fit your stage. The full explanation is in the report we emailed you.'}
+          </p>
+          <a class="link" href={view.reportHref}>Read the full report →</a>
+        </section>
+      </div>
+
+      {previous.length > 0 && (
+        <section class="card card--list" aria-labelledby="prev-title">
+          <div class="card-head">
+            <h2 class="card-title" id="prev-title">Previous analyses</h2>
+          </div>
+          <ul class="prev">
+            {previous.map((p) => (
+              <li class="prev-row">
+                <span class="prev-host">{hostOf(p.website_url) ?? 'Quiz diagnosis'}</span>
+                <span class="prev-stack">{(p.stack_key && STACKS[p.stack_key]?.name) ?? '—'}</span>
+                <span class="prev-date">{dateOf(p.created_at)}</span>
+                <a class="link" href={`/diagnosis/${p.id}/`}>Open →</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </>
+  ) : (
+    <div class="empty-state">
+      <div class="eyebrow">Your dashboard</div>
+      <h1 class="hd-h1">No diagnosis yet.</h1>
+      <p class="empty-lead">
+        We couldn’t find a diagnosis for <strong>{user.email}</strong>. Analyze your website and leave this same email at the end, and it will show up here.
+      </p>
+      <a class="action action--primary" href="/diagnosis/">Analyze my website</a>
+    </div>
+  )}
 </DashboardLayout>
+
+<style>
+  .eyebrow,
+  .mono,
+  .facts dt,
+  .area-label,
+  .tool-num,
+  .prev-date {
+    font-family: var(--db-mono);
+    font-size: 12px;
+    letter-spacing: 0.85px;
+    text-transform: uppercase;
+    color: var(--db-muted);
+  }
+
+  /* Cabecera */
+  .hd { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .hd-h1 {
+    margin: 0;
+    font-size: clamp(30px, 4vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -1.2px;
+    font-weight: 500;
+  }
+  .hd-sub { margin: 10px 0 0; font-size: 15px; color: var(--db-muted); }
+  .hd-host { color: var(--db-text-2); }
+  .hd-host:hover { color: var(--db-accent); }
+  .hd-dot { margin: 0 8px; color: var(--db-faint); }
+
+  /* Acciones rápidas */
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 9999px;
+    background: var(--db-surface);
+    border: 1px solid var(--db-border);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--db-text-2);
+  }
+  .action:hover { border-color: var(--db-border-strong); color: var(--db-text); }
+  .action--primary { background: var(--db-accent); border-color: var(--db-accent); color: #0a0a0a; }
+  .action--primary:hover { background: #7ea8ff; border-color: #7ea8ff; color: #0a0a0a; }
+  .action svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Rejillas */
+  .grid { display: grid; gap: 16px; margin-top: 24px; }
+  .grid--top { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+  .grid--bottom { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  /* Tarjetas */
+  .card {
+    background: var(--db-surface);
+    border: 1px solid var(--db-border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .card--list { margin-top: 16px; }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .card-title { margin: 0; font-size: 16px; font-weight: 500; letter-spacing: -0.2px; }
+  .card-sub { margin: 4px 0 0; font-size: 13px; color: var(--db-muted); }
+  .card-foot { margin: auto 0 0; padding-top: 14px; font-size: 13px; line-height: 1.5; color: var(--db-faint); }
+  .card-foot .mono { margin-right: 8px; }
+  .pill,
+  .count,
+  .archetype {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid var(--db-border-strong);
+    color: var(--db-text-2);
+    white-space: nowrap;
+  }
+  .pill { color: var(--db-accent); border-color: rgba(103, 152, 255, 0.4); }
+  .link { font-size: 14px; font-weight: 500; color: var(--db-accent); }
+  .link:hover { color: var(--db-text); }
+  .empty { margin: 16px 0 0; font-size: 14px; line-height: 1.5; color: var(--db-muted); }
+
+  /* Score */
+  .score { display: flex; align-items: center; gap: 24px; margin-top: 20px; }
+  .ring { position: relative; width: 132px; height: 132px; flex: none; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--db-border-strong); stroke-width: 8; }
+  .ring-fill {
+    fill: none;
+    stroke: var(--db-accent);
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.9s ease-out;
+  }
+  .ring-value {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    padding-top: 48px;
+    gap: 2px;
+  }
+  .ring-num { font-size: 34px; font-weight: 500; letter-spacing: -1.2px; line-height: 1; }
+  .ring-max { font-size: 13px; color: var(--db-muted); }
+  .score-text { margin: 0; font-size: 14px; line-height: 1.55; color: var(--db-muted); }
+  .areas { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  .area-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .area-value { font-size: 13px; color: var(--db-muted); text-align: right; min-width: 0; }
+  .area[data-covered='true'] .area-value { color: var(--db-text-2); }
+  .area-value strong { font-weight: 500; color: var(--db-text-2); }
+  .bar { height: 4px; margin-top: 8px; border-radius: 2px; background: var(--db-border-strong); overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 2px; background: var(--db-accent); }
+  .area[data-covered='true'] .bar-fill { background: var(--db-green); }
+
+  /* Stack */
+  .tools { list-style: none; margin: 16px 0 0; padding: 0; }
+  .tool {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid var(--db-border);
+  }
+  .tool-num { color: var(--db-accent); padding-top: 3px; }
+  .tool-body { flex: 1; min-width: 0; }
+  .tool-name { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tool-role { margin-top: 3px; font-size: 13px; line-height: 1.45; color: var(--db-muted); }
+  .tool-cta { font-size: 13px; font-weight: 500; color: var(--db-accent); white-space: nowrap; padding-top: 2px; }
+  .tool-cta:hover { color: var(--db-text); }
+  .badge {
+    font-family: var(--db-mono);
+    font-size: 11px;
+    color: var(--db-green);
+    border: 1px solid rgba(19, 194, 138, 0.4);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  /* Negocio */
+  .facts { margin: 16px 0 0; display: flex; flex-direction: column; gap: 12px; }
+  .fact dt { margin: 0; }
+  .fact dd { margin: 4px 0 0; font-size: 14px; line-height: 1.45; color: var(--db-text-2); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .chip {
+    font-family: var(--db-mono);
+    font-size: 12px;
+    border: 1px solid var(--db-border-strong);
+    border-radius: 4px;
+    padding: 3px 8px;
+    color: var(--db-text-2);
+  }
+  .chip--text { font-family: inherit; font-size: 13px; }
+
+  /* Por qué */
+  .card--why { border-left: 3px solid var(--db-accent); }
+  .why {
+    margin: 16px 0 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--db-text-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 8;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card--why .link { margin-top: auto; padding-top: 14px; }
+
+  /* Anteriores */
+  .prev { list-style: none; margin: 8px 0 0; padding: 0; }
+  .prev-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.5fr) auto auto;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--db-border);
+    font-size: 14px;
+  }
+  .prev-host { color: var(--db-text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prev-stack { color: var(--db-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prev-date { text-transform: none; letter-spacing: 0; }
+
+  /* Sin diagnóstico */
+  .empty-state { max-width: 560px; padding-top: 24px; }
+  .empty-lead { margin: 16px 0 28px; font-size: 16px; line-height: 1.55; color: var(--db-muted); }
+  .empty-lead strong { color: var(--db-text); font-weight: 500; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ring-fill { transition: none; }
+  }
+  @media (max-width: 1100px) {
+    .grid--top { grid-template-columns: 1fr; }
+    .grid--bottom { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card--why { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .grid--bottom { grid-template-columns: 1fr; }
+    .card { padding: 18px; }
+    .score { flex-direction: column; align-items: flex-start; }
+    .area-row { flex-direction: column; gap: 2px; }
+    .area-value { text-align: left; }
+    .prev-row { grid-template-columns: 1fr auto; }
+    .prev-stack { display: none; }
+  }
+</style>

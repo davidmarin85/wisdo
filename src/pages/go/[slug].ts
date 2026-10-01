@@ -1,4 +1,4 @@
-// GET /go/{slug}/?from=market|resultado|email&lead={uuid}
+// GET /go/{slug}/?from=market|resultado|email|dashboard&lead={uuid}
 // Apunta el clic en Supabase (affiliate_clicks) y redirige al enlace de
 // afiliado de PartnerStack. La redirección es lo importante: si Supabase va
 // lento o falla, se redirige igual sin apuntar el clic.
@@ -6,7 +6,7 @@ import type { APIRoute } from 'astro';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
 import { partnerBySlug, type ClickSource } from '@lib/tool-links';
 
-const SOURCES = new Set<ClickSource>(['market', 'resultado', 'email', 'otro']);
+const SOURCES = new Set<ClickSource>(['market', 'resultado', 'email', 'dashboard', 'otro']);
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LOG_TIMEOUT_MS = 800;
 

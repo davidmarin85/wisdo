@@ -44,7 +44,10 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse({ error: 'Invalid JSON' }, 400);
   }
 
-  const { id, email } = body;
+  const { id } = body;
+  // En minúsculas: el dashboard asocia los diagnósticos al usuario por este
+  // email, y Supabase Auth guarda los emails en minúsculas.
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
   if (!id || !UUID_RE.test(id) || !email || !EMAIL_RE.test(email)) {
     return jsonResponse({ error: 'Invalid id or email' }, 400);
   }
