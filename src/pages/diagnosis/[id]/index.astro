@@ -4,9 +4,11 @@
 // no se cachea. Se lee con service_role y solo se piden las columnas que se
 // pintan: el email del lead nunca sale al HTML.
 //
-// El "por qué este stack" (ai_diagnosis) está bloqueado hasta que el usuario
-// deja su email: el formulario llama a /api/capture, que genera el texto con
-// Claude y envía el email; al volver recargamos la página ya desbloqueada.
+// El resultado entero está bloqueado hasta que el usuario deja su email.
+// Normalmente llega ya desbloqueado (la puerta de email vive en /diagnosis/,
+// al acabar el análisis); si entra sin email (reload, enlace copiado), la
+// página solo pinta la puerta: el formulario llama a /api/capture, que genera
+// el "por qué" con Claude y envía el email, y al volver recargamos.
 import SiteLayout from '@layouts/SiteLayout.astro';
 import { BOOK_A_CALL_URL } from '@data/site';
 import { toolLink } from '@lib/tool-links';
@@ -89,10 +91,30 @@ const aiText = lead.ai_diagnosis;
 ---
 
 <SiteLayout
-  title={`Your stack: ${stack.name} — wisdo`}
+  title={unlocked ? `Your stack: ${stack.name} — wisdo` : 'Your diagnosis is ready — wisdo'}
   description="Your personalized sales stack diagnosis."
   noindex
 >
+  {!unlocked && (
+    <div class="res">
+      <section class="res-hero">
+        <div class="res-eyebrow">wisdo diagnosis{siteHost && <> · {siteHost}</>}</div>
+        <h1 class="res-h1">Your diagnosis is ready.</h1>
+        <p class="res-lead">Leave your email to see the sales stack we recommend{siteHost ? ` for ${siteHost}` : ''} and why it fits your business. We also send you the full report.</p>
+      </section>
+      <form class="gate" data-capture-form novalidate>
+        <input type="hidden" name="id" value={lead.id} />
+        <div class="gate-row">
+          <input class="gate-input" name="email" type="email" required autocomplete="email" placeholder="you@company.com" maxlength="254" aria-label="Email" />
+          <button class="gate-btn" type="submit">See my stack</button>
+        </div>
+        <p class="gate-error" role="alert" hidden></p>
+        <p class="gate-legal">We only use your email to send you the diagnosis and, now and then, ideas to sell more. You can unsubscribe at any time.</p>
+      </form>
+    </div>
+  )}
+
+  {unlocked && (
   <div class="res">
     <!-- 1. Análisis de la web -->
     <section class="res-hero">
@@ -190,36 +212,16 @@ const aiText = lead.ai_diagnosis;
       <p class="res-disclosure">Some links are affiliate links: if you sign up through them we may earn a commission, at no extra cost to you.</p>
     </section>
 
-    <!-- 4. Por qué este stack (bloqueado hasta dejar el email) -->
+    <!-- 4. Por qué este stack -->
     <section class="res-section">
       <div class="res-eyebrow">Why this stack fits you</div>
-      {unlocked ? (
-        <div class="why">
-          {aiText ? (
-            <p class="why-text">{aiText}</p>
-          ) : (
-            <p class="why-text">We’ve sent the full diagnosis to your email. If you can’t find it, check your spam or promotions folder.</p>
-          )}
-        </div>
-      ) : (
-        <div class="lock">
-          <div class="lock-preview" aria-hidden="true">
-            <p>This stack tackles the problem you picked with the tools that best fit your business stage. We explain why each one makes sense in your case.</p>
-            <p>You also get it by email as soon as you leave your address.</p>
-          </div>
-          <form class="lock-card" data-capture-form novalidate>
-            <div class="lock-title">Unlock your personalized diagnosis</div>
-            <p class="lock-text">We explain why this stack fits your business and email you the report.</p>
-            <input type="hidden" name="id" value={lead.id} />
-            <div class="lock-row">
-              <input class="lock-input" name="email" type="email" required autocomplete="email" placeholder="you@company.com" maxlength="254" aria-label="Email" />
-              <button class="lock-btn" type="submit">Unlock</button>
-            </div>
-            <p class="lock-error" role="alert" hidden></p>
-            <p class="lock-legal">We only use your email to send you the diagnosis and, now and then, ideas to sell more. You can unsubscribe at any time.</p>
-          </form>
-        </div>
-      )}
+      <div class="why">
+        {aiText ? (
+          <p class="why-text">{aiText}</p>
+        ) : (
+          <p class="why-text">We’ve sent the full diagnosis to your email. If you can’t find it, check your spam or promotions folder.</p>
+        )}
+      </div>
     </section>
 
     <!-- 5. CTA agencia -->
@@ -231,14 +233,16 @@ const aiText = lead.ai_diagnosis;
       <a class="cta-btn" href={BOOK_A_CALL_URL} target="_blank" rel="noopener">Book a call</a>
     </section>
   </div>
+  )}
 </SiteLayout>
 
 <script>
   const form = document.querySelector<HTMLFormElement>('[data-capture-form]');
   if (form) {
-    const btn = form.querySelector<HTMLButtonElement>('.lock-btn')!;
+    const btn = form.querySelector<HTMLButtonElement>('.gate-btn')!;
     const input = form.querySelector<HTMLInputElement>('input[name="email"]')!;
-    const errorEl = form.querySelector<HTMLParagraphElement>('.lock-error')!;
+    const errorEl = form.querySelector<HTMLParagraphElement>('.gate-error')!;
+    const btnLabel = btn.textContent;
     const id = form.querySelector<HTMLInputElement>('input[name="id"]')!.value;
 
     const showError = (msg: string) => {
@@ -268,7 +272,7 @@ const aiText = lead.ai_diagnosis;
         window.location.reload();
       } catch {
         btn.disabled = false;
-        btn.textContent = 'Unlock';
+        btn.textContent = btnLabel;
         showError('We couldn’t save your email. Please try again.');
       }
     });
@@ -435,40 +439,28 @@ const aiText = lead.ai_diagnosis;
   .tool-cta:hover { color: #ffffff; }
   .res-disclosure { margin: 16px 0 0; font-size: 13px; line-height: 1.5; color: #7c7c7c; }
 
-  /* Bloqueo */
-  .why,
-  .lock {
+  /* Por qué este stack */
+  .why {
     margin-top: 16px;
+    padding: 24px;
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    border-left: 3px solid #6798ff;
+    border-radius: 8px;
+  }
+  .why-text { margin: 0; font-size: 17px; line-height: 1.65; color: #e6e6e6; }
+
+  /* Puerta de email (resultado sin desbloquear) */
+  .gate {
+    margin-top: -16px;
+    padding: 24px;
     background: #141414;
     border: 1px solid #1e1e1e;
     border-radius: 8px;
+    max-width: 640px;
   }
-  .why { padding: 24px; border-left: 3px solid #6798ff; }
-  .why-text { margin: 0; font-size: 17px; line-height: 1.65; color: #e6e6e6; }
-  .lock { position: relative; overflow: hidden; }
-  .lock-preview {
-    padding: 24px;
-    font-size: 17px;
-    line-height: 1.65;
-    color: #e6e6e6;
-    filter: blur(6px);
-    user-select: none;
-    pointer-events: none;
-  }
-  .lock-preview p { margin: 0 0 12px; }
-  .lock-card {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 24px;
-    background: linear-gradient(180deg, rgba(20, 20, 20, 0.55), rgba(20, 20, 20, 0.95) 45%);
-  }
-  .lock-title { font-size: 20px; font-weight: 500; letter-spacing: -0.4px; }
-  .lock-text { margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: #a7a7a7; max-width: 520px; }
-  .lock-row { display: flex; gap: 8px; margin-top: 16px; max-width: 520px; }
-  .lock-input {
+  .gate-row { display: flex; gap: 8px; }
+  .gate-input {
     flex: 1;
     min-width: 0;
     background: #0a0a0a;
@@ -479,8 +471,8 @@ const aiText = lead.ai_diagnosis;
     font: inherit;
     font-size: 15px;
   }
-  .lock-input:focus { outline: none; border-color: #6798ff; }
-  .lock-btn {
+  .gate-input:focus { outline: none; border-color: #6798ff; }
+  .gate-btn {
     background: #ffffff;
     color: #0a0a0a;
     border: 0;
@@ -492,9 +484,9 @@ const aiText = lead.ai_diagnosis;
     cursor: pointer;
     white-space: nowrap;
   }
-  .lock-btn:disabled { opacity: 0.7; cursor: progress; }
-  .lock-error { margin: 10px 0 0; font-size: 13px; color: #ff7a7a; }
-  .lock-legal { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: #7c7c7c; max-width: 520px; }
+  .gate-btn:disabled { opacity: 0.7; cursor: progress; }
+  .gate-error { margin: 10px 0 0; font-size: 13px; color: #ff7a7a; }
+  .gate-legal { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: #7c7c7c; }
 
   /* CTA */
   .cta {
@@ -529,7 +521,6 @@ const aiText = lead.ai_diagnosis;
     .cta { flex-direction: column; align-items: flex-start; padding: 24px; }
   }
   @media (max-width: 480px) {
-    .lock-row { flex-direction: column; }
-    .lock-preview { min-height: 360px; }
+    .gate-row { flex-direction: column; }
   }
 </style>
