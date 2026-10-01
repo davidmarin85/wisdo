@@ -1,0 +1,27 @@
+---
+// /dashboard/analyze/ — nuevo análisis sin salir del dashboard.
+// Mismo escáner que /diagnosis/, pero sin puerta de email: el diagnóstico se
+// asocia al email de la sesión y al terminar se vuelve a /dashboard/ con el
+// score actualizado.
+import DashboardLayout from '@layouts/DashboardLayout.astro';
+import DiagnosisScanner from '@components/diagnosis/DiagnosisScanner.astro';
+
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+
+const user = Astro.locals.user!;
+const prefillUrl = (Astro.url.searchParams.get('url') ?? '').slice(0, 300);
+---
+
+<DashboardLayout title="New analysis" user={user} active="analyze">
+  <div class="an">
+    <h1 class="an-h1">New analysis</h1>
+    <p class="an-lead">Analyze your website again after setting up a tool to see your score move, or analyze another website. It takes a few seconds.</p>
+    <DiagnosisScanner prefillUrl={prefillUrl} userEmail={user.email ?? null} afterUrl="/dashboard/" />
+  </div>
+</DashboardLayout>
+
+<style>
+  .an { max-width: 760px; }
+  .an-h1 { margin: 0; font-size: clamp(30px, 4vw, 40px); line-height: 1.1; letter-spacing: -1.2px; font-weight: 500; }
+  .an-lead { margin: 12px 0 0; font-size: 16px; line-height: 1.55; color: var(--db-muted); }
+</style>

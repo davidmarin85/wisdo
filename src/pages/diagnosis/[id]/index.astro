@@ -9,37 +9,18 @@
 // al acabar el análisis); si entra sin email (reload, enlace copiado), la
 // página solo pinta la puerta: el formulario llama a /api/capture, que genera
 // el "por qué" con Claude y envía el email, y al volver recargamos.
+//
+// El informe en sí está en components/diagnosis/DiagnosisReport.astro, que
+// comparte con el dashboard (/dashboard/report/).
 import SiteLayout from '@layouts/SiteLayout.astro';
-import { BOOK_A_CALL_URL } from '@data/site';
-import { toolLink } from '@lib/tool-links';
+import DiagnosisReport from '@components/diagnosis/DiagnosisReport.astro';
 import { createSupabaseAdminClient } from '@lib/supabase-admin';
-import { ARCHETYPES, QUESTIONS, STACKS, resolveDiagnosis, type QuizAnswers } from '@lib/wisdo-engine';
+import { REPORT_COLUMNS, type ReportLead } from '@lib/report-lead';
+import { STACKS, resolveDiagnosis } from '@lib/wisdo-engine';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-interface WebsiteProfile {
-  resumen?: string;
-  modelo_negocio?: string;
-  servicios?: string[];
-  nicho?: string;
-  cliente_ideal?: string;
-  confianza?: string;
-  detected_tools?: string[];
-}
-
-interface ResultLead {
-  id: string;
-  problema_raiz: string;
-  tipo_negocio: string | null;
-  etapa: string | null;
-  archetype: string | null;
-  stack_key: string | null;
-  answers_raw: QuizAnswers | null;
-  email_captured_at: string | null;
-  ai_diagnosis: string | null;
-  website_url: string | null;
-  website_profile: WebsiteProfile | null;
-}
+type ResultLead = ReportLead & { email_captured_at: string | null };
 
 Astro.response.headers.set('Cache-Control', 'private, no-store');
 Astro.response.headers.set('X-Robots-Tag', 'noindex, nofollow');
@@ -52,7 +33,7 @@ if (!UUID_RE.test(id)) {
 const supabase = createSupabaseAdminClient();
 const { data: lead } = await supabase
   .from('leads')
-  .select('id, problema_raiz, tipo_negocio, etapa, archetype, stack_key, answers_raw, email_captured_at, ai_diagnosis, website_url, website_profile')
+  .select(`${REPORT_COLUMNS}, email_captured_at`)
   .eq('id', id)
   .maybeSingle<ResultLead>();
 
@@ -60,34 +41,9 @@ if (!lead) {
   return new Response(null, { status: 404 });
 }
 
-// Si el stack guardado ya no existe (renombrado en el motor), se recalcula.
-const fallback = resolveDiagnosis(lead.answers_raw ?? {});
-const stack = (lead.stack_key && STACKS[lead.stack_key]) || fallback.stack;
-const archetype = Object.values(ARCHETYPES).find((a) => a.name === lead.archetype) ?? fallback.archetype;
-
-function optionLabel(questionId: string, value: string | null): string | null {
-  if (!value) return null;
-  const q = QUESTIONS.find((x) => x.id === questionId);
-  return q?.options.find((o) => o.value === value)?.label ?? null;
-}
-
-const problemaLabel = optionLabel('problema_raiz', lead.problema_raiz);
-const tipoLabel = optionLabel('tipo_negocio', lead.tipo_negocio) ?? 'Other';
-const etapaLabel = optionLabel('etapa', lead.etapa) ?? '—';
-
-const profile = lead.website_profile;
-const detectedTools = profile?.detected_tools ?? [];
-// Leads analizados antes de que existieran estos campos no los tienen.
-const analysis = [
-  { label: 'Business model', value: profile?.modelo_negocio },
-  { label: 'Niche', value: profile?.nicho },
-  { label: 'Customer profile', value: profile?.cliente_ideal },
-].filter((a): a is { label: string; value: string } => Boolean(a.value));
-const servicios = profile?.servicios ?? [];
+const stack = (lead.stack_key && STACKS[lead.stack_key]) || resolveDiagnosis(lead.answers_raw ?? {}).stack;
 const siteHost = lead.website_url ? new URL(lead.website_url).hostname.replace(/^www\./, '') : null;
-
 const unlocked = Boolean(lead.email_captured_at);
-const aiText = lead.ai_diagnosis;
 ---
 
 <SiteLayout
@@ -95,13 +51,13 @@ const aiText = lead.ai_diagnosis;
   description="Your personalized sales stack diagnosis."
   noindex
 >
-  {!unlocked && (
-    <div class="res">
-      <section class="res-hero">
-        <div class="res-eyebrow">wisdo diagnosis{siteHost && <> · {siteHost}</>}</div>
-        <h1 class="res-h1">Your diagnosis is ready.</h1>
-        <p class="res-lead">Leave your email to see the sales stack we recommend{siteHost ? ` for ${siteHost}` : ''} and why it fits your business. We also send you the full report.</p>
-      </section>
+  {unlocked ? (
+    <DiagnosisReport lead={lead} from="resultado" showDashboardLink />
+  ) : (
+    <div class="lockd">
+      <div class="lockd-eyebrow">wisdo diagnosis{siteHost && <> · {siteHost}</>}</div>
+      <h1 class="lockd-h1">Your diagnosis is ready.</h1>
+      <p class="lockd-lead">Leave your email to see the sales stack we recommend{siteHost ? ` for ${siteHost}` : ''} and why it fits your business. We also send you the full report.</p>
       <form class="gate" data-capture-form novalidate>
         <input type="hidden" name="id" value={lead.id} />
         <div class="gate-row">
@@ -112,132 +68,6 @@ const aiText = lead.ai_diagnosis;
         <p class="gate-legal">We only use your email to send you the diagnosis and, now and then, ideas to sell more. You can unsubscribe at any time.</p>
       </form>
     </div>
-  )}
-
-  {unlocked && (
-  <div class="res">
-    <!-- 1. Análisis de la web -->
-    <section class="res-hero">
-      <div class="res-eyebrow">wisdo diagnosis{siteHost && <> · {siteHost}</>}</div>
-      {profile?.resumen ? (
-        <>
-          <h1 class="res-h1">We analyzed your website.</h1>
-          <p class="res-lead">{profile.resumen}</p>
-          {(analysis.length > 0 || servicios.length > 0) && (
-            <div class="analysis">
-              {analysis.map((a) => (
-                <div class="analysis-item">
-                  <div class="tile-label">{a.label}</div>
-                  <div class="analysis-value">{a.value}</div>
-                </div>
-              ))}
-              {servicios.length > 0 && (
-                <div class="analysis-item analysis-item--wide">
-                  <div class="tile-label">Services</div>
-                  <div class="chips">{servicios.map((sv) => <span class="chip chip--text">{sv}</span>)}</div>
-                </div>
-              )}
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <h1 class="res-h1">Your diagnosis is ready.</h1>
-          <p class="res-lead">This is the stack that best fits what you told us.</p>
-        </>
-      )}
-    </section>
-
-    <!-- 2. Fichas -->
-    <section class="res-tiles" aria-label="Resumen">
-      <div class="tile">
-        <div class="tile-label">Problem</div>
-        <div class="tile-value tile-value--sm">{problemaLabel}</div>
-      </div>
-      <div class="tile">
-        <div class="tile-label">Business</div>
-        <div class="tile-value">{tipoLabel}</div>
-      </div>
-      <div class="tile">
-        <div class="tile-label">Stage</div>
-        <div class="tile-value">{etapaLabel}</div>
-      </div>
-      <div class="tile">
-        <div class="tile-label">Stack cost</div>
-        <div class="tile-value tile-value--accent">{stack.cost}</div>
-      </div>
-      {lead.website_url && (
-        <div class="tile tile--wide">
-          <div class="tile-label">Tools detected on your website</div>
-          {detectedTools.length > 0 ? (
-            <div class="chips">{detectedTools.map((t) => <span class="chip">{t}</span>)}</div>
-          ) : (
-            <div class="tile-note">We didn’t find any sales or marketing tools, so you won’t have anything to migrate.</div>
-          )}
-        </div>
-      )}
-    </section>
-
-    <!-- 3. Arquetipo + stack -->
-    <section class="res-section">
-      <div class="res-eyebrow">Your profile</div>
-      <div class="archetype">
-        <span class="archetype-emoji" aria-hidden="true">{archetype.emoji}</span>
-        <div>
-          <div class="archetype-name">{archetype.name}</div>
-          <div class="archetype-tag">{archetype.tagline}</div>
-        </div>
-      </div>
-
-      <h2 class="res-h2">{stack.name}</h2>
-      <div class="stack">
-        {stack.tools.map((t, i) => {
-          const url = toolLink(t.name, { from: 'resultado', lead: lead.id });
-          return (
-            <article class="tool">
-              <div class="tool-head">
-                <span class="res-mono tool-num">{String(i + 1).padStart(2, '0')}</span>
-                <span class="tool-name">{t.name}</span>
-                {t.free && <span class="tool-badge">Free plan</span>}
-              </div>
-              <p class="tool-role">{t.role}</p>
-              {url && (
-                <a class="tool-cta" href={url} target="_blank" rel="noopener sponsored">Try {t.name} →</a>
-              )}
-            </article>
-          );
-        })}
-      </div>
-      {stack.alt && <p class="res-sub"><span class="res-mono">Budget option</span> {stack.alt}</p>}
-      <p class="res-disclosure">Some links are affiliate links: if you sign up through them we may earn a commission, at no extra cost to you.</p>
-    </section>
-
-    <!-- 4. Por qué este stack -->
-    <section class="res-section">
-      <div class="res-eyebrow">Why this stack fits you</div>
-      <div class="why">
-        {aiText ? (
-          <p class="why-text">{aiText}</p>
-        ) : (
-          <p class="why-text">We’ve sent the full diagnosis to your email. If you can’t find it, check your spam or promotions folder.</p>
-        )}
-      </div>
-    </section>
-
-    <!-- 5. CTA agencia -->
-    <section class="res-section cta">
-      <div>
-        <h2 class="res-h2 cta-title">Want us to set it up for you?</h2>
-        <p class="res-sub">We’re certified HubSpot, Google and Meta partners. On a call we’ll go through your diagnosis with you and explain how we’d put it in place.</p>
-      </div>
-      <a class="cta-btn" href={BOOK_A_CALL_URL} target="_blank" rel="noopener">Book a call</a>
-    </section>
-
-    <!-- 6. Dashboard -->
-    <p class="res-dash">
-      Want to come back to this? <a href="/login/?next=%2Fdashboard%2F">Open your dashboard</a> with the email you just left: your score, your stack and every analysis in one place.
-    </p>
-  </div>
   )}
 </SiteLayout>
 
@@ -285,24 +115,19 @@ const aiText = lead.ai_diagnosis;
 </script>
 
 <style>
-  .res {
+  .lockd {
     max-width: 960px;
     margin: 0 auto;
     padding: 72px 24px 96px;
-    display: flex;
-    flex-direction: column;
-    gap: 56px;
   }
-  .res-eyebrow,
-  .res-mono,
-  .tile-label {
+  .lockd-eyebrow {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     letter-spacing: 0.85px;
     text-transform: uppercase;
     color: #a7a7a7;
   }
-  .res-h1 {
+  .lockd-h1 {
     margin: 20px 0 0;
     font-size: clamp(34px, 5vw, 56px);
     line-height: 1.1;
@@ -310,14 +135,7 @@ const aiText = lead.ai_diagnosis;
     font-weight: 500;
     text-wrap: balance;
   }
-  .res-h2 {
-    margin: 32px 0 0;
-    font-size: clamp(24px, 3.2vw, 34px);
-    line-height: 1.2;
-    letter-spacing: -0.8px;
-    font-weight: 500;
-  }
-  .res-lead {
+  .lockd-lead {
     margin: 20px 0 0;
     font-size: 20px;
     line-height: 1.5;
@@ -325,139 +143,10 @@ const aiText = lead.ai_diagnosis;
     color: #e6e6e6;
     max-width: 720px;
   }
-  .res-sub {
-    margin: 16px 0 0;
-    font-size: 15px;
-    line-height: 1.55;
-    color: #a7a7a7;
-    max-width: 640px;
-  }
-  .res-sub .res-mono { margin-right: 8px; }
 
-  /* Análisis de la web */
-  .analysis {
-    margin-top: 28px;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    border: 1px solid #1e1e1e;
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .analysis-item {
-    padding: 18px;
-    border-right: 1px solid #1e1e1e;
-    min-width: 0;
-  }
-  .analysis-item:nth-child(3n) { border-right: 0; }
-  .analysis-item--wide {
-    grid-column: 1 / -1;
-    border-right: 0;
-    border-top: 1px solid #1e1e1e;
-  }
-  .analysis-value {
-    margin-top: 8px;
-    font-size: 15px;
-    line-height: 1.45;
-    color: #e6e6e6;
-  }
-  .chip.chip--text { font-family: inherit; font-size: 13px; }
-
-  /* Fichas */
-  .res-tiles {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-  }
-  .tile {
-    background: #141414;
-    border: 1px solid #1e1e1e;
-    border-radius: 8px;
-    padding: 18px;
-    min-width: 0;
-  }
-  .tile--wide { grid-column: 1 / -1; }
-  .tile-value {
-    margin-top: 8px;
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: -0.5px;
-  }
-  .tile-value--sm { font-size: 15px; line-height: 1.35; letter-spacing: -0.2px; }
-  .tile-value--accent { color: #6798ff; }
-  .tile-note { margin-top: 8px; font-size: 14px; color: #a7a7a7; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .chip {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    border: 1px solid #313131;
-    border-radius: 4px;
-    padding: 3px 8px;
-    color: #e6e6e6;
-  }
-
-  /* Arquetipo + stack */
-  .archetype {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 16px;
-  }
-  .archetype-emoji {
-    font-size: 28px;
-    width: 56px;
-    height: 56px;
-    display: grid;
-    place-items: center;
-    background: #141414;
-    border: 1px solid #1e1e1e;
-    border-radius: 8px;
-  }
-  .archetype-name { font-size: 18px; font-weight: 500; }
-  .archetype-tag { font-size: 14px; color: #a7a7a7; margin-top: 2px; }
-  .stack {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
-    margin-top: 20px;
-  }
-  .tool {
-    background: #141414;
-    border: 1px solid #1e1e1e;
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-  }
-  .tool-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .tool-num { color: #6798ff; }
-  .tool-name { font-size: 17px; font-weight: 500; letter-spacing: -0.3px; }
-  .tool-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: #13c28a;
-    border: 1px solid rgba(19, 194, 138, 0.4);
-    border-radius: 4px;
-    padding: 2px 6px;
-  }
-  .tool-role { margin: 12px 0 0; font-size: 14px; line-height: 1.5; color: #a7a7a7; flex: 1; }
-  .tool-cta { margin-top: 16px; font-size: 14px; font-weight: 500; color: #6798ff; }
-  .tool-cta:hover { color: #ffffff; }
-  .res-disclosure { margin: 16px 0 0; font-size: 13px; line-height: 1.5; color: #7c7c7c; }
-
-  /* Por qué este stack */
-  .why {
-    margin-top: 16px;
-    padding: 24px;
-    background: #141414;
-    border: 1px solid #1e1e1e;
-    border-left: 3px solid #6798ff;
-    border-radius: 8px;
-  }
-  .why-text { margin: 0; font-size: 17px; line-height: 1.65; color: #e6e6e6; }
-
-  /* Puerta de email (resultado sin desbloquear) */
+  /* Puerta de email */
   .gate {
-    margin-top: -16px;
+    margin-top: 40px;
     padding: 24px;
     background: #141414;
     border: 1px solid #1e1e1e;
@@ -493,40 +182,9 @@ const aiText = lead.ai_diagnosis;
   .gate-error { margin: 10px 0 0; font-size: 13px; color: #ff7a7a; }
   .gate-legal { margin: 12px 0 0; font-size: 12px; line-height: 1.5; color: #7c7c7c; }
 
-  /* CTA */
-  .cta {
-    background: #141414;
-    border: 1px solid #1e1e1e;
-    border-radius: 8px;
-    padding: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-  }
-  .cta-title { margin-top: 0; }
-  .cta-btn {
-    background: #ffffff;
-    color: #0a0a0a;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    white-space: nowrap;
-  }
-  .cta-btn:hover { color: #0a0a0a; opacity: 0.9; }
-  .res-dash { margin: -24px 0 0; font-size: 14px; line-height: 1.55; color: #7c7c7c; }
-  .res-dash a { color: #a7a7a7; text-decoration: underline; text-underline-offset: 3px; }
-  .res-dash a:hover { color: #ffffff; }
-
   @media (max-width: 720px) {
-    .res { padding: 48px 16px 72px; gap: 44px; }
-    .res-lead { font-size: 18px; }
-    .res-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .analysis { grid-template-columns: 1fr; }
-    .analysis-item { border-right: 0; border-bottom: 1px solid #1e1e1e; }
-    .analysis-item--wide { border-top: 0; border-bottom: 0; }
-    .cta { flex-direction: column; align-items: flex-start; padding: 24px; }
+    .lockd { padding: 48px 16px 72px; }
+    .lockd-lead { font-size: 18px; }
   }
   @media (max-width: 480px) {
     .gate-row { flex-direction: column; }

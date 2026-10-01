@@ -80,7 +80,7 @@ const view = lead
       return {
         host: hostOf(lead.website_url),
         date: dateOf(lead.created_at),
-        reportHref: `/diagnosis/${lead.id}/`,
+        reportHref: '/dashboard/report/',
         stack,
         archetype,
         profile,
@@ -102,7 +102,7 @@ const view = lead
 const RING = 2 * Math.PI * 54;
 ---
 
-<DashboardLayout title="Dashboard" user={user} reportHref={view?.reportHref ?? null}>
+<DashboardLayout title="Dashboard" user={user} active="home">
   {view && lead ? (
     <>
       <header class="hd">
@@ -117,7 +117,7 @@ const RING = 2 * Math.PI * 54;
       </header>
 
       <div class="actions">
-        <a class="action action--primary" href="/diagnosis/">
+        <a class="action action--primary" href="/dashboard/analyze/">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M4 12h16" /></svg>
           New analysis
         </a>
@@ -125,7 +125,7 @@ const RING = 2 * Math.PI * 54;
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm8 0v5h5M9 13h6M9 17h6" /></svg>
           Full report
         </a>
-        <a class="action" href="/market/">
+        <a class="action" href="/market/" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10l1.5-5h13L20 10M4 10h16M4 10v9a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-9M10 20v-6h4v6" /></svg>
           Browse tools
         </a>
@@ -265,7 +265,7 @@ const RING = 2 * Math.PI * 54;
                 <span class="prev-host">{hostOf(p.website_url) ?? 'Quiz diagnosis'}</span>
                 <span class="prev-stack">{(p.stack_key && STACKS[p.stack_key]?.name) ?? '—'}</span>
                 <span class="prev-date">{dateOf(p.created_at)}</span>
-                <a class="link" href={`/diagnosis/${p.id}/`}>Open →</a>
+                <a class="link" href={`/dashboard/report/?id=${p.id}`}>Open →</a>
               </li>
             ))}
           </ul>
@@ -279,7 +279,7 @@ const RING = 2 * Math.PI * 54;
       <p class="empty-lead">
         We couldn’t find a diagnosis for <strong>{user.email}</strong>. Analyze your website and leave this same email at the end, and it will show up here.
       </p>
-      <a class="action action--primary" href="/diagnosis/">Analyze my website</a>
+      <a class="action action--primary" href="/dashboard/analyze/">Analyze my website</a>
     </div>
   )}
 </DashboardLayout>

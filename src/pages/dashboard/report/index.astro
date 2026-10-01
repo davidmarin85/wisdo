@@ -1,0 +1,62 @@
+---
+// /dashboard/report/ — el informe completo dentro del dashboard.
+// Sin ?id= muestra el último diagnóstico del usuario; con ?id= uno concreto,
+// siempre que sea suyo (mismo email). Un id ajeno se trata como inexistente.
+import DashboardLayout from '@layouts/DashboardLayout.astro';
+import DiagnosisReport from '@components/diagnosis/DiagnosisReport.astro';
+import { createSupabaseAdminClient } from '@lib/supabase-admin';
+import { REPORT_COLUMNS, type ReportLead } from '@lib/report-lead';
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+Astro.response.headers.set('Cache-Control', 'private, no-store');
+
+const user = Astro.locals.user!;
+const email = (user.email ?? '').toLowerCase();
+const requestedId = Astro.url.searchParams.get('id');
+const id = requestedId && UUID_RE.test(requestedId) ? requestedId : null;
+
+let lead: ReportLead | null = null;
+if (email) {
+  let query = createSupabaseAdminClient()
+    .from('leads')
+    .select(REPORT_COLUMNS)
+    .eq('email', email)
+    .not('email_captured_at', 'is', null);
+  query = id ? query.eq('id', id) : query.order('created_at', { ascending: false });
+  const { data, error } = await query.limit(1).maybeSingle<ReportLead>();
+  if (error) console.error('[dashboard/report] query failed:', error.message);
+  lead = data ?? null;
+}
+---
+
+<DashboardLayout title="Full report" user={user} active="report">
+  {lead ? (
+    <DiagnosisReport lead={lead} from="dashboard" embedded />
+  ) : (
+    <div class="empty">
+      <h1 class="empty-h1">{id ? 'Report not found.' : 'No report yet.'}</h1>
+      <p class="empty-lead">
+        {id
+          ? 'This report doesn’t exist or belongs to a different account.'
+          : 'Analyze your website and your full report will show up here.'}
+      </p>
+      <a class="empty-btn" href="/dashboard/analyze/">Analyze a website</a>
+    </div>
+  )}
+</DashboardLayout>
+
+<style>
+  .empty { max-width: 560px; padding-top: 24px; }
+  .empty-h1 { margin: 0; font-size: clamp(30px, 4vw, 40px); line-height: 1.1; letter-spacing: -1.2px; font-weight: 500; }
+  .empty-lead { margin: 16px 0 28px; font-size: 16px; line-height: 1.55; color: var(--db-muted); }
+  .empty-btn {
+    display: inline-flex;
+    padding: 10px 16px;
+    border-radius: 9999px;
+    background: var(--db-accent);
+    color: #0a0a0a;
+    font-size: 14px;
+    font-weight: 500;
+  }
+</style>
