@@ -1,28 +1,9 @@
 ---
 import SiteLayout from '@layouts/SiteLayout.astro';
 import { tools, categories } from '@data/tools';
-import { toolLink } from '@lib/tool-links';
 import DiagnosisForm from '@components/site/DiagnosisForm.astro';
+import MarketSections from '@components/site/MarketSections.astro';
 
-// Single source of truth for the client-side grid, comparator, table and diagnostic.
-const marketData = {
-  tools: tools.map(t => ({
-    name: t.name,
-    mono: t.mono,
-    cat: t.category,
-    tagline: t.tagline,
-    desc: t.description,
-    bestFor: t.bestFor,
-    tags: t.tags,
-    // Valoración de G2 con su número de reseñas; guion si no la mostramos.
-    rating: t.rating && t.reviewCount ? `★ ${t.rating} on G2 (${t.reviewCount.toLocaleString('en-US')})` : '—',
-    priceLabel: t.priceLabel,
-    ctaLabel: `${t.cta} \u2192`,
-    // Enlace de seguimiento /go/ si hay programa de afiliado.
-    link: toolLink(t.name, { from: 'market' }) ?? t.externalUrl,
-  })),
-  cats: categories.map(c => c.label),
-};
 ---
 
 <SiteLayout
@@ -44,9 +25,9 @@ const marketData = {
         <a href="#tools" style="border:1px solid #313131; border-radius:4px; padding:4px 10px; font-size:14px; color:#a7a7a7;" class="h9">Lead gen</a>
       </div>
       <div style="display:flex; gap:40px; margin-top:40px; flex-wrap:wrap; font-size:14px; color:#a7a7a7;">
-        <div><span style="color:#6798ff;">◆</span> {tools.length} tools vetted</div>
-        <div><span style="color:#6798ff;">◆</span> {categories.length - 1} categories</div>
-        <div><span style="color:#6798ff;">◆</span> 100% hand-picked</div>
+        <div><span style="color:var(--accent);">◆</span> {tools.length} tools vetted</div>
+        <div><span style="color:var(--accent);">◆</span> {categories.length - 1} categories</div>
+        <div><span style="color:var(--accent);">◆</span> 100% hand-picked</div>
       </div>
     </div>
   </section>
@@ -64,53 +45,11 @@ const marketData = {
     </div>
   </section>
 
-  <section id="tools" style="border-bottom:1px solid #1e1e1e;">
-    <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
-      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Featured tools</div>
-      <div style="display:flex; align-items:baseline; gap:16px; margin-top:32px; flex-wrap:wrap;">
-        <h2 style="margin:0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500;">Browse the marketplace</h2>
-        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7; border:1px solid #313131; border-radius:4px; padding:3px 8px;"><span id="count-label">{tools.length} TOOLS</span></span>
-      </div>
-      <div style="display:flex; gap:8px; margin-top:24px; flex-wrap:wrap;">
-        <div id="cat-chips" style="display:contents;"></div>
-      </div>
-      <div id="tool-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin-top:40px;"></div>
-      <p style="margin:24px 0 0; font-size:13px; line-height:1.5; color:#7c7c7c;">Some of these links are affiliate links: if you sign up through them we may earn a commission, at no extra cost to you.</p>
-      </div>
-    </div>
-  </section>
-
-  <section id="compare" style="border-bottom:1px solid #1e1e1e;">
-    <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
-      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Interactive comparator</div>
-      <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500;">Compare tools</h2>
-      <p style="margin:16px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7;">Select up to 3 tools and compare them side by side.</p>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:24px;">
-        <div id="cmp-toggles" style="display:contents;"></div>
-      </div>
-      <div id="cmp-cols" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:32px;"></div>
-      <div style="margin-top:16px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#7c7c7c;"><span id="cmp-hint"></span></div>
-    </div>
-  </section>
-
-  <section id="comparison" style="border-bottom:1px solid #1e1e1e;">
-    <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
-      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">Full comparison</div>
-      <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500;">All tools, at a glance</h2>
-      <p style="margin:16px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:560px;">An honest comparison of what each tool does and costs. Some links are affiliate links.</p>
-      <div style="margin-top:40px; border:1px solid #1e1e1e; border-radius:8px; overflow:hidden;">
-        <div class="cmp-head" style="display:grid; grid-template-columns:1.2fr 1fr 1.4fr 1.2fr 0.6fr; gap:16px; padding:12px 24px; background:#1e1e1e; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">
-          <span>TOOL</span><span>CATEGORY</span><span>BEST FOR</span><span>PRICING</span><span>RATING</span>
-        </div>
-        <div id="all-rows"></div>
-      </div>
-      <p style="margin:16px 0 0; font-size:14px; line-height:1.57; color:#7c7c7c;">Some links are partner links — using them supports wisdo at no extra cost to you.</p>
-    </div>
-  </section>
+  <MarketSections />
 
   <section id="stack-cta" style="background-color:#0a0a0a; background-image:linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px); background-size:48px 48px; border-bottom:1px solid #1e1e1e;">
     <div style="max-width:1200px; margin:0 auto; padding:96px 24px; text-align:center;">
-      <h2 style="margin:0 auto; font-size:clamp(32px,4.4vw,56px); line-height:1.14; letter-spacing:-1.74px; font-weight:500; max-width:800px;">Build your sales stack in one place.</h2>
+      <h2 style="margin:0 auto; font-size:clamp(32px,4.4vw,56px); line-height:1.14; letter-spacing:-1.74px; font-weight:500; max-width:800px;">Ready to build your stack?</h2>
       <p style="margin:16px auto 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:520px;">Browse vetted tools, compare them honestly, and start with the ones that fit your goals.</p>
       <div style="display:flex; gap:8px; margin-top:32px; justify-content:center; flex-wrap:wrap;">
         <a href="#tools" style="background:#ffffff; color:#0a0a0a; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h11">Explore the marketplace</a>
@@ -119,7 +58,6 @@ const marketData = {
     </div>
   </section>
 
-<script type="application/json" id="market-data" is:inline set:html={JSON.stringify(marketData)}></script>
 
 </SiteLayout>
 
@@ -132,130 +70,3 @@ const marketData = {
   .h11:hover { background:#e6e6e6 !important; color:#0a0a0a !important }
   .h12:hover { border-color:#7c7c7c !important }
 </style>
-
-<script>
-
-  type Tool = {
-    name: string; mono: string; cat: string; tagline: string; desc: string;
-    bestFor: string; tags: string[]; rating: string; priceLabel: string;
-    ctaLabel: string; link: string;
-  };
-  type MarketData = { tools: Tool[]; cats: string[] };
-
-  const dataEl = document.getElementById('market-data');
-  const DATA: MarketData = dataEl
-    ? JSON.parse(dataEl.textContent || '{"tools":[],"cats":[]}')
-    : { tools: [], cats: [] };
-
-  const TOOLS = DATA.tools;
-  const CATS = DATA.cats;
-
-  const S: { cat: string; compare: Record<string, boolean> } = {
-    cat: 'All',
-    compare: { 'Apollo.io': true, 'lemlist': true, 'ManyChat': true },
-  };
-
-  const $ = (id: string) => document.getElementById(id);
-  const esc = (s: string) =>
-    String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-  const CHIP_ON  = 'cursor:pointer;background:#ffffff;color:#0a0a0a;border:1px solid #ffffff;border-radius:9999px;padding:6px 14px;font-size:14px;font-weight:500;';
-  const CHIP_OFF = 'cursor:pointer;border:1px solid #313131;color:#a7a7a7;border-radius:9999px;padding:6px 14px;font-size:14px;';
-  const SEL_ON   = 'cursor:pointer;border:1px solid #6798ff;color:#ffffff;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:500;';
-  const SEL_OFF  = 'cursor:pointer;border:1px solid #313131;color:#a7a7a7;border-radius:8px;padding:8px 14px;font-size:14px;';
-  const MONO     = "font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.85px;";
-
-  function renderTools() {
-    const list = TOOLS.filter(t => S.cat === 'All' || t.cat === S.cat);
-    const countEl = $('count-label');
-    if (countEl) countEl.textContent = list.length + (list.length === 1 ? ' TOOL' : ' TOOLS');
-
-    const chips = $('cat-chips');
-    if (chips) {
-      chips.innerHTML = CATS.map(c =>
-        `<span data-cat="${c}" style="${c === S.cat ? CHIP_ON : CHIP_OFF}">${c}</span>`).join('');
-    }
-
-    const grid = $('tool-grid');
-    if (!grid) return;
-    grid.innerHTML = list.map(t =>
-      '<div style="background:#141414;border:1px solid #1e1e1e;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:16px;">' +
-        '<div style="display:flex;align-items:center;gap:12px;">' +
-          `<span style="width:36px;height:36px;border-radius:8px;border:1px solid #313131;background:#1e1e1e;display:inline-flex;align-items:center;justify-content:center;${MONO}font-size:14px;color:#6798ff;">${t.mono}</span>` +
-          `<div><div style="font-size:20px;font-weight:500;letter-spacing:-0.42px;">${esc(t.name)}</div>` +
-          `<div style="${MONO}color:#a7a7a7;">${t.cat.toUpperCase()} · ${t.rating}</div></div>` +
-        '</div>' +
-        `<div style="font-size:14px;font-weight:500;letter-spacing:-0.25px;">${esc(t.tagline)}</div>` +
-        `<p style="margin:0;font-size:14px;line-height:1.57;letter-spacing:-0.25px;color:#a7a7a7;">${esc(t.desc)}</p>` +
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-          t.tags.map(g => `<span style="border:1px solid #313131;border-radius:4px;padding:3px 8px;font-size:12px;color:#a7a7a7;">${esc(g)}</span>`).join('') +
-        '</div>' +
-        '<div style="margin-top:auto;padding-top:16px;border-top:1px solid #1e1e1e;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">' +
-          `<span style="font-size:14px;color:#a7a7a7;">${esc(t.priceLabel)}</span><span style="flex:1;"></span>` +
-          `<a href="${t.link}" target="_blank" rel="noopener sponsored" style="font-size:14px;font-weight:500;color:#6798ff;">${t.ctaLabel}</a>` +
-        '</div></div>').join('');
-  }
-
-  function renderCompare() {
-    const toggles = $('cmp-toggles');
-    if (toggles) {
-      toggles.innerHTML = TOOLS.map(t =>
-        `<span data-cmp="${t.name}" style="${S.compare[t.name] ? SEL_ON : SEL_OFF}">${esc(t.name)}</span>`).join('');
-    }
-
-    const cols = TOOLS.filter(t => S.compare[t.name]);
-    const colsEl = $('cmp-cols');
-    if (colsEl) {
-      const row = (l: string, v: string, c?: string) =>
-        `<div><div style="${MONO}color:#a7a7a7;">${l}</div><div style="font-size:14px;margin-top:4px;${c || ''}">${esc(v)}</div></div>`;
-      colsEl.innerHTML = cols.map(t =>
-        '<div style="background:#141414;border:1px solid #1e1e1e;border-radius:8px;padding:24px;">' +
-          `<div style="font-size:20px;font-weight:500;letter-spacing:-0.42px;">${esc(t.name)}</div>` +
-          '<div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">' +
-            row('CATEGORY', t.cat) + row('BEST FOR', t.bestFor) + row('PRICING', t.priceLabel) + row('RATING', t.rating, 'color:#6798ff;') +
-          '</div>' +
-          `<a href="${t.link}" target="_blank" rel="noopener sponsored" style="display:inline-block;margin-top:24px;font-size:14px;font-weight:500;color:#6798ff;">${t.ctaLabel}</a>` +
-        '</div>').join('');
-    }
-
-    const n = cols.length;
-    const hint = $('cmp-hint');
-    if (hint) {
-      hint.textContent = n === 0
-        ? 'SELECT AT LEAST ONE TOOL TO COMPARE'
-        : (n >= 3 ? 'MAXIMUM OF 3 SELECTED' : `${n} OF 3 SELECTED`);
-    }
-  }
-
-  function renderTable() {
-    const rows = $('all-rows');
-    if (!rows) return;
-    rows.innerHTML = TOOLS.map(t =>
-      '<div class="cmp-row" style="display:grid;grid-template-columns:1.2fr 1fr 1.4fr 1.2fr 0.6fr;gap:16px;padding:16px 24px;background:#141414;border-top:1px solid #1e1e1e;font-size:14px;letter-spacing:-0.25px;">' +
-        `<span class="cmp-name" style="font-weight:500;">${esc(t.name)}</span>` +
-        `<span data-l="CATEGORY" style="color:#a7a7a7;">${t.cat}</span>` +
-        `<span data-l="BEST FOR" style="color:#a7a7a7;">${esc(t.bestFor)}</span>` +
-        `<span data-l="PRICING" style="color:#a7a7a7;">${esc(t.priceLabel)}</span>` +
-        `<span data-l="RATING" style="color:#6798ff;">${t.rating}</span></div>`).join('');
-  }
-
-  document.addEventListener('click', (e: MouseEvent) => {
-    const target = e.target as Element | null;
-    const el = target?.closest<HTMLElement>('[data-cat],[data-cmp]');
-    if (!el) return;
-
-    if (el.dataset.cat) { S.cat = el.dataset.cat; renderTools(); return; }
-
-    if (el.dataset.cmp) {
-      const nm = el.dataset.cmp;
-      if (S.compare[nm]) delete S.compare[nm];
-      else if (Object.keys(S.compare).length < 3) S.compare[nm] = true;
-      renderCompare();
-      return;
-    }
-  });
-
-  renderTools();
-  renderCompare();
-  renderTable();
-</script>

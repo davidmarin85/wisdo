@@ -30,7 +30,7 @@ const { id, label = 'Free sales-stack diagnosis' } = Astro.props;
     font-size: 12px;
     letter-spacing: 0.85px;
     text-transform: uppercase;
-    color: #6798ff;
+    color: var(--accent);
     margin-bottom: 10px;
   }
   .hero-dg-row {
@@ -41,7 +41,7 @@ const { id, label = 'Free sales-stack diagnosis' } = Astro.props;
     border-radius: 10px;
     padding: 6px;
   }
-  .hero-dg-row:focus-within { border-color: #6798ff; }
+  .hero-dg-row:focus-within { border-color: var(--accent); }
   .hero-dg-input {
     flex: 1;
     min-width: 0;

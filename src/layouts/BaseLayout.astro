@@ -31,7 +31,9 @@ const user = Astro.locals.user
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/brand/icons/svg/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/icons/png/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/brand/icons/png/icon-180.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -55,8 +57,7 @@ const user = Astro.locals.user
       <div class="container">
         <div class="site-footer__inner">
           <a href="/" class="site-footer__logo" aria-label="wisdo inicio">
-            <span class="site-footer__logo-dot" aria-hidden="true"></span>
-            wisdo
+            <img src="/brand/svg/wisdo-logo-dark.svg" alt="wisdo" width="113" height="30" class="site-footer__logo-img" />
             <span class="site-footer__logo-badge">MARKET</span>
           </a>
           <p class="site-footer__copy">
@@ -100,12 +101,10 @@ const user = Astro.locals.user
     flex-shrink: 0;
   }
 
-  .site-footer__logo-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-green);
-    box-shadow: 0 0 10px var(--color-green);
+  .site-footer__logo-img {
+    display: block;
+    height: 30px;
+    width: auto;
     flex-shrink: 0;
   }
 

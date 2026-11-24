@@ -1,7 +1,7 @@
 ---
 // Layout privado del dashboard: sidebar fija a la izquierda, contenido a la
 // derecha. Mismo lenguaje visual que /diagnosis/ (fondo #0a0a0a, tarjetas
-// #141414, acento #6798ff, Inter + JetBrains Mono). Siempre noindex.
+// #141414, acento #13C28A (verde de marca), Inter + JetBrains Mono). Siempre noindex.
 import SEO from '@components/SEO.astro';
 import { BOOK_A_CALL_URL } from '@data/site';
 import type { User } from '@supabase/supabase-js';
@@ -50,7 +50,9 @@ const ICONS: Record<NavItem['icon'], string> = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/brand/icons/svg/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/brand/icons/png/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/brand/icons/png/icon-180.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -63,8 +65,7 @@ const ICONS: Record<NavItem['icon'], string> = {
     <div class="db">
       <aside class="db-side">
         <a href="/" class="db-logo" aria-label="wisdo — home">
-          <span class="db-logo-dot" aria-hidden="true"></span>
-          <span class="db-logo-text">wisdo</span>
+          <img src="/brand/svg/wisdo-logo-dark.svg" alt="wisdo" width="113" height="30" class="db-logo-img" />
         </a>
 
         <nav class="db-nav" aria-label="Dashboard">
@@ -113,7 +114,7 @@ const ICONS: Record<NavItem['icon'], string> = {
     --db-text-2: #e6e6e6;
     --db-muted: #a7a7a7;
     --db-faint: #7c7c7c;
-    --db-accent: #6798ff;
+    --db-accent: #13C28A;
     --db-green: #13c28a;
     --db-red: #ff7a7a;
     --db-mono: 'JetBrains Mono', monospace;
@@ -151,14 +152,7 @@ const ICONS: Record<NavItem['icon'], string> = {
     gap: 10px;
     padding: 4px 12px;
   }
-  .db-logo-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--db-green);
-    box-shadow: 0 0 12px var(--db-green);
-  }
-  .db-logo-text { font: 700 21px 'Space Grotesk', sans-serif; letter-spacing: -0.42px; }
+  .db-logo-img { display: block; height: 30px; width: auto; }
   .db-nav { display: flex; flex-direction: column; gap: 2px; }
   .db-nav-item {
     display: flex;

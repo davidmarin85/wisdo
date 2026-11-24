@@ -3,106 +3,60 @@ import SiteLayout from '@layouts/SiteLayout.astro';
 import { BOOK_A_CALL_URL } from '@data/site';
 import ContactForm from '@components/site/ContactForm.astro';
 import DiagnosisForm from '@components/site/DiagnosisForm.astro';
+import { tools, categories } from '@data/tools';
+import MarketSections from '@components/site/MarketSections.astro';
+
+// Panel del hero: ejemplo de diagnóstico con herramientas y precios reales del catálogo.
+const EXAMPLE = [
+  { name: 'Apollo.io', role: 'Find and enrich B2B contacts' },
+  { name: 'lemlist', role: 'Email and LinkedIn sequences' },
+  { name: 'ManyChat', role: 'Qualify leads from DMs' },
+];
+const exampleStack = EXAMPLE.flatMap(e => {
+  const t = tools.find(x => x.name === e.name);
+  return t ? [{ ...e, priceLabel: t.priceLabel }] : [];
+});
 ---
 
 <SiteLayout
-  title="wisdo — AI-powered growth consultancy"
-  description="We connect your ads, CRM and content into one automated system. Certified HubSpot, Google and Meta partners."
+  title="wisdo — Your marketing operations partner"
+  description="Build your marketing and sales stack in one place: a free diagnosis, vetted tools and a team that runs them. Certified HubSpot, Google and Meta partners."
   active="solutions"
 >
 
 <section id="top" style="background-color:#0a0a0a; background-image:linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px); background-size:48px 48px; border-bottom:1px solid #1e1e1e;">
     <div style="max-width:1200px; margin:0 auto; padding:96px 24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:64px; align-items:center;">
       <div>
-        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7; margin-bottom:24px;">AI-powered growth consultancy</div>
-        <h1 style="margin:0; font-size:clamp(38px,5.2vw,64px); line-height:1.13; letter-spacing:-2.3px; font-weight:500; text-wrap:balance;">Marketing that runs itself. Measured end to end.</h1>
-        <p style="margin:24px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:480px;">We connect your ads, CRM and content into one automated system, then let AI handle the optimization you don't have time for. We're certified HubSpot partners working with growth teams across Spain and Latin America.</p>
+        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7; margin-bottom:24px;">Marketing operations partner</div>
+        <h1 style="margin:0; font-size:clamp(38px,5.2vw,64px); line-height:1.13; letter-spacing:-2.3px; font-weight:500; text-wrap:balance;">Build your marketing and sales stack in one place.</h1>
+        <p style="margin:24px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7; max-width:480px;">Get a free diagnosis, choose the right tools from wisdo Market, and let our team connect and run them as your marketing operations partner. Certified HubSpot partners for growth teams in Spain and Latin America.</p>
         <DiagnosisForm id="hero-dg-url" />
         <div style="margin-top:32px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#7c7c7c; text-transform:uppercase;">Certified partner: HubSpot · Google Ads · Meta</div>
       </div>
 
-      <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
-        <div style="display:flex; align-items:center; gap:8px; padding-bottom:16px; border-bottom:1px solid #1e1e1e;">
-          <span style="width:8px; height:8px; border-radius:2px; background:#6798ff;"></span>
-          <span style="font-size:14px; font-weight:500; letter-spacing:-0.25px;">Pipeline performance</span>
-          <span style="flex:1;"></span>
-          <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#a7a7a7; border:1px solid #313131; border-radius:4px; padding:3px 8px;">LAST 30 DAYS</span>
+      <figure class="dg-example" aria-label="Example of a stack diagnosis">
+        <div class="dg-example__head">
+          <img src="/brand/svg/wisdo-mark-dark.svg" alt="" width="22" height="22" />
+          <span class="dg-example__title">Stack diagnosis</span>
+          <span class="dg-example__tag">Example</span>
         </div>
-
-        <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; padding:16px 0; border-bottom:1px solid #1e1e1e;">
-          <div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">CPL</div>
-            <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px; margin-top:4px;">€18.40</div>
-          </div>
-          <div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">MQL</div>
-            <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px; margin-top:4px;">412</div>
-          </div>
-          <div>
-            <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">WIN RATE</div>
-            <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px; margin-top:4px; color:#6798ff;">24%</div>
-          </div>
+        <div class="dg-example__input">
+          <span class="dg-example__k">Website</span><span>yourcompany.com</span>
+          <span class="dg-example__k">Main problem</span><span>Not enough qualified leads</span>
         </div>
-
-        <div style="display:flex; align-items:flex-end; gap:6px; height:132px; padding:24px 0 16px;">
-          <div style="flex:1; height:38%; background:#313131; border-radius:3px 3px 0 0;"></div>
-          <div style="flex:1; height:52%; background:#313131; border-radius:3px 3px 0 0;"></div>
-          <div style="flex:1; height:44%; background:#313131; border-radius:3px 3px 0 0;"></div>
-          <div style="flex:1; height:66%; background:#6798ff; border-radius:3px 3px 0 0;"></div>
-          <div style="flex:1; height:58%; background:#313131; border-radius:3px 3px 0 0;"></div>
-          <div style="flex:1; height:79%; background:#6798ff; border-radius:3px 3px 0 0;"></div>
-          <div style="flex:1; height:71%; background:#313131; border-radius:3px 3px 0 0;"></div>
-          <div style="flex:1; height:94%; background:#6798ff; border-radius:3px 3px 0 0;"></div>
-        </div>
-
-        <div style="border-top:1px solid #1e1e1e; display:grid; grid-template-columns:1.4fr 1fr 0.8fr; gap:8px; padding:12px 0; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">
-          <span>CHANNEL</span><span>SPEND</span><span>ROAS</span>
-        </div>
-        <div style="display:grid; grid-template-columns:1.4fr 1fr 0.8fr; gap:8px; padding:10px 0; border-top:1px solid #1e1e1e; font-size:14px; letter-spacing:-0.25px;">
-          <span>Google Ads</span><span style="color:#a7a7a7;">€12,400</span><span>4.1×</span>
-        </div>
-        <div style="display:grid; grid-template-columns:1.4fr 1fr 0.8fr; gap:8px; padding:10px 0; border-top:1px solid #1e1e1e; font-size:14px; letter-spacing:-0.25px;">
-          <span>Meta Ads</span><span style="color:#a7a7a7;">€8,900</span><span>3.3×</span>
-        </div>
-        <div style="display:grid; grid-template-columns:1.4fr 1fr 0.8fr; gap:8px; padding:10px 0; border-top:1px solid #1e1e1e; font-size:14px; letter-spacing:-0.25px;">
-          <span>Inbound (HubSpot)</span><span style="color:#a7a7a7;">€3,100</span><span>6.8×</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section style="border-bottom:1px solid #1e1e1e;">
-    <div class="logo-strip" style="max-width:1200px; margin:0 auto; padding:40px 24px; display:flex; align-items:center; gap:40px; flex-wrap:wrap;">
-      <div class="logo-strip__label" style="font-size:14px; font-weight:500; letter-spacing:-0.25px; max-width:260px;">Trusted by growing companies</div>
-      <div class="logo-strip__items" style="flex:1; display:flex; align-items:center; gap:40px; flex-wrap:wrap; font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:1.16px; color:#a7a7a7;">
-        <span>NORTHBEAM</span><span>ALDARA</span><span>VELTRIX</span><span>CASA&nbsp;MAR</span><span>OPENLOOP</span><span>TERRANOVA</span>
-      </div>
-    </div>
-  </section>
-
-  <section id="results" style="border-bottom:1px solid #1e1e1e;">
-    <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:32px; text-align:center;">
-        <div>
-          <div style="color:#6798ff; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px;">↑ CONVERSION</div>
-          <div style="font-size:40px; font-weight:500; letter-spacing:-0.84px; margin-top:16px;">+38%</div>
-          <div style="font-size:16px; font-weight:500; letter-spacing:-0.25px; margin-top:8px;">Average lift in qualified leads</div>
-          <div style="font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7; margin-top:8px;">Measured across client accounts in the first two quarters after onboarding.</div>
-        </div>
-        <div>
-          <div style="color:#6798ff; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px;">◷ TIME SAVED</div>
-          <div style="font-size:40px; font-weight:500; letter-spacing:-0.84px; margin-top:16px;">20h</div>
-          <div style="font-size:16px; font-weight:500; letter-spacing:-0.25px; margin-top:8px;">Returned to the team each month</div>
-          <div style="font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7; margin-top:8px;">Reporting, lead routing and follow-up handled by workflows instead of people.</div>
-        </div>
-        <div>
-          <div style="color:#6798ff; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px;">⌾ EFFICIENCY</div>
-          <div style="font-size:40px; font-weight:500; letter-spacing:-0.84px; margin-top:16px;">−27%</div>
-          <div style="font-size:16px; font-weight:500; letter-spacing:-0.25px; margin-top:8px;">Lower cost per acquisition</div>
-          <div style="font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7; margin-top:8px;">Budget reallocated continuously by models rather than monthly by hand.</div>
-        </div>
-      </div>
-      <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#7c7c7c; margin-top:40px;">PLACEHOLDER FIGURES — REPLACE WITH YOUR REAL NUMBERS</div>
+        <ol class="dg-example__stack">
+          {exampleStack.map((t, i) => (
+            <li>
+              <span class="dg-example__n">{i + 1}</span>
+              <span class="dg-example__tool"><strong>{t.name}</strong><span>{t.role}</span></span>
+              <span class="dg-example__price">{t.priceLabel}</span>
+            </li>
+          ))}
+        </ol>
+        <figcaption class="dg-example__next">
+          <strong>Then we run it with you:</strong> connected to your CRM, set up and reviewed every week.
+        </figcaption>
+      </figure>
     </div>
   </section>
 
@@ -114,10 +68,10 @@ import DiagnosisForm from '@components/site/DiagnosisForm.astro';
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:40px;">
         <a href="/ai-automation/" style="display:block; background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;" class="h8">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">01 — AI &amp; AUTOMATION</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:var(--accent);">01 — AI &amp; AUTOMATION</div>
           <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">AI &amp; marketing automation</div>
           <div style="font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7; margin-top:8px;">Workflows, lead scoring and predictive budget allocation wired into the tools you already pay for.</div>
-          <div style="font-size:14px; font-weight:500; color:#6798ff; margin-top:16px;">Explore the practice →</div>
+          <div style="font-size:14px; font-weight:500; color:var(--accent); margin-top:16px;">Explore the practice →</div>
         </a>
         <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
           <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#a7a7a7;">02 — PAID MEDIA</div>
@@ -142,26 +96,26 @@ import DiagnosisForm from '@components/site/DiagnosisForm.astro';
     <div style="max-width:1200px; margin:0 auto; padding:80px 24px;">
       <div style="text-align:center;">
         <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">How it works</div>
-        <h2 style="margin:32px auto 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500; max-width:720px;">Build, measure, learn — on a two-week cycle.</h2>
+        <h2 style="margin:32px auto 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500; max-width:720px; text-wrap:balance;">Build, measure, learn — on a two-week cycle.</h2>
       </div>
       <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-top:40px;">
         <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">STEP 01</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:var(--accent);">STEP 01</div>
           <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Diagnose</div>
           <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">We audit your channels, CRM and competitive position, and agree on the one metric the quarter is judged by.</p>
         </div>
         <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">STEP 02</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:var(--accent);">STEP 02</div>
           <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Instrument</div>
           <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Tracking, attribution and reporting go in first. Nothing is optimized before it can be measured honestly.</p>
         </div>
         <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">STEP 03</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:var(--accent);">STEP 03</div>
           <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Automate</div>
           <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Repetitive work moves into workflows and models — routing, nurturing, bidding, reporting — and stays there.</p>
         </div>
         <div style="background:#141414; border:1px solid #1e1e1e; border-radius:8px; padding:24px;">
-          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:#6798ff;">STEP 04</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; color:var(--accent);">STEP 04</div>
           <div style="font-size:20px; font-weight:500; letter-spacing:-0.42px; margin-top:16px;">Iterate</div>
           <p style="margin:8px 0 0; font-size:14px; line-height:1.57; letter-spacing:-0.25px; color:#a7a7a7;">Every sprint closes with a review: what moved, what didn't, and what the next two weeks test.</p>
         </div>
@@ -206,20 +160,20 @@ import DiagnosisForm from '@components/site/DiagnosisForm.astro';
       <div>
         <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase; color:#a7a7a7;">wisdo Market</div>
         <h2 style="margin:32px 0 0; font-size:clamp(28px,3.6vw,40px); line-height:1.2; letter-spacing:-0.84px; font-weight:500;">The tools we use, vetted and compared.</h2>
-        <p style="margin:16px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7;">Our marketplace is the same shortlist we work from on client projects. Answer four questions and it builds the stack that fits your business — which tools, in what order, and what it costs per month.</p>
+        <p style="margin:16px 0 0; font-size:16px; line-height:1.5; letter-spacing:-0.25px; color:#a7a7a7;">Our marketplace is the same shortlist we work from on client projects. Compare them honestly, or enter your website and we'll recommend the stack that fits your business: which tools, what each one does and what it costs.</p>
         <a href="/market/" style="display:inline-block; margin-top:32px; border:1px solid #454545; padding:12px 20px; border-radius:8px; font-size:14px; font-weight:500;" class="h11">Open the marketplace →</a>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:#1e1e1e; border:1px solid #1e1e1e; border-radius:8px; overflow:hidden;">
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:#1e1e1e; border:1px solid #1e1e1e; border-radius:8px; overflow:hidden;">
         <div style="background:#141414; padding:24px;">
-          <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px;">6</div>
+          <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px;">{tools.length}</div>
           <div style="font-size:14px; color:#a7a7a7; margin-top:8px;">Tools vetted</div>
         </div>
         <div style="background:#141414; padding:24px;">
-          <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px;">5</div>
+          <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px;">{categories.length - 1}</div>
           <div style="font-size:14px; color:#a7a7a7; margin-top:8px;">Categories</div>
         </div>
         <div style="background:#141414; padding:24px;">
-          <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px; color:#6798ff;">100%</div>
+          <div style="font-size:24px; font-weight:500; letter-spacing:-0.6px; color:var(--accent);">100%</div>
           <div style="font-size:14px; color:#a7a7a7; margin-top:8px;">Hand-picked</div>
         </div>
         <div style="background:#141414; padding:24px;">
@@ -229,6 +183,8 @@ import DiagnosisForm from '@components/site/DiagnosisForm.astro';
       </div>
     </div>
   </section>
+
+  <MarketSections />
 
   <section id="contact" style="background-color:#0a0a0a; background-image:linear-gradient(#1e1e1e 1px, transparent 1px), linear-gradient(90deg, #1e1e1e 1px, transparent 1px); background-size:48px 48px; border-bottom:1px solid #1e1e1e;">
     <div style="max-width:1200px; margin:0 auto; padding:96px 24px; text-align:center;">
@@ -254,4 +210,45 @@ import DiagnosisForm from '@components/site/DiagnosisForm.astro';
   .h11:hover { border-color:#7c7c7c !important }
   .h12:hover { background:#e6e6e6 !important; color:#0a0a0a !important }
   .h13:hover { border-color:#7c7c7c !important }
+  /* Panel del hero: ejemplo de diagnóstico, con el verde de marca. */
+  .dg-example {
+    margin: 0;
+    background: #121412;
+    border: 1px solid #1f2a25;
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .dg-example__head {
+    display: flex; align-items: center; gap: 10px;
+    padding-bottom: 16px; border-bottom: 1px solid #1f2a25;
+  }
+  .dg-example__title { font-size: 15px; font-weight: 500; letter-spacing: -0.25px; }
+  .dg-example__tag {
+    margin-left: auto; font-size: 12px; font-weight: 500;
+    color: var(--accent-soft); background: rgb(19 194 138 / 0.14);
+    border: 1px solid rgb(19 194 138 / 0.35); border-radius: 999px; padding: 3px 10px;
+  }
+  .dg-example__input {
+    display: grid; grid-template-columns: auto 1fr; gap: 8px 20px;
+    padding: 16px 0; border-bottom: 1px solid #1f2a25; font-size: 14px;
+  }
+  .dg-example__k { color: #8f9a95; }
+  .dg-example__stack { list-style: none; margin: 0; padding: 8px 0; }
+  .dg-example__stack li {
+    display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid #1a211e;
+  }
+  .dg-example__stack li:last-child { border-bottom: 0; }
+  .dg-example__n {
+    width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 13px; font-weight: 600; color: #0a0a0a; background: var(--accent);
+  }
+  .dg-example__tool { display: flex; flex-direction: column; gap: 2px; font-size: 15px; }
+  .dg-example__tool span { font-size: 13px; color: #8f9a95; }
+  .dg-example__price { font-size: 13px; color: var(--accent-hi); font-variant-numeric: tabular-nums; text-align: right; }
+  .dg-example__next {
+    margin: 0; padding-top: 16px; border-top: 1px solid #1f2a25;
+    font-size: 14px; line-height: 1.5; color: #cfd8d3;
+  }
+  .dg-example__next strong { color: var(--accent-soft); font-weight: 500; }
 </style>
