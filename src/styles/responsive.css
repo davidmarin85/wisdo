@@ -105,19 +105,6 @@
   }
 }
 
-/* ---- 7. Logo strip --------------------------------------------------------
- * The label claimed 260px and left the `flex:1` logo row too narrow, so each
- * name wrapped onto its own line. Give both full width and tighten the gap. */
-@media (max-width: 720px) {
-  .logo-strip { gap: 16px !important; }
-  .logo-strip__label { max-width: none !important; flex: 1 1 100%; }
-  .logo-strip__items {
-    flex: 1 1 100% !important;
-    gap: 12px 20px !important;
-    font-size: 12px !important;
-  }
-}
-
 /* ---- 8. Anchor targets ----------------------------------------------------
  * The header is sticky, so jumping to #services or #tools would land with the
  * heading hidden underneath it. */

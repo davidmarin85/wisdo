@@ -66,6 +66,19 @@ const {
 </script>
 
 <style is:global>
+  /* Paleta de marca (kit de logo): verde, brillo y claro. */
+  :root {
+    --accent: #13C28A;
+    --accent-hi: #5EE0B0;
+    --accent-soft: #E9FFF6;
+  }
+  ::selection { background: var(--accent); color: #0a0a0a; }
+  input, textarea { caret-color: var(--accent); accent-color: var(--accent); }
+  ::placeholder { color: #8f8f8f; opacity: 1; }
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent-hi);
+    outline-offset: 2px;
+  }
   body {
     margin: 0;
     background: #0a0a0a;
@@ -74,6 +87,6 @@ const {
   }
   * { box-sizing: border-box; }
   a { color: #ffffff; text-decoration: none; }
-  a:hover { color: #6798ff; }
+  a:hover { color: var(--accent); }
 
 </style>
