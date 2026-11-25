@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" role="img" aria-label="Wisdo"><defs><mask id="wdm"><rect width="60" height="60" fill="#fff"></rect><g class="wd-spark"><circle cx="43.5" cy="14.5" r="8" fill="#000"></circle></g></mask></defs><style>.wd-spark{transform-box:view-box;transform-origin:30px 30px;animation:wdspin 6s linear infinite}@keyframes wdspin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.wd-spark{animation:none}}</style>
+<g mask="url(#wdm)"><circle cx="30" cy="30" r="16" fill="#171528"></circle><circle cx="30" cy="30" r="17.25" fill="none" stroke="#13C28A" stroke-width="2.5"></circle></g>
+<g class="wd-spark"><circle cx="43.5" cy="14.5" r="5.5" fill="#13C28A"></circle></g></svg>

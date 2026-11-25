@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<defs>
+<radialGradient id="bg" cx="45%" cy="50%" r="65%"><stop offset="0" stop-color="#13C28A" stop-opacity=".16"></stop><stop offset="1" stop-color="#13C28A" stop-opacity="0"></stop></radialGradient>
+<filter id="g1" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="3.2"></feGaussianBlur></filter>
+<filter id="g2" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="2.6"></feGaussianBlur></filter>
+</defs><style>.wd-spark{transform-box:view-box;transform-origin:31px 33px;animation:wdspin 6s linear infinite}@keyframes wdspin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.wd-spark{animation:none}}</style>
+<rect width="64" height="64" rx="14" fill="#14121F"></rect>
+<rect width="64" height="64" rx="14" fill="url(#bg)"></rect>
+<circle cx="31" cy="33" r="15.5" fill="none" stroke="#13C28A" stroke-opacity=".75" stroke-width="5" filter="url(#g1)"></circle>
+<circle cx="31" cy="33" r="14" fill="#0B0A14"></circle>
+<circle cx="31" cy="33" r="15.5" fill="none" stroke="#13C28A" stroke-width="3.5"></circle>
+<g class="wd-spark"><circle cx="44.5" cy="19.5" r="7" fill="#5EE0B0" fill-opacity=".95" filter="url(#g2)"></circle>
+<circle cx="44.5" cy="19.5" r="4.6" fill="#E9FFF6"></circle></g>
+</svg>
