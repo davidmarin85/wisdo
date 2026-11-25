@@ -24,7 +24,60 @@ const HEADER_SIGNATURES: [string, (h: Headers) => boolean][] = [
   ['Wix', (h) => h.has('x-wix-request-id')],
   ['Squarespace', (h) => /squarespace/i.test(h.get('server') ?? '')],
   ['GitHub Pages', (h) => /github\.com/i.test(h.get('server') ?? '')],
+  ['Railway', (h) => h.has('x-railway-edge') || h.has('x-railway-request-id') || /railway/i.test(h.get('server') ?? '')],
+  ['Render', (h) => h.has('rndr-id') || /render/i.test(h.get('x-render-origin-server') ?? '')],
+  ['Heroku', (h) => /vegur|heroku/i.test(h.get('via') ?? '')],
+  ['Fly.io', (h) => h.has('fly-request-id') || /^fly\//i.test(h.get('server') ?? '')],
 ];
+
+// — Dominios de servicios en el HTML o el JavaScript de la web —
+// Backends y APIs que la web llama desde el navegador: la URL queda escrita en
+// el código aunque el servicio no se vea en la página.
+const CODE_SIGNATURES: [string, RegExp][] = [
+  ['Railway', /[a-z0-9-]+\.up\.railway\.app|railway\.app\b/i],
+  ['Render', /[a-z0-9-]+\.onrender\.com/i],
+  ['Heroku', /[a-z0-9-]+\.herokuapp\.com/i],
+  ['Fly.io', /[a-z0-9-]+\.fly\.dev/i],
+  ['Supabase', /[a-z0-9]{20}\.supabase\.co/i],
+  ['Firebase', /firebaseapp\.com|firebaseio\.com|firestore\.googleapis\.com|gstatic\.com\/firebasejs/i],
+  ['AWS API Gateway', /\.execute-api\.[a-z0-9-]+\.amazonaws\.com/i],
+  ['Sentry', /ingest(\.[a-z]+)?\.sentry\.io|browser\.sentry-cdn\.com/i],
+  ['PostHog', /[a-z]+\.i\.posthog\.com|app\.posthog\.com|posthog-js/i],
+  ['Mixpanel', /cdn\.mxpnl\.com|api(-js)?\.mixpanel\.com/i],
+  ['Segment', /cdn\.segment\.com|api\.segment\.io/i],
+  ['Amplitude', /cdn\.amplitude\.com|api2?\.amplitude\.com/i],
+  ['Algolia', /\.algolia\.net|algolianet\.com/i],
+  ['Cloudinary', /res\.cloudinary\.com/i],
+  ['Clerk', /clerk\.accounts\.dev|\.clerk\.com\/npm/i],
+  ['Auth0', /\.auth0\.com/i],
+];
+
+export function detectFromCode(code: string): string[] {
+  return CODE_SIGNATURES.filter(([, re]) => re.test(code)).map(([name]) => name);
+}
+
+// — CNAME: adónde apuntan el dominio y sus subdominios habituales —
+const CNAME_SIGNATURES: [string, RegExp][] = [
+  ['Railway', /railway\.app\.?$/i],
+  ['Vercel', /vercel-dns\.com\.?$|vercel\.app\.?$/i],
+  ['Netlify', /netlify\.(app|com)\.?$/i],
+  ['Render', /onrender\.com\.?$/i],
+  ['Heroku', /herokudns\.com\.?$|herokuapp\.com\.?$/i],
+  ['Fly.io', /fly\.dev\.?$/i],
+  ['Amazon CloudFront', /cloudfront\.net\.?$/i],
+  ['AWS', /elb\.amazonaws\.com\.?$|amplifyapp\.com\.?$/i],
+  ['Azure', /azurewebsites\.net\.?$|azureedge\.net\.?$|azurefd\.net\.?$/i],
+  ['Google Cloud', /run\.app\.?$|appspot\.com\.?$|ghs\.googlehosted\.com\.?$/i],
+  ['GitHub Pages', /github\.io\.?$/i],
+  ['Shopify', /myshopify\.com\.?$|shops\.myshopify/i],
+  ['Webflow', /proxy-ssl\.webflow\.com\.?$|webflow\.io\.?$/i],
+  ['WP Engine', /wpengine\.com\.?$/i],
+  ['HubSpot', /hubspot\.net\.?$|hs-sites\.com\.?$/i],
+  ['Framer', /framer\.(app|website)\.?$/i],
+];
+
+// Subdominios donde suelen vivir la API, la app o el blog.
+const CNAME_SUBDOMAINS = ['www', 'api', 'app', 'backend', 'admin', 'blog', 'dashboard'];
 
 export function detectFromHeaders(headers: Headers): string[] {
   return HEADER_SIGNATURES.filter(([, test]) => test(headers)).map(([name]) => name);
@@ -92,7 +145,7 @@ export async function detectFromDns(hostname: string): Promise<string[]> {
   const domain = mailDomain(hostname);
   const resolver = new Resolver({ timeout: DNS_TIMEOUT_MS, tries: 1 });
 
-  const [mx, txt, dkim] = await Promise.all([
+  const [mx, txt, dkim, cnames] = await Promise.all([
     resolver.resolveMx(domain).catch(() => []),
     resolver.resolveTxt(domain).catch(() => [] as string[][]),
     Promise.all(
@@ -103,9 +156,15 @@ export async function detectFromDns(hostname: string): Promise<string[]> {
           .catch(() => null)
       )
     ),
+    Promise.all(
+      CNAME_SUBDOMAINS.map((sub) => resolver.resolveCname(`${sub}.${domain}`).catch(() => [] as string[]))
+    ),
   ]);
 
   const found = new Set<string>(dkim.filter((n): n is string => n !== null));
+  for (const target of cnames.flat()) {
+    for (const [name, re] of CNAME_SIGNATURES) if (re.test(target)) found.add(name);
+  }
   for (const { exchange } of mx) {
     for (const [name, re] of MX_SIGNATURES) if (re.test(exchange)) found.add(name);
   }

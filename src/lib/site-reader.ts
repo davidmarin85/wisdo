@@ -10,13 +10,17 @@
 // ============================================================================
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
-import { detectFromDns, detectFromHeaders } from '@lib/stack-signals';
+import { detectFromCode, detectFromDns, detectFromHeaders } from '@lib/stack-signals';
 
 const FETCH_TIMEOUT_MS = 8_000;
 const MAX_BYTES = 1_500_000;
 const MAX_REDIRECTS = 3;
 // Suficiente para que Claude entienda el negocio sin pagar tokens de más.
 const MAX_TEXT_CHARS = 12_000;
+// Scripts del propio dominio que leemos buscando URLs de servicios (APIs, backends).
+const MAX_SCRIPTS = 4;
+const MAX_SCRIPT_BYTES = 800_000;
+const SCRIPT_TIMEOUT_MS = 4_000;
 
 export interface SiteSnapshot {
   finalUrl: string;
@@ -118,8 +122,58 @@ export async function readSite(input: string): Promise<SiteSnapshot> {
     throw new SiteReadError('empty', 'We couldn’t read the website’s content');
   }
 
-  const detectedTools = [...new Set([...detectTools(html), ...headerTools, ...(await dnsTools)])];
+  const scripts = await readSameOriginScripts(html, url);
+  const detectedTools = [
+    ...new Set([
+      ...detectTools(html),
+      ...headerTools,
+      ...detectFromCode(html + '\n' + scripts),
+      ...(await dnsTools),
+    ]),
+  ];
   return { finalUrl: url.toString(), title, description, text, detectedTools };
+}
+
+// Lee los primeros scripts servidos desde el mismo dominio (no de terceros):
+// en webs hechas con React, Vue, etc. es ahí donde aparece la URL de la API.
+async function readSameOriginScripts(html: string, pageUrl: URL): Promise<string> {
+  const srcs = [...html.matchAll(/<script[^>]+src=["']([^"']+)["']/gi)].map((m) => m[1]!);
+  const urls: URL[] = [];
+  for (const src of srcs) {
+    let u: URL;
+    try {
+      u = new URL(src, pageUrl);
+    } catch {
+      continue;
+    }
+    if (u.hostname !== pageUrl.hostname || !/^https?:$/.test(u.protocol)) continue;
+    if (!urls.some((x) => x.href === u.href)) urls.push(u);
+    if (urls.length >= MAX_SCRIPTS) break;
+  }
+  if (urls.length === 0) return '';
+  // Mismo dominio que la página, pero volvemos a validar la IP (DNS rebinding).
+  try {
+    await assertPublicHost(pageUrl.hostname);
+  } catch {
+    return '';
+  }
+
+  const bodies = await Promise.all(
+    urls.map(async (u) => {
+      try {
+        const res = await fetch(u, {
+          redirect: 'manual',
+          signal: AbortSignal.timeout(SCRIPT_TIMEOUT_MS),
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; wisdo-diagnostico/1.0; +https://www.wisdo.io)' },
+        });
+        if (!res.ok) return '';
+        return await readLimited(res, MAX_SCRIPT_BYTES);
+      } catch {
+        return '';
+      }
+    })
+  );
+  return bodies.join('\n');
 }
 
 async function assertPublicHost(hostname: string): Promise<void> {
@@ -153,19 +207,19 @@ function isPrivateAddress(ip: string): boolean {
   return v6 === '::' || v6 === '::1' || v6.startsWith('fc') || v6.startsWith('fd') || v6.startsWith('fe80');
 }
 
-async function readLimited(res: Response): Promise<string> {
+async function readLimited(res: Response, maxBytes = MAX_BYTES): Promise<string> {
   if (!res.body) return '';
   const reader = res.body.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
-  while (total < MAX_BYTES) {
+  while (total < maxBytes) {
     const { done, value } = await reader.read();
     if (done) break;
     chunks.push(value);
     total += value.byteLength;
   }
   await reader.cancel().catch(() => {});
-  return new TextDecoder().decode(Buffer.concat(chunks).subarray(0, MAX_BYTES));
+  return new TextDecoder().decode(Buffer.concat(chunks).subarray(0, maxBytes));
 }
 
 function matchFirst(html: string, re: RegExp): string {
@@ -224,8 +278,6 @@ const TOOL_SIGNATURES: [string, RegExp][] = [
   ['Meta Pixel', /connect\.facebook\.net\/.*fbevents\.js/i],
   ['LinkedIn Insight', /snap\.licdn\.com/i],
   ['Hotjar', /static\.hotjar\.com/i],
-  ['Supabase', /[a-z0-9]{20}\.supabase\.co/i],
-  ['Firebase', /firebaseapp\.com|firebaseio\.com|gstatic\.com\/firebasejs/i],
 ];
 
 function detectTools(html: string): string[] {
