@@ -10,6 +10,7 @@
 // ============================================================================
 import { lookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
+import { detectFromDns, detectFromHeaders } from '@lib/stack-signals';
 
 const FETCH_TIMEOUT_MS = 8_000;
 const MAX_BYTES = 1_500_000;
@@ -101,6 +102,9 @@ export async function readSite(input: string): Promise<SiteSnapshot> {
     throw new SiteReadError('not_html', 'The URL doesn’t return a web page');
   }
 
+  // El DNS se consulta mientras se descarga el HTML; si falla, seguimos sin él.
+  const dnsTools = detectFromDns(url.hostname).catch(() => [] as string[]);
+  const headerTools = detectFromHeaders(res.headers);
   const html = await readLimited(res);
   const title = decodeEntities(matchFirst(html, /<title[^>]*>([\s\S]*?)<\/title>/i));
   const description = decodeEntities(
@@ -114,7 +118,8 @@ export async function readSite(input: string): Promise<SiteSnapshot> {
     throw new SiteReadError('empty', 'We couldn’t read the website’s content');
   }
 
-  return { finalUrl: url.toString(), title, description, text, detectedTools: detectTools(html) };
+  const detectedTools = [...new Set([...detectTools(html), ...headerTools, ...(await dnsTools)])];
+  return { finalUrl: url.toString(), title, description, text, detectedTools };
 }
 
 async function assertPublicHost(hostname: string): Promise<void> {
@@ -194,7 +199,7 @@ function decodeEntities(s: string): string {
 // Firmas en el HTML de herramientas de marketing/ventas. Determinista y
 // gratis: no hace falta IA para ver que una web carga el script de HubSpot.
 const TOOL_SIGNATURES: [string, RegExp][] = [
-  ['HubSpot', /js\.hs-scripts\.com|js\.hsforms\.net|hs-analytics/i],
+  ['HubSpot', /js\.hs-scripts\.com|js\.hsforms\.net|hs-analytics|meetings\.hubspot\.com/i],
   ['Salesforce / Pardot', /pardot\.com|pi\.pardot|salesforce\.com\/.*\.js/i],
   ['Zoho', /zohopublic|salesiq\.zoho/i],
   ['Pipedrive', /pipedrive(webforms)?\.com/i],
@@ -219,6 +224,8 @@ const TOOL_SIGNATURES: [string, RegExp][] = [
   ['Meta Pixel', /connect\.facebook\.net\/.*fbevents\.js/i],
   ['LinkedIn Insight', /snap\.licdn\.com/i],
   ['Hotjar', /static\.hotjar\.com/i],
+  ['Supabase', /[a-z0-9]{20}\.supabase\.co/i],
+  ['Firebase', /firebaseapp\.com|firebaseio\.com|gstatic\.com\/firebasejs/i],
 ];
 
 function detectTools(html: string): string[] {

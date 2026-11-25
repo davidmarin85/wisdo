@@ -277,7 +277,7 @@ Use only what the website says; if a detail isn't there, infer it cautiously and
           content: `URL: ${site.finalUrl}
 Title: ${site.title || '(no title)'}
 Meta description: ${site.description || '(no description)'}
-Tools detected in the HTML: ${site.detectedTools.join(', ') || 'none'}
+Tools detected (website code, HTTP headers and DNS records): ${site.detectedTools.join(', ') || 'none'}
 
 <website_content>
 ${site.text}
