@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-24T21:45:00Z",
+  "title": "Design System: wisdo",
+  "extensions": {
+    "colorMeta": {
+      "signal-green": { "role": "primary", "displayName": "Signal Green", "canonical": "#13C28A", "tonalRamp": ["#04291D", "#074331", "#0A6347", "#0F8A63", "#13C28A", "#5EE0B0", "#A6EED3", "#E9FFF6"] },
+      "glow-mint": { "role": "primary", "displayName": "Glow Mint", "canonical": "#5EE0B0" },
+      "spark-white": { "role": "primary", "displayName": "Spark White", "canonical": "#E9FFF6" },
+      "eclipse-core": { "role": "neutral", "displayName": "Eclipse Core", "canonical": "#0B0A14" },
+      "night-canvas": { "role": "neutral", "displayName": "Night Canvas", "canonical": "#0A0A0A", "tonalRamp": ["#0A0A0A", "#0F0F0F", "#141414", "#1E1E1E", "#313131", "#454545", "#7C7C7C", "#A7A7A7"] },
+      "panel": { "role": "neutral", "displayName": "Panel", "canonical": "#141414" },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#1E1E1E" },
+      "control-stroke": { "role": "neutral", "displayName": "Control Stroke", "canonical": "#313131" },
+      "ghost-stroke": { "role": "neutral", "displayName": "Ghost Stroke", "canonical": "#454545" },
+      "text-primary": { "role": "neutral", "displayName": "Text Primary", "canonical": "#FFFFFF" },
+      "text-secondary": { "role": "neutral", "displayName": "Text Secondary", "canonical": "#A7A7A7" },
+      "text-tertiary": { "role": "neutral", "displayName": "Text Tertiary", "canonical": "#7C7C7C" },
+      "placeholder": { "role": "neutral", "displayName": "Placeholder", "canonical": "#8F8F8F" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page H1 only, balanced wrapping." },
+      "headline": { "displayName": "Headline", "purpose": "Section H2s." },
+      "title": { "displayName": "Title", "purpose": "Card and tool names." },
+      "body": { "displayName": "Body", "purpose": "Section intros, 480-560px wide." },
+      "body-small": { "displayName": "Body Small", "purpose": "Card descriptions, table cells, notes." },
+      "label": { "displayName": "Label (mono)", "purpose": "Data, prices, ratings, categories, column headers." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "Logo and dashboard wordmark only." }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [
+      { "name": "phone", "value": "640px" },
+      { "name": "tablet", "value": "720px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action per view (Book a call, Analyze my website).",
+      "html": "<button class=\"ds-btn-primary\">Book a call</button>",
+      "css": ".ds-btn-primary { background: #ffffff; color: #0a0a0a; border: 0; border-radius: 8px; padding: 12px 20px; font: 500 14px Inter, system-ui, sans-serif; cursor: pointer; transition: background 0.15s; } .ds-btn-primary:hover { background: #e6e6e6; } .ds-btn-primary:focus-visible { outline: 2px solid #5EE0B0; outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action next to a primary one.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Open the marketplace →</a>",
+      "css": ".ds-btn-ghost { display: inline-block; background: transparent; color: #ffffff; border: 1px solid #454545; border-radius: 8px; padding: 12px 20px; font: 500 14px Inter, system-ui, sans-serif; text-decoration: none; transition: border-color 0.15s; } .ds-btn-ghost:hover { border-color: #7c7c7c; } .ds-btn-ghost:focus-visible { outline: 2px solid #5EE0B0; outline-offset: 2px; }"
+    },
+    {
+      "name": "Diagnosis Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Hero URL field with an inline primary button.",
+      "html": "<div class=\"ds-dg-row\"><input class=\"ds-dg-input\" placeholder=\"yourcompany.com\" /><button class=\"ds-dg-btn\">Analyze my website</button></div>",
+      "css": ".ds-dg-row { display: flex; gap: 6px; max-width: 520px; background: #141414; border: 1px solid #313131; border-radius: 10px; padding: 6px; } .ds-dg-row:focus-within { border-color: #13C28A; } .ds-dg-input { flex: 1; background: transparent; border: 0; padding: 10px 12px; color: #ffffff; font: 15px Inter, system-ui, sans-serif; caret-color: #13C28A; } .ds-dg-input::placeholder { color: #8f8f8f; } .ds-dg-input:focus { outline: none; } .ds-dg-btn { background: #ffffff; color: #0a0a0a; border: 0; border-radius: 7px; padding: 10px 16px; font: 500 14px Inter, system-ui, sans-serif; cursor: pointer; } .ds-dg-btn:hover { background: #e6e6e6; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-pill",
+      "description": "Sticky translucent header with pill links and the Book a call button.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-logo\">wisdo</span><a class=\"ds-nav-pill ds-nav-pill--active\" href=\"#\">Solutions</a><a class=\"ds-nav-pill\" href=\"#\">Market</a><a class=\"ds-nav-pill\" href=\"#\">AI &amp; Automation</a><span style=\"flex:1\"></span><a class=\"ds-nav-cta\" href=\"#\">Book a call</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 4px; padding: 16px 24px; background: rgba(10,10,10,0.88); backdrop-filter: blur(12px); border-bottom: 1px solid #1e1e1e; } .ds-nav-logo { font: 700 21px 'Space Grotesk', sans-serif; letter-spacing: -0.42px; color: #fff; margin-right: 20px; } .ds-nav-pill { padding: 8px 14px; border-radius: 9999px; font: 500 14px Inter, system-ui, sans-serif; color: #fff; text-decoration: none; } .ds-nav-pill:hover { color: #13C28A; } .ds-nav-pill--active { background: #141414; } .ds-nav-cta { background: #fff; color: #0a0a0a; padding: 8px 16px; border-radius: 8px; font: 500 14px Inter, system-ui, sans-serif; text-decoration: none; } .ds-nav-cta:hover { background: #e6e6e6; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip-filter",
+      "description": "Market category filters; the active chip inverts to white.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip ds-chip--on\" aria-pressed=\"true\">All</button><button class=\"ds-chip\" aria-pressed=\"false\">Prospecting</button><button class=\"ds-chip\" aria-pressed=\"false\">CRM</button></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; flex-wrap: wrap; } .ds-chip { cursor: pointer; background: transparent; border: 1px solid #313131; color: #a7a7a7; border-radius: 9999px; padding: 6px 14px; font: 14px Inter, system-ui, sans-serif; } .ds-chip:hover { border-color: #7c7c7c; color: #fff; } .ds-chip--on { background: #fff; color: #0a0a0a; border-color: #fff; font-weight: 500; } .ds-chip:focus-visible { outline: 2px solid #5EE0B0; outline-offset: 2px; }"
+    },
+    {
+      "name": "Tool Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Market tool card with mono metadata and a green CTA link.",
+      "html": "<article class=\"ds-tool\"><div class=\"ds-tool-head\"><span class=\"ds-tool-mono\">L</span><div><div class=\"ds-tool-name\">lemlist</div><div class=\"ds-tool-meta\">OUTREACH · ★ 4.6 on G2</div></div></div><div class=\"ds-tool-tag\">Personalized cold outreach at scale.</div><p class=\"ds-tool-desc\">Multichannel sequences across email and LinkedIn with personalization and deliverability tools.</p><div class=\"ds-tool-foot\"><span>From $55/mo · free trial</span><a href=\"#\">Try lemlist →</a></div></article>",
+      "css": ".ds-tool { max-width: 360px; background: #141414; border: 1px solid #1e1e1e; border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 16px; font-family: Inter, system-ui, sans-serif; color: #fff; } .ds-tool-head { display: flex; align-items: center; gap: 12px; } .ds-tool-mono { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #313131; background: #1e1e1e; display: inline-flex; align-items: center; justify-content: center; font: 14px 'JetBrains Mono', monospace; color: #13C28A; } .ds-tool-name { font-size: 20px; font-weight: 500; letter-spacing: -0.42px; } .ds-tool-meta { font: 12px 'JetBrains Mono', monospace; letter-spacing: 0.85px; color: #a7a7a7; } .ds-tool-tag { font-size: 14px; font-weight: 500; } .ds-tool-desc { margin: 0; font-size: 14px; line-height: 1.57; color: #a7a7a7; } .ds-tool-foot { display: flex; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid #1e1e1e; font-size: 14px; color: #a7a7a7; } .ds-tool-foot a { color: #13C28A; font-weight: 500; text-decoration: none; } .ds-tool-foot a:hover { color: #5EE0B0; }"
+    },
+    {
+      "name": "Example Diagnosis Panel",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Hero panel showing a labelled example stack recommendation.",
+      "html": "<figure class=\"ds-dx\"><div class=\"ds-dx-head\"><span class=\"ds-dx-dot\"></span><span>Stack diagnosis</span><span class=\"ds-dx-tag\">Example</span></div><ol class=\"ds-dx-list\"><li><span class=\"ds-dx-n\">1</span><span><strong>Apollo.io</strong><br><small>Find and enrich B2B contacts</small></span><em>Free plan</em></li><li><span class=\"ds-dx-n\">2</span><span><strong>lemlist</strong><br><small>Email and LinkedIn sequences</small></span><em>From $55/mo</em></li></ol><figcaption class=\"ds-dx-next\"><strong>Then we run it with you:</strong> connected to your CRM, set up and reviewed every week.</figcaption></figure>",
+      "css": ".ds-dx { margin: 0; max-width: 480px; background: #121412; border: 1px solid #1f2a25; border-radius: 12px; padding: 24px; font-family: Inter, system-ui, sans-serif; color: #fff; } .ds-dx-head { display: flex; align-items: center; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid #1f2a25; font-size: 15px; font-weight: 500; } .ds-dx-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #13C28A; } .ds-dx-tag { margin-left: auto; font-size: 12px; color: #E9FFF6; background: rgba(19,194,138,0.14); border: 1px solid rgba(19,194,138,0.35); border-radius: 999px; padding: 3px 10px; } .ds-dx-list { list-style: none; margin: 0; padding: 8px 0; } .ds-dx-list li { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #1a211e; } .ds-dx-list small { color: #8f9a95; font-size: 13px; } .ds-dx-list em { font-style: normal; font-size: 13px; color: #5EE0B0; } .ds-dx-n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600; color: #0a0a0a; background: #13C28A; } .ds-dx-next { padding-top: 16px; border-top: 1px solid #1f2a25; font-size: 14px; line-height: 1.5; color: #cfd8d3; } .ds-dx-next strong { color: #E9FFF6; font-weight: 500; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Operations Room",
+    "overview": "wisdo looks like a control room after hours: a near-black canvas, thin hairlines that organise information into panels, and a single brand-green signal that says the system is running. The interface is the calm, competent surface of a team that operates the client's marketing and sales stack. It should feel precise and quiet, never flashy, with data and plain language doing the persuading.\n\nDensity is moderate. Content sits in a 1200px column with generous section padding, so each block reads as one console module. Hierarchy comes from size and weight in a single sans family (Inter), with a monospace label voice (JetBrains Mono) reserved for data, measurements and small metadata. Colour is almost entirely neutral; green is the only chromatic voice and is spent on action, state and the numbers that matter.\n\nThe brand mark (an eclipse ring with a diamond spark) is the source of the palette: dark core, green ring, bright spark. Use it as a quiet signature, not as decoration.",
+    "keyCharacteristics": [
+      "Dark, flat, hairline-structured panels on a near-black canvas.",
+      "One accent: brand green. Everything else is neutral greys and white.",
+      "Inter at weight 500 for headings, tight negative tracking at display sizes.",
+      "Monospace only for data, prices, ratings and short metadata.",
+      "White solid buttons for the primary action; green for links, focus and selection.",
+      "Honest content: example data is always labelled as an example."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Green is the only accent. It marks what is actionable, selected or important. If a screen has green on decoration, remove it.", "section": "colors" },
+      { "name": "The Lit Panel Rule", "body": "Text on a green-tinted surface uses Spark White or Text Primary, never grey.", "section": "colors" },
+      { "name": "The Readout Rule", "body": "Monospace is for data and measurement (prices, ratings, counts, column headers). Don't use it for sentences or as a decorative \"tech\" costume.", "section": "typography" },
+      { "name": "The Sentence Case Rule", "body": "All headings are sentence case; only proper nouns are capitalised.", "section": "typography" },
+      { "name": "The Flat Console Rule", "body": "No drop shadows and no coloured glows on cards or panels. Separate surfaces with a tone step or a hairline.", "section": "elevation" }
+    ],
+    "dos": [
+      "**Do** use Signal Green (`--accent`) for every link, selection, focus border and highlighted value, and nothing else.",
+      "**Do** keep surfaces flat: Night Canvas, Panel, and 1px hairlines.",
+      "**Do** use the dark logo (`/brand/svg/wisdo-logo-dark.svg`) at 30px high on dark backgrounds.",
+      "**Do** label any illustrative data as \"Example\" and pull real prices and ratings from the catalogue.",
+      "**Do** keep headings in sentence case, Inter weight 500, with negative tracking at display sizes."
+    ],
+    "donts": [
+      "**Don't** reintroduce the old blue accent (#6798FF).",
+      "**Don't** use the legacy purple (#6C5CE7 family) or cream (#FBF9F5) palette from `src/styles/global.css`; it belongs to the retired light pages and is obsolete for new work.",
+      "**Don't** add drop shadows, coloured glows, gradient text or one-sided accent borders to cards.",
+      "**Don't** set sentences or headings in monospace.",
+      "**Don't** show invented client logos, metrics or testimonials as if they were real."
+    ]
+  }
+}

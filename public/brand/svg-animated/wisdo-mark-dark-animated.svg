@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60" role="img" aria-label="Wisdo"><defs><filter id="wdg" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"></feGaussianBlur></filter><filter id="wds" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3.5"></feGaussianBlur></filter></defs><style>.wd-spark{transform-box:view-box;transform-origin:30px 30px;animation:wdspin 6s linear infinite}@keyframes wdspin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.wd-spark{animation:none}}</style>
+<circle cx="30" cy="30" r="17.25" fill="none" stroke="#13C28A" stroke-opacity=".6" stroke-width="5" filter="url(#wdg)"></circle>
+<circle cx="30" cy="30" r="16" fill="#0B0A14"></circle>
+<circle cx="30" cy="30" r="17.25" fill="none" stroke="#13C28A" stroke-width="2.5"></circle>
+<g class="wd-spark"><circle cx="43.5" cy="14.5" r="8.5" fill="#5EE0B0" fill-opacity=".9" filter="url(#wds)"></circle><circle cx="43.5" cy="14.5" r="5.5" fill="#E9FFF6"></circle></g></svg>
