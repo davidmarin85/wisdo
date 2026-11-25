@@ -4,34 +4,144 @@
   "title": "Design System: wisdo",
   "extensions": {
     "colorMeta": {
-      "signal-green": { "role": "primary", "displayName": "Signal Green", "canonical": "#13C28A", "tonalRamp": ["#04291D", "#074331", "#0A6347", "#0F8A63", "#13C28A", "#5EE0B0", "#A6EED3", "#E9FFF6"] },
-      "glow-mint": { "role": "primary", "displayName": "Glow Mint", "canonical": "#5EE0B0" },
-      "spark-white": { "role": "primary", "displayName": "Spark White", "canonical": "#E9FFF6" },
-      "eclipse-core": { "role": "neutral", "displayName": "Eclipse Core", "canonical": "#0B0A14" },
-      "night-canvas": { "role": "neutral", "displayName": "Night Canvas", "canonical": "#0A0A0A", "tonalRamp": ["#0A0A0A", "#0F0F0F", "#141414", "#1E1E1E", "#313131", "#454545", "#7C7C7C", "#A7A7A7"] },
-      "panel": { "role": "neutral", "displayName": "Panel", "canonical": "#141414" },
-      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#1E1E1E" },
-      "control-stroke": { "role": "neutral", "displayName": "Control Stroke", "canonical": "#313131" },
-      "ghost-stroke": { "role": "neutral", "displayName": "Ghost Stroke", "canonical": "#454545" },
-      "text-primary": { "role": "neutral", "displayName": "Text Primary", "canonical": "#FFFFFF" },
-      "text-secondary": { "role": "neutral", "displayName": "Text Secondary", "canonical": "#A7A7A7" },
-      "text-tertiary": { "role": "neutral", "displayName": "Text Tertiary", "canonical": "#7C7C7C" },
-      "placeholder": { "role": "neutral", "displayName": "Placeholder", "canonical": "#8F8F8F" }
+      "signal-green": {
+        "role": "primary",
+        "displayName": "Signal Green",
+        "canonical": "#13C28A",
+        "tonalRamp": [
+          "#04291D",
+          "#074331",
+          "#0A6347",
+          "#0F8A63",
+          "#13C28A",
+          "#5EE0B0",
+          "#A6EED3",
+          "#E9FFF6"
+        ]
+      },
+      "glow-mint": {
+        "role": "primary",
+        "displayName": "Glow Mint",
+        "canonical": "#5EE0B0"
+      },
+      "spark-white": {
+        "role": "primary",
+        "displayName": "Spark White",
+        "canonical": "#E9FFF6"
+      },
+      "eclipse-core": {
+        "role": "neutral",
+        "displayName": "Eclipse Core",
+        "canonical": "#0B0A14"
+      },
+      "night-canvas": {
+        "role": "neutral",
+        "displayName": "Night Canvas",
+        "canonical": "#0A0A0A",
+        "tonalRamp": [
+          "#0A0A0A",
+          "#0F0F0F",
+          "#141414",
+          "#1E1E1E",
+          "#313131",
+          "#454545",
+          "#7C7C7C",
+          "#A7A7A7"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "#141414"
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#1E1E1E"
+      },
+      "control-stroke": {
+        "role": "neutral",
+        "displayName": "Control Stroke",
+        "canonical": "#313131"
+      },
+      "ghost-stroke": {
+        "role": "neutral",
+        "displayName": "Ghost Stroke",
+        "canonical": "#454545"
+      },
+      "text-primary": {
+        "role": "neutral",
+        "displayName": "Text Primary",
+        "canonical": "#FFFFFF"
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Text Secondary",
+        "canonical": "#A7A7A7"
+      },
+      "text-tertiary": {
+        "role": "neutral",
+        "displayName": "Text Tertiary",
+        "canonical": "#7C7C7C"
+      },
+      "placeholder": {
+        "role": "neutral",
+        "displayName": "Placeholder",
+        "canonical": "#8F8F8F"
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Page H1 only, balanced wrapping." },
-      "headline": { "displayName": "Headline", "purpose": "Section H2s." },
-      "title": { "displayName": "Title", "purpose": "Card and tool names." },
-      "body": { "displayName": "Body", "purpose": "Section intros, 480-560px wide." },
-      "body-small": { "displayName": "Body Small", "purpose": "Card descriptions, table cells, notes." },
-      "label": { "displayName": "Label (mono)", "purpose": "Data, prices, ratings, categories, column headers." },
-      "wordmark": { "displayName": "Wordmark", "purpose": "Logo and dashboard wordmark only." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page H1 only, balanced wrapping."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section H2s."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card and tool names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Section intros, 480-560px wide."
+      },
+      "body-small": {
+        "displayName": "Body Small",
+        "purpose": "Card descriptions, table cells, notes."
+      },
+      "label": {
+        "displayName": "Label (mono)",
+        "purpose": "Data, prices, ratings, categories, column headers."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "Logo and dashboard wordmark only."
+      }
     },
     "shadows": [],
-    "motion": [],
+    "motion": [
+      {
+        "name": "spark-orbit",
+        "value": "rotate 360deg, 6s linear infinite",
+        "purpose": "Animated brand mark on branded panels."
+      },
+      {
+        "name": "spark-loader",
+        "value": "rotate 360deg, 1.4s linear infinite",
+        "purpose": "Loading indicator for work in progress; stops under prefers-reduced-motion."
+      }
+    ],
     "breakpoints": [
-      { "name": "phone", "value": "640px" },
-      { "name": "tablet", "value": "720px" }
+      {
+        "name": "phone",
+        "value": "640px"
+      },
+      {
+        "name": "tablet",
+        "value": "720px"
+      }
     ]
   },
   "components": [
@@ -104,18 +214,39 @@
       "Honest content: example data is always labelled as an example."
     ],
     "rules": [
-      { "name": "The One Signal Rule", "body": "Green is the only accent. It marks what is actionable, selected or important. If a screen has green on decoration, remove it.", "section": "colors" },
-      { "name": "The Lit Panel Rule", "body": "Text on a green-tinted surface uses Spark White or Text Primary, never grey.", "section": "colors" },
-      { "name": "The Readout Rule", "body": "Monospace is for data and measurement (prices, ratings, counts, column headers). Don't use it for sentences or as a decorative \"tech\" costume.", "section": "typography" },
-      { "name": "The Sentence Case Rule", "body": "All headings are sentence case; only proper nouns are capitalised.", "section": "typography" },
-      { "name": "The Flat Console Rule", "body": "No drop shadows and no coloured glows on cards or panels. Separate surfaces with a tone step or a hairline.", "section": "elevation" }
+      {
+        "name": "The One Signal Rule",
+        "body": "Green is the only accent. It marks what is actionable, selected or important. If a screen has green on decoration, remove it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lit Panel Rule",
+        "body": "Text on a green-tinted surface uses Spark White or Text Primary, never grey.",
+        "section": "colors"
+      },
+      {
+        "name": "The Readout Rule",
+        "body": "Monospace is for data and measurement (prices, ratings, counts, column headers). Don't use it for sentences or as a decorative \"tech\" costume.",
+        "section": "typography"
+      },
+      {
+        "name": "The Sentence Case Rule",
+        "body": "All headings are sentence case; only proper nouns are capitalised.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Console Rule",
+        "body": "No drop shadows and no coloured glows on cards or panels. Separate surfaces with a tone step or a hairline.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "**Do** use Signal Green (`--accent`) for every link, selection, focus border and highlighted value, and nothing else.",
       "**Do** keep surfaces flat: Night Canvas, Panel, and 1px hairlines.",
       "**Do** use the dark logo (`/brand/svg/wisdo-logo-dark.svg`) at 30px high on dark backgrounds.",
       "**Do** label any illustrative data as \"Example\" and pull real prices and ratings from the catalogue.",
-      "**Do** keep headings in sentence case, Inter weight 500, with negative tracking at display sizes."
+      "**Do** keep headings in sentence case, Inter weight 500, with negative tracking at display sizes.",
+      "**Do** use the animated brand mark as the loading indicator instead of a generic spinner."
     ],
     "donts": [
       "**Don't** reintroduce the old blue accent (#6798FF).",
