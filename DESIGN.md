@@ -229,6 +229,9 @@ Gently rounded rectangles throughout: 8px for cards, buttons and inputs; 10–12
 ### Navigation
 - **Style:** sticky translucent header with the logo (30px high, dark variant), pill links (14px, weight 500), active link on a Panel background, and the white "Book a call" button on the right. On phones the links wrap to a second row.
 
+### Brand Mark & Loader (signature)
+The eclipse ring with its diamond spark is the system's only motion. The animated mark (`/brand/svg-animated/wisdo-mark-dark-animated.svg`, spark orbiting once every 6s) labels branded panels such as the example diagnosis, at 28px. The loader variant (`/brand/svg-animated/mark-loader.svg`, one turn every 1.4s, 26px) replaces generic spinners for work in progress, and turns grey (grayscale, 45% opacity) when the work fails. Both stop under `prefers-reduced-motion`. Don't add other spinners or decorative motion.
+
 ### Tool Card (signature)
 A Panel card for each Market tool: a 36px mono monogram tile, tool name (Title), a mono metadata line (category · G2 rating), tagline, description, tags, and a hairline footer with the price on the left and a Signal Green "Try/Get X →" link on the right. Affiliate disclosure must sit near any group of these cards.
 
@@ -243,6 +246,7 @@ The hero panel: a 12px-radius panel with the brand mark and title, an "Example" 
 - **Do** use the dark logo (`/brand/svg/wisdo-logo-dark.svg`) at 30px high on dark backgrounds.
 - **Do** label any illustrative data as "Example" and pull real prices and ratings from the catalogue.
 - **Do** keep headings in sentence case, Inter weight 500, with negative tracking at display sizes.
+- **Do** use the animated brand mark as the loading indicator instead of a generic spinner.
 
 ### Don't:
 - **Don't** reintroduce the old blue accent (#6798FF).
