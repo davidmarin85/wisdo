@@ -1,0 +1,50 @@
+---
+// Índice del blog (/blog/ y /blog/page/N/).
+import SiteLayout from '@layouts/SiteLayout.astro';
+import FeaturedPost from './FeaturedPost.astro';
+import PostCard from './PostCard.astro';
+import CategoryChips from './CategoryChips.astro';
+import Pagination from './Pagination.astro';
+import type { Post } from '@lib/blog';
+import '@styles/blog.css';
+
+interface Props {
+  featured?: Post | undefined;
+  posts: Post[];
+  current: number;
+  last: number;
+  prev?: string | undefined;
+  next?: string | undefined;
+}
+
+const { featured, posts, current, last, prev, next } = Astro.props;
+const title = current > 1 ? `Blog — page ${current} | wisdo` : 'Blog — Guides and tool comparisons | wisdo';
+---
+
+<SiteLayout
+  title={title}
+  description="How we run marketing and sales stacks, written down: step-by-step guides and side-by-side tool comparisons."
+  active="blog"
+>
+  <link slot="head" rel="alternate" type="application/rss+xml" title="wisdo blog" href="/blog/rss.xml" />
+
+  <section class="bl-hero bl-grid-bg">
+    <div class="bl-wrap bl-hero__inner">
+      <div class="bl-mono">Blog</div>
+      <h1 class="bl-display">Guides and tool comparisons.</h1>
+      <p class="bl-hero__intro">How we run marketing and sales stacks, written down. New posts every two weeks.</p>
+      <CategoryChips current="all" />
+    </div>
+  </section>
+
+  <div class="bl-wrap bl-body">
+    {featured && <FeaturedPost post={featured} />}
+    {posts.length > 0 && (
+      <div class="bl-grid">
+        {posts.map((p, i) => <PostCard post={p} eager={!featured && i < 3} />)}
+      </div>
+    )}
+    {!featured && posts.length === 0 && <p class="bl-empty">No posts yet. The first one is on its way.</p>}
+    <Pagination current={current} last={last} prev={prev} next={next} />
+  </div>
+</SiteLayout>

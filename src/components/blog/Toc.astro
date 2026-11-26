@@ -1,0 +1,53 @@
+---
+// Índice del artículo: un enlace por h2. El activo se marca con un
+// IntersectionObserver (script abajo).
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const items = Astro.props.headings.filter((h) => h.depth === 2);
+---
+
+{items.length > 0 && (
+  <nav class="bl-toc" aria-label="On this page">
+    <div class="bl-mono bl-mono--dim">On this page</div>
+    <ul>
+      {items.map((h, i) => (
+        <li><a href={`#${h.slug}`} data-toc={h.slug} class:list={{ 'is-active': i === 0 }}>{h.text}</a></li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.bl-toc a[data-toc]')];
+  const targets = links
+    .map((a) => document.getElementById(a.dataset.toc ?? ''))
+    .filter((el): el is HTMLElement => !!el);
+
+  if (targets.length) {
+    const setActive = (id: string) => {
+      for (const a of links) {
+        const on = a.dataset.toc === id;
+        a.classList.toggle('is-active', on);
+        if (on) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+      }
+    };
+
+    // Activo = el último h2 que ha pasado por encima de la línea del header.
+    const update = () => {
+      let current = targets[0]!.id;
+      for (const t of targets) {
+        if (t.getBoundingClientRect().top <= 120) current = t.id;
+      }
+      setActive(current);
+    };
+
+    const io = new IntersectionObserver(update, { rootMargin: '-88px 0px -60% 0px', threshold: [0, 1] });
+    targets.forEach((t) => io.observe(t));
+    update();
+  }
+</script>

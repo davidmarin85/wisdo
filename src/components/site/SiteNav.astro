@@ -3,7 +3,7 @@ import { BOOK_A_CALL_URL } from '@data/site';
 
 interface Props {
   /** Which nav pill renders as active */
-  active?: 'solutions' | 'ai-automation' | 'market' | null;
+  active?: 'solutions' | 'ai-automation' | 'market' | 'blog' | null;
   /** Where the logo points */
   logoHref?: string;
 }
@@ -16,6 +16,7 @@ const links = [
   { id: 'solutions',     label: 'Solutions',       href: '/#services' },
   { id: 'market',        label: 'Market',          href: '/market/' },
   { id: 'ai-automation', label: 'AI & Automation', href: '/ai-automation/' },
+  { id: 'blog',          label: 'Blog',            href: '/blog/' },
 ] as const;
 ---
 

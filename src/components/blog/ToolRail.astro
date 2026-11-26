@@ -1,0 +1,50 @@
+---
+// Herramientas del post, sacadas del catálogo de wisdo Market (precio y
+// categoría reales). Los enlaces pasan por /go/{slug}/ como en el Market.
+import { tools } from '@data/tools';
+import { toolLink } from '@lib/tool-links';
+
+interface Props {
+  slugs: string[];
+  label?: string;
+  /** inline: versión al final del texto (pantallas sin columna derecha). */
+  variant?: 'rail' | 'inline';
+}
+
+const { slugs, label = 'Tools in this guide', variant = 'rail' } = Astro.props;
+
+const items = slugs
+  .map((slug) => tools.find((t) => t.slug === slug))
+  .filter((t) => !!t)
+  .map((t) => ({ ...t, href: toolLink(t.name, { from: 'otro' }) ?? t.externalUrl }));
+
+const missing = slugs.filter((s) => !tools.some((t) => t.slug === s));
+if (missing.length) {
+  console.warn(`[blog] Unknown Market tool slug(s): ${missing.join(', ')}`);
+}
+---
+
+{items.length > 0 && (
+  <section class:list={['bl-tools', `bl-tools--${variant}`]} aria-label={label}>
+    <div class="bl-mono bl-mono--dim">{label}</div>
+    <div class="bl-tools__list">
+      {items.map((t) => (
+        <div class="bl-tool">
+          <div class="bl-tool__head">
+            <span class="bl-tool__mono" aria-hidden="true">{t.mono}</span>
+            <div>
+              <div class="bl-tool__name">{t.name}</div>
+              <div class="bl-mono">{t.category}</div>
+            </div>
+          </div>
+          <p class="bl-tool__why">{t.tagline}</p>
+          <div class="bl-tool__foot">
+            <span class="bl-mono">{t.priceLabel}</span>
+            <a class="bl-link" href={t.href} rel="sponsored noopener" target="_blank">{t.cta.replace(/^(Get|Try)\b/, 'Try')} →</a>
+          </div>
+        </div>
+      ))}
+    </div>
+    <p class="bl-disclosure">Some links are affiliate links. We may earn a commission at no cost to you.</p>
+  </section>
+)}

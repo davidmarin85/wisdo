@@ -1,0 +1,30 @@
+---
+import Cover from './Cover.astro';
+import { BLOG_CATEGORIES, formatDate, postUrl, readingMinutes, type Post } from '@lib/blog';
+
+interface Props {
+  post: Post;
+  /** related: sin extracto ni pie, título más pequeño. */
+  variant?: 'default' | 'related';
+  eager?: boolean;
+}
+
+const { post, variant = 'default', eager = false } = Astro.props;
+const { title, excerpt, category, date } = post.data;
+const related = variant === 'related';
+---
+
+<a href={postUrl(post)} class:list={['bl-card', { 'bl-card--related': related }]}>
+  <Cover post={post} eager={eager} sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 380px" />
+  <div class="bl-card__body">
+    <div class="bl-mono">{BLOG_CATEGORIES[category].singular} · {readingMinutes(post)} min</div>
+    <h3 class="bl-card__title">{title}</h3>
+    {!related && <p class="bl-card__excerpt">{excerpt}</p>}
+  </div>
+  {!related && (
+    <div class="bl-card__foot">
+      <time class="bl-mono bl-mono--dim" datetime={date.toISOString()}>{formatDate(date)}</time>
+      <span class="bl-link">Read →</span>
+    </div>
+  )}
+</a>

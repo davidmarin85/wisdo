@@ -1,0 +1,19 @@
+---
+import BlogIndex from '@components/blog/BlogIndex.astro';
+import { getPosts, pickFeatured, PAGE_SIZE } from '@lib/blog';
+
+export const prerender = true;
+
+const all = await getPosts();
+const featured = pickFeatured(all);
+const rest = all.filter((p) => p !== featured);
+const last = Math.max(1, Math.ceil(rest.length / PAGE_SIZE));
+---
+
+<BlogIndex
+  featured={featured}
+  posts={rest.slice(0, PAGE_SIZE)}
+  current={1}
+  last={last}
+  next={last > 1 ? '/blog/page/2/' : undefined}
+/>

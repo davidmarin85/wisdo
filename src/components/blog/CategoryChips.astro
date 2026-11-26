@@ -1,0 +1,25 @@
+---
+import { BLOG_CATEGORIES, CATEGORY_SLUGS, categoryUrl, type CategorySlug } from '@lib/blog';
+
+interface Props {
+  current: 'all' | CategorySlug;
+}
+
+const { current } = Astro.props;
+const chips = [
+  { id: 'all', label: 'All', href: '/blog/' },
+  ...CATEGORY_SLUGS.map((s) => ({ id: s, label: BLOG_CATEGORIES[s].label, href: categoryUrl(s) })),
+];
+---
+
+<nav class="bl-chips" aria-label="Blog categories">
+  {chips.map((c) => (
+    <a
+      href={c.href}
+      class:list={['bl-chip', { 'is-selected': c.id === current }]}
+      aria-current={c.id === current ? 'page' : undefined}
+    >
+      {c.label}
+    </a>
+  ))}
+</nav>
