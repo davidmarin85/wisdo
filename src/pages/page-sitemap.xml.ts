@@ -1,4 +1,6 @@
 import type { APIRoute } from 'astro';
+import { CATEGORY_SLUGS, categoryUrl, getPosts, postUrl } from '@lib/blog';
+import { SHOW_BLOG_IN_NAV } from '@data/site';
 
 const SITE = 'https://www.wisdo.io';
 
@@ -16,6 +18,12 @@ const PAGES: SitemapEntry[] = [
   { url: `${SITE}/market/`, priority: 0.9, changefreq: 'weekly' },
 ];
 
+// El blog entra en el sitemap a la vez que en el menú.
+const BLOG_PAGES: SitemapEntry[] = [
+  { url: `${SITE}/blog/`, priority: 0.8, changefreq: 'weekly' },
+  ...CATEGORY_SLUGS.map((c): SitemapEntry => ({ url: `${SITE}${categoryUrl(c)}`, priority: 0.6, changefreq: 'weekly' })),
+];
+
 function toXmlEntry(entry: SitemapEntry): string {
   const parts = [`  <url>`, `    <loc>${entry.url}</loc>`];
   if (entry.lastmod) parts.push(`    <lastmod>${entry.lastmod}</lastmod>`);
@@ -25,10 +33,15 @@ function toXmlEntry(entry: SitemapEntry): string {
   return parts.join('\n');
 }
 
-export const GET: APIRoute = () => {
+export const GET: APIRoute = async () => {
+  const posts: SitemapEntry[] = !SHOW_BLOG_IN_NAV ? [] : (await getPosts()).map((p) => ({
+    url: `${SITE}${postUrl(p)}`,
+    lastmod: p.data.date.toISOString().slice(0, 10),
+    priority: 0.7,
+  }));
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${PAGES.map(toXmlEntry).join('\n')}
+${[...PAGES, ...(SHOW_BLOG_IN_NAV ? BLOG_PAGES : []), ...posts].map(toXmlEntry).join('\n')}
 </urlset>`;
 
   return new Response(xml, {

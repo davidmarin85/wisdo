@@ -1,9 +1,9 @@
 ---
-import { BOOK_A_CALL_URL } from '@data/site';
+import { BOOK_A_CALL_URL, SHOW_BLOG_IN_NAV } from '@data/site';
 
 interface Props {
   /** Which nav pill renders as active */
-  active?: 'solutions' | 'ai-automation' | 'market' | null;
+  active?: 'solutions' | 'ai-automation' | 'market' | 'blog' | null;
   /** Where the logo points */
   logoHref?: string;
 }
@@ -12,11 +12,12 @@ const { active = null, logoHref = '/' } = Astro.props;
 
 const pill = 'padding:8px 14px; border-radius:9999px; font-size:14px; font-weight:500;';
 const pillActive = pill + ' background:#141414;';
-const links = [
+const links = ([
   { id: 'solutions',     label: 'Solutions',       href: '/#services' },
   { id: 'market',        label: 'Market',          href: '/market/' },
   { id: 'ai-automation', label: 'AI & Automation', href: '/ai-automation/' },
-] as const;
+  { id: 'blog',          label: 'Blog',            href: '/blog/' },
+] as const).filter((l) => SHOW_BLOG_IN_NAV || l.id !== 'blog');
 ---
 
 <div style="position:sticky; top:0; z-index:20; background:rgba(10,10,10,0.88); backdrop-filter:blur(12px); border-bottom:1px solid #1e1e1e;">

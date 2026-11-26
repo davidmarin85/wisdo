@@ -1,0 +1,69 @@
+---
+// /blog/category/{guides|comparisons}/ y sus páginas /2/, /3/…
+import type { GetStaticPaths, Page } from 'astro';
+import SiteLayout from '@layouts/SiteLayout.astro';
+import PostCard from '@components/blog/PostCard.astro';
+import CategoryChips from '@components/blog/CategoryChips.astro';
+import Pagination from '@components/blog/Pagination.astro';
+import { BLOG_CATEGORIES, CATEGORY_SLUGS, getPosts, PAGE_SIZE, tagsOf, type CategorySlug, type Post } from '@lib/blog';
+import '@styles/blog.css';
+
+export const prerender = true;
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const all = await getPosts();
+  return CATEGORY_SLUGS.flatMap((category) => {
+    const posts = all.filter((p) => p.data.category === category);
+    return paginate(posts, {
+      params: { category },
+      props: { category, total: posts.length, tags: tagsOf(posts) },
+      pageSize: PAGE_SIZE,
+    });
+  });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<Post>;
+  category: CategorySlug;
+  total: number;
+  tags: string[];
+}
+
+const { page, category, total, tags } = Astro.props;
+const cat = BLOG_CATEGORIES[category];
+const withSlash = (u?: string) => (u ? (u.endsWith('/') ? u : `${u}/`) : undefined);
+const title = page.currentPage > 1 ? `${cat.label} — page ${page.currentPage} | wisdo blog` : `${cat.label} | wisdo blog`;
+---
+
+<SiteLayout title={title} description={cat.description} active="blog">
+  <link slot="head" rel="alternate" type="application/rss+xml" title="wisdo blog" href="/blog/rss.xml" />
+
+  <section class="bl-hero bl-hero--category bl-grid-bg">
+    <div class="bl-wrap bl-hero__inner">
+      <div class="bl-mono bl-mono--dim bl-crumb"><a href="/blog/">Blog</a><span>/</span><span>Category</span></div>
+      <div class="bl-hero__titlerow">
+        <h1 class="bl-display">{cat.label}</h1>
+        <span class="bl-mono">{total} {total === 1 ? 'article' : 'articles'}</span>
+      </div>
+      <p class="bl-hero__intro">{cat.description}</p>
+      <CategoryChips current={category} />
+      {tags.length > 0 && (
+        <div class="bl-tags">
+          <span class="bl-mono bl-mono--dim">Tags</span>
+          {tags.map((t) => <span class="bl-tag">{t}</span>)}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <div class="bl-wrap bl-body">
+    {page.data.length > 0 ? (
+      <div class="bl-grid">
+        {page.data.map((p, i) => <PostCard post={p} eager={i < 3} />)}
+      </div>
+    ) : (
+      <p class="bl-empty">No {cat.label.toLowerCase()} yet. The first one is on its way.</p>
+    )}
+    <Pagination current={page.currentPage} last={page.lastPage} prev={withSlash(page.url.prev)} next={withSlash(page.url.next)} />
+  </div>
+</SiteLayout>

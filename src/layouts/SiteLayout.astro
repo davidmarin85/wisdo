@@ -9,10 +9,11 @@ interface Props {
   description: string;
   noindex?: boolean;
   canonical?: string | undefined;
-  ogImage?: string;
+  ogImage?: string | undefined;
   /** Which nav pill renders as active */
-  active?: 'solutions' | 'ai-automation' | 'market' | null;
+  active?: 'solutions' | 'ai-automation' | 'market' | 'blog' | null;
   lang?: string;
+  ogType?: 'website' | 'article';
 }
 
 const {
@@ -23,6 +24,7 @@ const {
   ogImage,
   active = null,
   lang = 'en',
+  ogType = 'website',
 } = Astro.props;
 ---
 
@@ -46,7 +48,9 @@ const {
       noindex={noindex}
       canonical={canonical}
       ogImage={ogImage}
+      ogType={ogType}
     />
+    <slot name="head" />
   </head>
   <body>
     <div style="background:#0a0a0a; color:#ffffff; font-family:'Inter',system-ui,sans-serif; min-height:100vh;">

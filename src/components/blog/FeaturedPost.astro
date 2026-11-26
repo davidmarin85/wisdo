@@ -1,0 +1,28 @@
+---
+import Cover from './Cover.astro';
+import { BLOG_CATEGORIES, formatDate, postUrl, readingMinutes, type Post } from '@lib/blog';
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, excerpt, category, date, author } = post.data;
+const cat = BLOG_CATEGORIES[category];
+---
+
+<a href={postUrl(post)} class="bl-featured">
+  <Cover post={post} eager sizes="(max-width: 820px) 100vw, 660px" />
+  <div class="bl-featured__body">
+    <div class="bl-featured__meta">
+      <span class="bl-mono bl-mono--accent">Featured</span>
+      <span class="bl-mono">{cat.singular} · {readingMinutes(post)} min</span>
+    </div>
+    <h2 class="bl-featured__title">{title}</h2>
+    <p class="bl-featured__excerpt">{excerpt}</p>
+    <div class="bl-featured__foot">
+      <span class="bl-mono bl-mono--dim"><time datetime={date.toISOString()}>{formatDate(date)}</time> · {author}</span>
+      <span class="bl-link">{cat.readLabel} →</span>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,18 @@
+---
+interface Props {
+  prev?: string | undefined;
+  next?: string | undefined;
+  current: number;
+  last: number;
+}
+
+const { prev, next, current, last } = Astro.props;
+---
+
+{last > 1 && (
+  <nav class="bl-pager" aria-label="Pagination">
+    {prev ? <a class="bl-chip" href={prev} rel="prev">← Newer</a> : <span></span>}
+    <span class="bl-mono bl-mono--dim">Page {current} of {last}</span>
+    {next ? <a class="bl-chip" href={next} rel="next">Older →</a> : <span></span>}
+  </nav>
+)}

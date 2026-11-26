@@ -1,0 +1,39 @@
+---
+// Portada de un post. Con `cover` usa <Image> (recorte por aspect-ratio);
+// sin portada dibuja un fondo de marca: rejilla, marca y categoría.
+import { Image } from 'astro:assets';
+import { BLOG_CATEGORIES, type Post } from '@lib/blog';
+
+interface Props {
+  post: Post;
+  ratio?: '16/10' | '21/9';
+  /** Imagen visible al cargar: sin lazy-load. */
+  eager?: boolean;
+  sizes?: string;
+  class?: string;
+}
+
+const { post, ratio = '16/10', eager = false, sizes = '(max-width: 600px) 100vw, 400px', class: cls } = Astro.props;
+const { cover, coverAlt, category } = post.data;
+const [w, h] = ratio === '21/9' ? [1680, 720] : [1200, 750];
+---
+
+<div class:list={['bl-cover', cls]} style={`aspect-ratio:${ratio};`}>
+  {cover ? (
+    <Image
+      src={cover}
+      alt={coverAlt ?? ''}
+      width={w}
+      height={h}
+      widths={[w / 2, w]}
+      sizes={sizes}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : undefined}
+    />
+  ) : (
+    <div class="bl-cover__fallback" aria-hidden="true">
+      <img src="/brand/svg/wisdo-mark-dark.svg" alt="" width="40" height="40" loading="lazy" />
+      <span class="bl-mono">{BLOG_CATEGORIES[category].singular}</span>
+    </div>
+  )}
+</div>
