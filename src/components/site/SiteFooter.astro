@@ -1,5 +1,5 @@
 ---
-import { BOOK_A_CALL_URL } from '@data/site';
+import { BOOK_A_CALL_URL, SHOW_BLOG_IN_NAV } from '@data/site';
 
 const colHead = "font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.85px; text-transform:uppercase;";
 const col = 'display:flex; flex-direction:column; gap:12px;';
@@ -23,7 +23,7 @@ const link = 'font-size:14px;';
       <a href="/#services" style={link}>Solutions</a>
       <a href="/market/" style={link}>wisdo Market</a>
       <a href="/ai-automation/" style={link}>AI &amp; Automation</a>
-      <a href="/blog/" style={link}>Blog</a>
+      {SHOW_BLOG_IN_NAV && <a href="/blog/" style={link}>Blog</a>}
       <a href="/#method" style={link}>How it works</a>
     </div>
 
