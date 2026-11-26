@@ -8,18 +8,21 @@ interface Props {
   /** id del input: único por página. */
   id: string;
   label?: string;
+  /** Texto bajo el campo. Por defecto, el de la home con el enlace a la llamada. */
+  note?: string;
+  class?: string;
 }
 
-const { id, label = 'Free sales-stack diagnosis' } = Astro.props;
+const { id, label = 'Free sales-stack diagnosis', note, class: cls } = Astro.props;
 ---
 
-<form action="/diagnosis/" method="get" class="hero-dg">
+<form action="/diagnosis/" method="get" class:list={['hero-dg', cls]}>
   <label class="hero-dg-label" for={id}>{label}</label>
   <div class="hero-dg-row">
     <input id={id} class="hero-dg-input" name="url" type="text" inputmode="url" autocomplete="url" placeholder="yourcompany.com" maxlength="300" required />
     <button class="hero-dg-btn" type="submit">Analyze my website</button>
   </div>
-  <p class="hero-dg-note">We read your site and recommend the tools to win more clients. Takes about 10 seconds. Or <a href={BOOK_A_CALL_URL}>book a call</a>.</p>
+  {note ? <p class="hero-dg-note">{note}</p> : <p class="hero-dg-note">We read your site and recommend the tools to win more clients. Takes about 10 seconds. Or <a href={BOOK_A_CALL_URL}>book a call</a>.</p>}
 </form>
 
 <style>

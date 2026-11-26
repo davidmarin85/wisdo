@@ -1,0 +1,42 @@
+---
+// Páginas 2..N del índice. La 1 es /blog/ (con el destacado).
+import type { GetStaticPaths } from 'astro';
+import BlogIndex from '@components/blog/BlogIndex.astro';
+import { getPosts, pickFeatured, PAGE_SIZE, type Post } from '@lib/blog';
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+  const all = await getPosts();
+  const featured = pickFeatured(all);
+  const rest = all.filter((p) => p !== featured);
+  const last = Math.max(1, Math.ceil(rest.length / PAGE_SIZE));
+  return Array.from({ length: Math.max(0, last - 1) }, (_, i) => {
+    const page = i + 2;
+    return {
+      params: { page: String(page) },
+      props: {
+        posts: rest.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+        current: page,
+        last,
+      },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+interface Props {
+  posts: Post[];
+  current: number;
+  last: number;
+}
+
+const { posts, current, last } = Astro.props;
+---
+
+<BlogIndex
+  posts={posts}
+  current={current}
+  last={last}
+  prev={current === 2 ? '/blog/' : `/blog/page/${current - 1}/`}
+  next={current < last ? `/blog/page/${current + 1}/` : undefined}
+/>
